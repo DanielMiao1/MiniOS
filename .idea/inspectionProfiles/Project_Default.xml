@@ -1,0 +1,46 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyPep8Inspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="E302" />
+          <option value="E501" />
+          <option value="E701" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPep8NamingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="N802" />
+          <option value="N803" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyStubPackagesAdvertiser" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <list>
+          <option value="PyQt5-stubs==5.15.2.0" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="PyQt5.QtWebEngineWidgets.urlChanged.connect" />
+          <option value="PyQt5.QtWebEngineWidgets.loadFinished.*" />
+          <option value="PyQt5.QtCore.QTextCodec.*" />
+          <option value="PyQt5.QtWebEngineWidgets.fullScreenRequested.connect" />
+          <option value="PyQt5.QtWebEngineWidgets.downloadRequested.*" />
+          <option value="PyQt5.QtWidgets.clicked.*" />
+          <option value="PyQt5.QtWidgets.tabBarDoubleClicked.*" />
+          <option value="PyQt5.QtWidgets.currentChanged.*" />
+          <option value="PyQt5.QtWidgets.triggered.connect" />
+          <option value="PyQt5.QtWidgets.tabCloseRequested.connect" />
+          <option value="PyQt5.QtWidgets.returnPressed.connect" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>
