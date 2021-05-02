@@ -1,14 +1,15 @@
-# The Simplifyc Operating System
-# Made by Daniel M using PyQt5
+# The Simplifyc Operating System main script
+# Made by Daniel M using Python 3
 
-try: import os # Import OS module
-except ImportError(name = "os"):
-	print("An error occurred while trying to import the os module.")
-	exit() # If OS module is not found
+# Imports
+import os
+import sys
 
 try:
 	from PyQt5.QtGui import *
 	from PyQt5.QtWidgets import *
 except ImportError:
-	if input("The PyQt5 Library is not installed. Enter 'install' to install the module, or anything else to stop the process. ").lower() == "install": os.system("pip install PyQt5")
+	if input("The PyQt5 Library is not installed. Enter 'install' to install the module, or anything else to stop the process. ").lower() == "install":
+		os.system("pip install PyQt5")
 
+print("Starting the Simplifyc Operating System...") # Print startup message
