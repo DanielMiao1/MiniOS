@@ -18,7 +18,8 @@ print("Starting the Simplifyc Operating System...") # Print startup message
 class Window(QMainWindow):
 	def __init__(self):
 		super(Window, self).__init__()
+		self.show() # Show the main window
 
 
 (application, window) = (QApplication(sys.argv), Window())
-application.exec_()
+application.exec_() # Create new Qt application and run Window class
