@@ -5,8 +5,7 @@
 import os
 import sys
 
-try:
-	import PyQt5
+try: import PyQt5
 except ImportError:
 	if input("The PyQt5 Library is not installed. Enter 'install' to install the module, or anything else to stop the process: ").lower() == "install":
 		os.system("pip3 install PyQt5")
@@ -14,6 +13,12 @@ finally:
 	from PyQt5.QtGui import *
 	from PyQt5.QtCore import *
 	from PyQt5.QtWidgets import *
+
+try: import PyQt5.QtWebEngineWidgets
+except ImportError:
+	if input("The PyQtWebEngineWidgets Library is not installed. Enter 'install' to install the module, or anything else to stop the process: ").lower() == "install":
+		os.system("pip3 install PyQtWebEngine")
+finally: from PyQt5.QtWebEngineWidgets import *
 
 print("Starting the Simplifyc Operating System...") # Print startup message
 
