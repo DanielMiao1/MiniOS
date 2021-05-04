@@ -263,7 +263,7 @@ class Window(QMainWindow):
 		self.navigation.addAction(self.config) # Add 'config' QAction to 'navigation' tool bar
 		about.triggered.connect(self.openAbout) # Call function openAbout when 'about' is triggered
 		about_menu.addAction(about) # Add 'about' to the 'about_menu'
-		self.newTab() # Set default tab displayed as 'https://home.danielmiao1.repl.co/' with the tab name 'New Tab'
+		self.newTab() # Add default tab
 		self.show() # Show widgets
 
 	def back(self): # Go back, and record the new url in the history file
