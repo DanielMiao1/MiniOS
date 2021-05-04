@@ -33,8 +33,8 @@ class Window(QMainWindow):
 		self.dock.setIconSize(QSize(32, 32)) # Configure the dock icon size
 		self.addToolBar(Qt.BottomToolBarArea, self.dock) # Display the toolbar at the bottom of the screen
 		self.applications = [QAction(QIcon("System/images/browser.png"), "Browser", self), QAction(QIcon("System/images/terminal.png"), "Terminal", self)] # Create list of applications
-		self.applications[0].triggered.connect(lambda: os.system("python3 Applications/OSApplications/SimplifycBrowser/main.py")) # Run Applications/OSApplications/SimplifycBrowser/main.py script when the first action in self.applications list is triggered
-		self.applications[1].triggered.connect(lambda: os.system("python3 Applications/OSApplications/SimplifycTerminal/main.py")) # Run Applications/OSApplications/SimplifycTerminal/main.py script when the second action in self.applications list is triggered
+		self.applications[0].triggered.connect(lambda: os.system("python3 Applications/SimplifycBrowser/main.py")) # Run Applications/OSApplications/SimplifycBrowser/main.py script when the first action in self.applications list is triggered
+		self.applications[1].triggered.connect(lambda: os.system("python3 Applications/SimplifycTerminal/main.py")) # Run Applications/OSApplications/SimplifycTerminal/main.py script when the second action in self.applications list is triggered
 		for i in self.applications: self.dock.addAction(i) # Add each application to the dock
 		self.show() # Show the main window
 

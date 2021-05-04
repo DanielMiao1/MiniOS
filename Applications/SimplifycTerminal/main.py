@@ -11,12 +11,19 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 
+class MainWindow(QMainWindow):
+	def eventFilter(self, a0, a1):
+		if a0 == QLineEdit:
+			if a1.type() == QEvent.KeyPress:
+				key_event = QKeyEvent(a1)
+				if key_event.key() == Qt.Key_Up: return True
+
 class Window(QMainWindow):
 	"""Main Window"""
 	def __init__(self):
 		super(Window, self).__init__()
 		self.path = os.path.abspath(os.getcwd())
-		self.commands = ["ls", "echo", "pwd"] # Define valid operation commands
+		self.commands = ["ls", "echo", "pwd", "history"] # Define valid operation commands
 		self.setFixedSize(QSize(450, 250)) # Set window size
 		self.input_box = QLineEdit(self) # Create the command input box
 		self.input_box.setFont(QFont("Consolas", 15)) # Set font and font size of command input box
@@ -33,14 +40,16 @@ class Window(QMainWindow):
 		self.show() # Show widgets
 
 	def evalCommand(self): # Evaluate the command in the command input box and write to the output box
-		if self.input_box.text() == "": return
+		if self.input_box.text() == "": return # Exit function if the input box is empty
+		open("Applications/SimplifycTerminal/history.txt", "a+").write(f"{self.input_box.text()}\n") # Write current command to the history file
 		arguments = self.getListFromCommand(self.removeSpaces(self.input_box.text()))[1:] if len(self.getListFromCommand(self.removeSpaces(self.input_box.text()))) > 1 else [] # Get command
 		operation_command = self.getListFromCommand(self.removeSpaces(self.input_box.text()))[0] if self.getListFromCommand(self.removeSpaces(self.input_box.text()))[0] in self.commands else None # Get the operation command
 		if operation_command is None: # If operation command is None
 			self.output_box.setText(f"Command not found: '{self.getListFromCommand(self.removeSpaces(self.input_box.text()))[0]}'") # Output command not found message
+			self.input_box.setText("")
 			return # Exit from function
-		if operation_command == "ls": # List command
-			if len(arguments) == 0: self.output_box.setText("	".join(str(i) for i in os.listdir("./") if not i.startswith("."))) # If the arguments list is empty; output files and directories in the current directory
+		elif operation_command == "ls": # List command
+			if len(arguments) == 0: self.output_box.setText("    ".join(str(i) for i in os.listdir("./") if not i.startswith("."))) # If the arguments list is empty; output files and directories in the current directory
 			elif len(arguments) == 1: pass
 			elif len(arguments) == 2: pass
 			elif len(arguments) == 3: pass
@@ -66,9 +75,26 @@ class Window(QMainWindow):
 					self.output_box.setText(string)
 				else:
 					self.output_box.setText(f"Invalid command: at argument {arguments[0]}")
+					self.input_box.setText("")
 					return # Otherwise, output an error message and return
 			else: pass
-		elif operation_command == "pwd": self.output_box.setText(self.path)
+		elif operation_command == "pwd": self.output_box.setText(self.path) # Output current directory if operation command is 'pwd', regardless of the arguments
+		elif operation_command == "history": # If the operation command is 'history'
+			if len(arguments) >= 1: # If there are one or more arguments
+				if arguments[0].startswith("-") and len(arguments[0]) > 1: # If the first argument starts with a hyphen and there are more than one arguments
+					option = list(arguments[0][1:]) # Assign variable option to the first argument excluding the first hyphen as a list
+					if "c" in option: # If 'option' contains a 'c'
+						open("Applications/SimplifycTerminal/history.txt", "w+").write("") # Clear the Applications/SimplifycTerminal/history.txt file
+						self.output_box.setText("\n") # Clear the output
+						self.input_box.setText("") # Clear the input box
+						return # Exit function
+					else: self.output_box.setText(open("Applications/SimplifycTerminal/history.txt", "r").read()) # Otherwise, output the contents of Applications/SimplifycTerminal/history.txt
+				elif arguments[0].isnumeric(): # If the first argument is a non-negative whole number
+					if open("Applications/SimplifycTerminal/history.txt", "r").read().count("\n") < (int(arguments[0]) - 1): self.output_box.setText(open("Applications/SimplifycTerminal/history.txt", "r").read()) # If the history entries in Applications/SimplifycTerminal/history.txt is less than the amount entered, output the entire history
+					else: self.output_box.setText("\n".join(str(i) for i in str(open("Applications/SimplifycTerminal/history.txt", "r").read()).splitlines()[::-1][:int(arguments[0])])) # Otherwise, output the first given amount of history entries
+				else: self.output_box.setText(open("Applications/SimplifycTerminal/history.txt", "r").read()) # Otherwise, output the contents of Applications/SimplifycTerminal/history.txt
+			else: self.output_box.setText(open("Applications/SimplifycTerminal/history.txt", "r").read()) # Otherwise, output the contents of Applications/SimplifycTerminal/history.txt
+		self.input_box.setText("") # Clear the input box
 
 	@staticmethod # Make the removeSpaces function static
 	def removeSpaces(text): return text[re.search(r"[^ ]", text).start():] # Return the text without spaces in the front using re.search
