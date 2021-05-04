@@ -233,7 +233,7 @@ class Window(QMainWindow):
 	# noinspection PyArgumentList
 	def __init__(self):
 		super(Window, self).__init__()
-		(self.tabs, self.status, self.bookmarks, self.url_bar, self.navigation, self.back, self.forward, self.reload, self.home, about_menu, about, self.config) = (QTabWidget(), QStatusBar(), QToolBar("Bookmarks"), LineEdit(), QToolBar("Navigation"), QAction("←", self), QAction("→", self), QAction("↺", self), QAction("🏠", self), self.menuBar().addMenu("About"), QAction(QIcon(os.path.join("images", "question.png")), "About", self), QAction("⚙", self)) # Define variables
+		(self.tabs, self.bookmarks, self.url_bar, self.navigation, self.back, self.forward, self.reload, self.home, about_menu, about, self.config) = (QTabWidget(), QToolBar("Bookmarks"), LineEdit(), QToolBar("Navigation"), QAction("←", self), QAction("→", self), QAction("↺", self), QAction("🏠", self), self.menuBar().addMenu("About"), QAction(QIcon(os.path.join("images", "question.png")), "About", self), QAction("⚙", self)) # Define variables
 		self.navigation.setStyleSheet("font-size: 15px;") # Set font size of all items in the QToolBar named 'navigation' to 15px
 		self.tabs.setDocumentMode(True) # Set document mode for the QTabWidget named 'tabs' to True
 		self.tabs.tabBarDoubleClicked.connect(self.openTab) # Call the function openTab when the tab bar is double clicked
@@ -241,7 +241,6 @@ class Window(QMainWindow):
 		self.tabs.setTabsClosable(True) # Set tabs closable
 		self.tabs.tabCloseRequested.connect(self.closeTab) # Call the function closeTab when user attempts to close a tab
 		self.setCentralWidget(self.tabs) # Set central widget for the window as the tab widget
-		self.setStatusBar(self.status) # Add a status bar
 		# Add the tool bars 'navigation' and 'bookmarks', with a break between them
 		self.addToolBar(self.navigation)
 		self.addToolBarBreak()
