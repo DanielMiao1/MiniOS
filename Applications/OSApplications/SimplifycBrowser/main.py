@@ -114,8 +114,8 @@ class ConfigDialog(QDialog):
 		title_font.setPointSize(25) # Set point size for font
 		title.setFont(title_font) # Set font for title QLabel as title_font
 		# Add QLabel for history entries
-		entries = open("config/history.txt", "r").read().count("\n")
-		self.history_size = QLabel(f"History Size: {os.stat('config/history.txt').st_size} Bytes; {entries} Entries")
+		entries = open("Applications/OSApplications/SimplifycBrowser/config/history.txt", "r").read().count("\n")
+		self.history_size = QLabel(f"History Size: {os.stat('Applications/OSApplications/SimplifycBrowser/config/history.txt').st_size} Bytes; {entries} Entries")
 		# Add PushButton with text 'History' and call function openHistory in the current class when clicked
 		self.history = PushButton()
 		self.history.setText("History")
@@ -158,11 +158,11 @@ class History(QDialog):
 		title_font.setPointSize(25)
 		title.setFont(title_font) # Set the 'title' QLabel's font to 'title_font'
 		# Add QLabel for history entries
-		entries = open("config/history.txt", "r").read().count("\n")
-		self.history_info = QLabel(f"{os.stat('config/history.txt').st_size} Bytes with {entries} Entries")
-		# Add new ScrollArea containing the text of config/history.txt
+		entries = open("Applications/OSApplications/SimplifycBrowser/config/history.txt", "r").read().count("\n")
+		self.history_info = QLabel(f"{os.stat('Applications/OSApplications/SimplifycBrowser/config/history.txt').st_size} Bytes with {entries} Entries")
+		# Add new ScrollArea containing the text of Applications/OSApplications/SimplifycBrowser/config/history.txt
 		self.history = ScrollArea()
-		self.history.setText(str(open("config/history.txt", "r").read()))
+		self.history.setText(str(open("Applications/OSApplications/SimplifycBrowser/config/history.txt", "r").read()))
 		# Add new PushButton with text 'Clear History' and open the function clearHistory in the current class when clicked
 		clear_history = PushButton()
 		clear_history.setText("Clear History")
@@ -176,8 +176,8 @@ class History(QDialog):
 		self.setStyleSheet("color: white; background-color: #18082C;") # Set background color of dialog to #18082C and color of text to white
 		self.setLayout(self.template) # Display the widgets
 
-	def clearHistory(self): # Clears the history by clearing the config/history.txt file and updates the ScrollArea and the history QLabel
-		open("config/history.txt", "w+").write("")
+	def clearHistory(self): # Clears the history by clearing the Applications/OSApplications/SimplifycBrowser/config/history.txt file and updates the ScrollArea and the history QLabel
+		open("Applications/OSApplications/SimplifycBrowser/config/history.txt", "w+").write("")
 		history_info = QLabel("0 Bytes with 0 Entries")
 		self.history_info.update()
 		history = ScrollArea()
@@ -268,15 +268,15 @@ class Window(QMainWindow):
 
 	def back(self): # Go back, and record the new url in the history file
 		self.tabs.currentWidget().back()
-		open("config/history.txt", "a+").write(f"{self.url_bar.text()}\n")
+		open("Applications/OSApplications/SimplifycBrowser/config/history.txt", "a+").write(f"{self.url_bar.text()}\n")
 
 	def forward(self): # Go forward, and record the new url in the history file
 		self.tabs.currentWidget().forward()
-		open("config/history.txt", "a+").write(f"{self.url_bar.text()}\n")
+		open("Applications/OSApplications/SimplifycBrowser/config/history.txt", "a+").write(f"{self.url_bar.text()}\n")
 
 	def reload(self): # Reload, and record the new url in the history file
 		self.tabs.currentWidget().reload()
-		open("config/history.txt", "a+").write(f"{self.url_bar.text()}\n")
+		open("Applications/OSApplications/SimplifycBrowser/config/history.txt", "a+").write(f"{self.url_bar.text()}\n")
 
 	def newTab(self, url = None, label = "New Tab"): # Create a new tab
 		if url is None: url = QUrl("https://home.danielmiao1.repl.co/")
@@ -300,7 +300,7 @@ class Window(QMainWindow):
 
 	def toHome(self): # Go to 'https://home.danielmiao1.repl.co/'
 		self.tabs.currentWidget().setUrl(QUrl("https://home.danielmiao1.repl.co/"))
-		open("config/history.txt", "a+").write("browser://home\n")
+		open("Applications/OSApplications/SimplifycBrowser/config/history.txt", "a+").write("browser://home\n")
 
 	def toURL(self): # Go to the url given in the URL box or search google
 		url = QUrl(self.url_bar.text())
@@ -314,7 +314,7 @@ class Window(QMainWindow):
 	def updateURLBox(self, url, engine = None): # Update URL box text to the relative URL when URL changed
 		if engine != self.tabs.currentWidget(): return
 		if not url.toString == "":
-			open("config/history.txt", "a+").write(f"{url.toString()}\n")
+			open("Applications/OSApplications/SimplifycBrowser/config/history.txt", "a+").write(f"{url.toString()}\n")
 			self.url_bar.setText("") if url.toString().lower() == "https://home.danielmiao1.repl.co/" else self.url_bar.setText(url.toString())
 			self.url_bar.setCursorPosition(0)
 
