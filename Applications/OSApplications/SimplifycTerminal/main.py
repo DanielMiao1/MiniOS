@@ -15,6 +15,8 @@ class Window(QMainWindow):
 	"""Main Window"""
 	def __init__(self):
 		super(Window, self).__init__()
+		self.path = os.path.abspath(os.getcwd())
+		self.commands = ["ls", "echo", "pwd"] # Define valid operation commands
 		self.setFixedSize(QSize(450, 250)) # Set window size
 		self.input_box = QLineEdit(self) # Create the command input box
 		self.input_box.setFont(QFont("Consolas", 15)) # Set font and font size of command input box
@@ -31,20 +33,65 @@ class Window(QMainWindow):
 		self.show() # Show widgets
 
 	def evalCommand(self): # Evaluate the command in the command input box and write to the output box
-		command = self.getListFromCommand(self.removeSpaces(self.input_box.text())) # Get command
-		if command[0] == "ls": # List command
-			if len(command) == 1: self.output_box.setText("	".join(str(i) for i in os.listdir("./") if not i.startswith("."))) # If the command is simply 'ls'; output files and directories in the current directory
-			elif len(command) == 2: pass
-			elif len(command) == 3: pass
-			elif len(command) == 4: pass
+		if self.input_box.text() == "": return
+		arguments = self.getListFromCommand(self.removeSpaces(self.input_box.text()))[1:] if len(self.getListFromCommand(self.removeSpaces(self.input_box.text()))) > 1 else [] # Get command
+		operation_command = self.getListFromCommand(self.removeSpaces(self.input_box.text()))[0] if self.getListFromCommand(self.removeSpaces(self.input_box.text()))[0] in self.commands else None # Get the operation command
+		if operation_command is None: # If operation command is None
+			self.output_box.setText(f"Command not found: '{self.getListFromCommand(self.removeSpaces(self.input_box.text()))[0]}'") # Output command not found message
+			return # Exit from function
+		if operation_command == "ls": # List command
+			if len(arguments) == 0: self.output_box.setText("	".join(str(i) for i in os.listdir("./") if not i.startswith("."))) # If the arguments list is empty; output files and directories in the current directory
+			elif len(arguments) == 1: pass
+			elif len(arguments) == 2: pass
+			elif len(arguments) == 3: pass
 			else: pass
-		else: self.output_box.setText(f"Command not found: '{self.removeSpaces(self.input_box.text())}'")
+		elif operation_command == "echo": # Echo command
+			if (arguments[0].startswith("\"") and arguments[-1].endswith("\"")) or (arguments[0].startswith("'") and arguments[-1].endswith("'")):
+				self.output_box.setText(" ".join(str(i) for i in arguments)[1:-1])
+			elif len(arguments) == 0: self.output_box.setText("") # If the arguments list is empty; output ''
+			elif len(arguments) == 1: # If there is one argument after 'echo'
+				if arguments[0] == "-n": self.output_box.setText("") # If the argument is '-n', output ''
+				elif arguments[0] == "-e": self.output_box.setText("\n") # If the argument is '-e', output a new line
+				else: self.output_box.setText("".join(str(i) for i in list(arguments[0])[1:-1] if i != "\\")) if (arguments[0].startswith("\"") and arguments[0].endswith("\"")) or (arguments[0].startswith("'") and arguments[0].endswith("'")) else self.output_box.setText("".join(str(i) for i in list(arguments[0]) if i != "\\")) # Otherwise, output the argument if it is not quoted; however if it is quoted, output the argument without quotes.
+			elif len(arguments) == 2: # If there are two arguments after 'echo'
+				escape_characters = False # If escape characters such as '\n' is allowed
+				newline_at_end = True # If a newline is inserted at the end of output
+				if arguments[0].startswith("-") and len(arguments[0]) > 1:
+					option = list(arguments[0][1:]) # Store options
+					if "e" in option: escape_characters = True # Allow escape characters
+					elif "n" in option: newline_at_end = False # Do not print newline
+					string = " ".join(str(i) for i in arguments[1:])[1:-1] if (arguments[1].startswith("\"") and arguments[-1].endswith("\"")) or (arguments[1].startswith("'") and arguments[-1].endswith("'")) else " ".join(str(i) for i in arguments[1:])
+					if escape_characters: string = self.processEscapeCharacters(string)
+					if newline_at_end: string += "\n"
+					self.output_box.setText(string)
+				else:
+					self.output_box.setText(f"Invalid command: at argument {arguments[0]}")
+					return # Otherwise, output an error message and return
+			else: pass
+		elif operation_command == "pwd": self.output_box.setText(self.path)
 
 	@staticmethod # Make the removeSpaces function static
 	def removeSpaces(text): return text[re.search(r"[^ ]", text).start():] # Return the text without spaces in the front using re.search
 
 	@staticmethod # Make the getListFromCommand function static
 	def getListFromCommand(command): return command.split(" ") # Return command as a list separated at spaces
+
+	@staticmethod # Make the updateEscapeCharacters function static
+	def processEscapeCharacters(string): # Process escape characters
+		string = list(string)
+		new_string = ""
+		for i in string:
+			if string[string.index(i)] == "\\" and string[string.index(i) + 1] == "n":
+				del string[string.index(i) + 1], string[string.index(i)]
+				new_string += "\n"
+			elif string[string.index(i)] == "\\" and string[string.index(i) + 1] == "t":
+				del string[string.index(i) + 1], string[string.index(i)]
+				new_string += "\t"
+			elif string[string.index(i)] == "\\" and string[string.index(i) + 1] == "\\":
+				del string[string.index(i) + 1], string[string.index(i)]
+				new_string += "\\"
+			else: new_string += i
+		return new_string
 
 
 # Create new Qt application and run Window class
