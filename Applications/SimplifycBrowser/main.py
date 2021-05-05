@@ -6,7 +6,7 @@
 import os
 import sys
 
-import json
+# import json
 
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
@@ -14,6 +14,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtWebEngineWidgets import *
 
 # PyQt5 widget overrides
+# noinspection PyArgumentList
 class PushButton(QPushButton):
 	# noinspection PyUnresolvedReferences
 	"""Add QPushButton Animation"""
@@ -178,7 +179,6 @@ class History(QDialog):
 
 	def clearHistory(self): # Clears the history by clearing the Applications/SimplifycBrowser/config/history.txt file and updates the ScrollArea and the history QLabel
 		open("Applications/SimplifycBrowser/config/history.txt", "w+").write("")
-		history_info = QLabel("0 Bytes with 0 Entries")
 		self.history_info.update()
 		history = ScrollArea()
 		history.setText("")
