@@ -228,11 +228,11 @@ class NewBookmark(QDialog):
 		self.setStyleSheet("color: white; background-color: #18082C;")
 		self.setLayout(self.template)
 
-class Window(QMainWindow):
+class Browser(QMainWindow):
 	"""Main Window"""
 	# noinspection PyArgumentList
 	def __init__(self):
-		super(Window, self).__init__()
+		super(Browser, self).__init__()
 		(self.tabs, self.bookmarks, self.url_bar, self.navigation, self.back, self.forward, self.reload, self.home, about_menu, about, self.config) = (QTabWidget(), QToolBar("Bookmarks"), LineEdit(), QToolBar("Navigation"), QAction("←", self), QAction("→", self), QAction("↺", self), QAction("🏠", self), self.menuBar().addMenu("About"), QAction(QIcon(os.path.join("images", "question.png")), "About", self), QAction("⚙", self)) # Define variables
 		self.navigation.setStyleSheet("font-size: 15px;") # Set font size of all items in the QToolBar named 'navigation' to 15px
 		self.tabs.setDocumentMode(True) # Set document mode for the QTabWidget named 'tabs' to True
@@ -336,5 +336,6 @@ class Window(QMainWindow):
 		dialog.exec_()
 
 
-(browser, window) = (QApplication(sys.argv), Window())
-browser.exec_() # Create new Qt application and run Window class
+app = QApplication(sys.argv)
+browser = Browser()
+app.exec_()

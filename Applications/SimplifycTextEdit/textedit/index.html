@@ -1,0 +1,207 @@
+<!--
+index.html
+Main HTML script for SimplifycTextEdit application
+Made by Daniel M
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background-color: #eeeeee;
+    }
+    ::-webkit-scrollbar-thumb {
+      background-color: #888888
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: #666666;
+    }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+      outline: none;
+    }
+    html {
+      font-size: 1rem;
+      background-color: white;
+      font-family: arial;
+    }
+    .toolbar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(20px, 40px));
+      background-color: #18082C;
+      color: rgb(0, 0, 0);
+      grid-gap: 4px;
+      padding: 7px;
+      justify-content: center;
+      align-items: center;
+    }
+    .actions {
+      background-color: inherit;
+      padding-top: 0.6rem;
+      padding-bottom: 0.6rem;
+      cursor: pointer;
+      color: white;
+      border: 2px solid transparent;
+      transition: 0.5s;
+      border-radius: 0px;
+      outline: none;
+    }
+    .actions:hover {
+      border: 2px solid #E7F7D3
+    }
+    .actions:active {
+      transition: 0s;
+      background-color: #500884
+    }
+    .center {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .editor {
+      width: 70vw;
+      height: 50vh;
+      margin: 2rem;
+      padding: 1rem;
+      font-size: 1.2rem;
+      border: 2px solid black;
+      overflow-y: auto;
+    }
+    .getcontent {
+      white-space: pre;
+      width: 80vw;
+      background-color: rgb(255, 255, 255);
+      overflow: auto;
+      padding: 1rem;
+      display: none;
+      margin-top: 1rem;
+      box-shadow: 0.1rem 0.1rem 0.5rem rgb(255, 255, 255);
+      border: 1px solid rgb(0, 0, 0);
+    }
+    img {
+      width: 60px;
+      height: 60px;
+      margin-top: 0.4rem;
+      border-radius: 50rem;
+    }
+    label {
+      margin-left: 0.04rem;
+      padding-left: 0.7rem;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      padding-top: 100px;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+    }
+    .modal-content {
+      position: relative;
+      background-color: #FEFEFE;
+      margin: auto;
+      padding: 0;
+      border: 1px solid #888;
+      width: 80%;
+      box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+      -webkit-animation-name: animate_top;
+      -webkit-animation-duration: 0.4s;
+      animation-name: animate_top;
+      animation-duration: 0.4s
+    }
+    @keyframes animate_top {
+      from {top:-300px; opacity:0}
+      to {top:0; opacity:1}
+    }
+    @-webkit-keyframes animate_top {
+      from {top:-300px; opacity:0}
+      to {top:0; opacity:1}
+    }
+    .close {
+      color: white;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .close:hover,
+    .close:focus {
+      color: #000;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .modal-header {
+      padding: 25px 16px;
+      background-color: #18082C;
+      color: white;
+    }
+    .modal-body {
+      padding: 25px 16px;
+    }
+    .modal-footer {
+      padding: 15px 16px;
+      background-color: #18082C;
+      color: #E7F7D3;
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <button class="actions fas fa-bold" onclick="document.execCommand('bold', false, '');" title="Bold"></button>
+    <button class="actions fas fa-underline"  onclick="document.execCommand('underline', false, '');" title="Underline">
+    </button>
+    <button class="actions fas fa-italic" onclick="document.execCommand('italic', false, '');" title="Italic">
+    </button>
+    <button class="actions fas fa-strikethrough" onclick="document.execCommand('strikeThrough', false, '')" title="Strikethrough"></button>
+    <br>
+    <button class="actions fas fa-superscript" onclick="document.execCommand('superscript', false, null)" title="Superscript"></button>
+    <button class="actions fas fa-subscript" onclick="document.execCommand('subscript', false, null)" title="Subscript"></button>
+    <br>
+    <button class="actions fas fa-undo-alt" onclick="document.execCommand('undo', false, '')" title="Undo"></button>
+    <button class="actions fas fa-redo-alt" onclick="document.execCommand('redo', false, '')" title="Redo"></button>
+    <br>
+    <button class="actions fas fa-align-left" onclick="document.execCommand('justifyLeft', false, '')" title="Align Left"></button>
+    <button class="actions fas fa-align-center" onclick="document.execCommand('justifyCenter', false, '')" title="Align Center"></button>
+    <button class="actions fas fa-align-right" onclick="document.execCommand('justifyRight', false, '')" title="Align Right"></button>
+    <button class="actions fas fa-align-justify" onclick="document.execCommand('justifyFull', false, '')" title="Justify"></button>
+    <br>
+    <button class="actions far fa-copy" onclick="document.execCommand('copy', false, '');" title="Copy"></button>
+    <button class="actions far fa-file-alt" onclick="document.execCommand('selectAll', false, null)" title="Select All"></button>
+    <br>
+    <button class="actions fas fa-indent" onclick="document.execCommand('indent', false, null)" title="Indent"></button>
+    <button class="actions fas fa-outdent" onclick="document.execCommand('outdent', false, null)" title="Outdent"></button>
+    <button class="actions fas fa-remove-format" onclick="document.execCommand('removeFormat', false, null)" title="Remove Format"></button>
+    <button class="actions fas fa-fill-drip" onclick="document.execCommand('foreColor', false, prompt('Enter the color (e.g. black, #000000, rgb(0, 0, 0)): '))" title="Text Color"></button>
+    <br>
+    <button class="actions fas fa-list-ol" onclick="document.execCommand('insertOrderedList', false, null)" title="Insert Ordered List"></button>
+    <button class="actions fas fa-list-ul" onclick="document.execCommand('insertUnorderedList', false, null)" title="Insert Unordered List"></button>
+    <button class="actions fas fa-bars" onclick="document.execCommand('insertHorizontalRule', false, null)" title="Insert Line Break"></button>
+    <br>
+    <select style="width: 100px;" class="actions" onchange="document.execCommand('formatBlock', false, this.value)" title="Text Size">
+      <option value="P">&nbsp;&nbsp;Paragraph</option>
+      <option value="H1">&nbsp;&nbsp;Header 1</option>
+      <option value="H2">&nbsp;&nbsp;Header 2</option>
+      <option value="H3">&nbsp;&nbsp;Header 3</option>
+      <option value="H4">&nbsp;&nbsp;Header 4</option>
+      <option value="H5">&nbsp;&nbsp;Header 5</option>
+      <option value="H6">&nbsp;&nbsp;Header 6</option>
+    </select>
+  </div>
+  <div class="center">
+    <div class="editor" contenteditable></div>
+  </div>
+  <script src="https://kit.fontawesome.com/1ae17f48f1.js" crossorigin="anonymous"></script>
+</body>
+</html>

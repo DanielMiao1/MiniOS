@@ -13,9 +13,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtWebEngine import *
 
-
 application = QApplication(sys.argv) # Create new Qt application
 web_view = QWebEngineView() # Create new Web Engine View
 web_view.load(QUrl.fromLocalFile(os.path.abspath(os.path.join(os.path.dirname(__file__), "calculator/index.html")))) # Load HTML page at calculator/index.html
 web_view.show() # Show view
-application.exec_() # Execute new Qt application
+application.exec_() # Execute Qt application
