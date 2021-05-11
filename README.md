@@ -1,3 +1,3 @@
 # SimplifycOS
-## An Operating System made by Daniel M using PyQt
-## **_Not_** Finished
+## A simple graphical operating system made by Daniel M using PyQt
+## Not Finished
