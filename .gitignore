@@ -1,3 +1,5 @@
 .idea/
 Applications/SimplifycBrowser/config/history.txt
 Applications/SimplifycTerminal/history.txt
+venv/
+

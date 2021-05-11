@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
-# Simplifyc Terminal
-# Terminal Emulator made by Daniel M using Python 3 for the SimplifycOS project: https://github.com/DanielMiao1/SimplifycOS
+"""
+Applications/SimplifycTerminal/terminal.py
+Simplifyc Terminal
+Terminal Emulator made by Daniel M using Python 3 for the SimplifycOS project: https://github.com/DanielMiao1/SimplifycOS
+"""
 
 # Imports
 import os
@@ -11,11 +14,12 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 
-#Widget Overrides
+# Widget Overrides
 class MainWindow(QMainWindow):
 	"""Add Event Filter for Main Window: Not finished"""
 	@staticmethod
 	def eventFilter(a0, a1):
+		"""Add event filter"""
 		if a0 == QLineEdit:
 			if a1.type() == QEvent.KeyPress:
 				key_event = QKeyEvent(a1)
@@ -42,7 +46,8 @@ class Terminal(QWidget):
 		self.output_box.resize(400, 165) # Resize the output box
 		self.show() # Show widgets
 
-	def evalCommand(self): # Evaluate the command in the command input box and write to the output box
+	def evalCommand(self):
+		"""Evaluate the command in the command input box and write to the output box"""
 		if self.input_box.text() == "": return # Exit function if the input box is empty
 		open("Applications/SimplifycTerminal/history.txt", "a+").write(f"{self.input_box.text()}\n") # Write current command to the history file
 		arguments = self.getListFromCommand(self.removeSpaces(self.input_box.text()))[1:] if len(self.getListFromCommand(self.removeSpaces(self.input_box.text()))) > 1 else [] # Get command
@@ -100,13 +105,18 @@ class Terminal(QWidget):
 		self.input_box.setText("") # Clear the input box
 
 	@staticmethod # Make the removeSpaces function static
-	def removeSpaces(text): return text[re.search(r"[^ ]", text).start():] # Return the text without spaces in the front using re.search
+	def removeSpaces(text):
+		"""Return the text without spaces in the front using re.search, if spaces exists"""
+		return text[re.search(r"[^ ]", text).start():]
 
 	@staticmethod # Make the getListFromCommand function static
-	def getListFromCommand(command): return command.split(" ") # Return command as a list separated at spaces
+	def getListFromCommand(command):
+		"""Return command as a list separated at spaces"""
+		return command.split(" ")
 
 	@staticmethod # Make the updateEscapeCharacters function static
-	def processEscapeCharacters(string): # Process escape characters
+	def processEscapeCharacters(string):
+		"""Process escape characters"""
 		string = list(string)
 		new_string = ""
 		for i in string:

@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
-# Simplifyc Text Edit
-# Text Editor made by Daniel M using Python 3 for the SimplifycOS project: https://github.com/DanielMiao1/SimplifycOS
-# Main Text Edit code at textedit/index.html
+"""
+Applications/SimplifycTextEdit/textedit.py
+Simplifyc Text Edit
+Text Editor made by Daniel M using Python 3 for the SimplifycOS project: https://github.com/DanielMiao1/SimplifycOS
+Main Text Edit code at textedit/index.html
+"""
 
 # Imports
 import sys
@@ -14,6 +17,7 @@ from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtWebEngine import *
 
 class TextEdit(QMainWindow):
+	"""Main Window"""
 	def __init__(self):
 		super(TextEdit, self).__init__()
 		self.web_view = QWebEngineView() # Create new Web Engine View

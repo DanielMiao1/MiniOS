@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
-# Simplifyc Browser
-# Web browser made by Daniel M using Python 3 for the SimplifycOS project: https://github.com/DanielMiao1/SimplifycOS
+"""
+Applications/SimplifycBrowser/browser.py
+Simplifyc Browser
+Web browser made by Daniel M using Python 3 for the SimplifycOS project: https://github.com/DanielMiao1/SimplifycOS
+"""
 
 # Imports
 import os
@@ -24,18 +27,22 @@ class PushButton(QPushButton):
 		self.updateStylesheet(QColor("#18082C"), QColor("white"))
 		self.setCursor(QCursor(Qt.PointingHandCursor))
 
-	def valueChanged(self, color): self.updateStylesheet(color, QColor("white") if self._animation.direction() == QAbstractAnimation.Forward else QColor("#18082C"))
+	def valueChanged(self, color):
+		"""If value changed"""
+		self.updateStylesheet(color, QColor("white") if self._animation.direction() == QAbstractAnimation.Forward else QColor("#18082C"))
 
-	def updateStylesheet(self, background, foreground): self.setStyleSheet("QPushButton {background-color: %s; color: %s; padding: 16px 32px; text-align: center; text-decoration: none; font-size: 16px; margin: 4px 2px; border: 2px solid white;}" % (background.name(), foreground.name()))
+	def updateStylesheet(self, background, foreground):
+		"""Update style sheet"""
+		self.setStyleSheet("QPushButton {background-color: %s; color: %s; padding: 16px 32px; text-align: center; text-decoration: none; font-size: 16px; margin: 4px 2px; border: 2px solid white;}" % (background.name(), foreground.name()))
 
 	def enterEvent(self, event):
-		# Display backward color animation on mouse hover
+		"""Display backward color animation on mouse hover"""
 		self._animation.setDirection(QAbstractAnimation.Backward)
 		self._animation.start()
 		super().enterEvent(event)
 
 	def leaveEvent(self, event):
-		# Display forward color animation on mouse leave
+		"""Display forward color animation on mouse leave"""
 		self._animation.setDirection(QAbstractAnimation.Forward)
 		self._animation.start()
 		super().leaveEvent(event)
@@ -44,7 +51,9 @@ class LineEdit(QLineEdit):
 	""""Add select all when pressed feature to QLineEdit"""
 	def __init__(self, parent = None): super(LineEdit, self).__init__(parent)
 
-	def mousePressEvent(self, _): self.setCursorPosition(len(self.text())) if self.hasSelectedText() else self.selectAll() # Select all when pressed unless text is already selected
+	def mousePressEvent(self, _):
+		"""Select all when pressed unless text is already selected"""
+		self.setCursorPosition(len(self.text())) if self.hasSelectedText() else self.selectAll()
 
 class ScrollArea(QScrollArea):
 	"""Set word wrap of QScrollArea to True"""
@@ -59,20 +68,23 @@ class ScrollArea(QScrollArea):
 		self.label.setWordWrap(True)
 		template.addWidget(self.label)
 
-	def setText(self, text): self.label.setText(text)
+	def setText(self, text):
+		"""Set text of button"""
+		self.label.setText(text)
 
 class WebEngineView(QWebEngineView):
 	"""Handle target='_blank' hyperlinks in webpages"""
 	def createWindow(self, _type):
-		# if not isinstance(self.window(), Window): return
+		"""Create new window function"""
 		if _type in [QWebEnginePage.WebBrowserTab, QWebEnginePage.WebBrowserBackgroundTab]: return self._tab_factory_func()
 		return self._window_factory_func
 
 class TabWidget(QTabWidget):
 	"""Set default tab title of QTabWidget to 'New Tab'"""
 	def createTab(self):
-		view = WebEngineView()
-		self.addTab(view, "New Tab")
+		"""Create new tab"""
+		view = WebEngineView() # Make view
+		self.addTab(view, "New Tab") # Create tab
 
 # Dialogs
 # noinspection PyUnresolvedReferences,PyArgumentList
@@ -135,12 +147,14 @@ class ConfigDialog(QDialog):
 		self.setLayout(self.template) # Display the widgets
 
 	@staticmethod # Set function openHistory static
-	def openHistory(): # Open the History dialog
+	def openHistory():
+		"""Open the History dialog"""
 		dialog = History()
 		dialog.exec_()
 
 	@staticmethod # Set function openBookmarks static
-	def openBookmarks(): # Open the Bookmarks dialog
+	def openBookmarks():
+		""" Open the Bookmarks dialog"""
 		dialog = Bookmarks()
 		dialog.exec_()
 
@@ -177,7 +191,9 @@ class History(QDialog):
 		self.setStyleSheet("color: white; background-color: #18082C;") # Set background color of dialog to #18082C and color of text to white
 		self.setLayout(self.template) # Display the widgets
 
-	def clearHistory(self): # Clears the history by clearing the Applications/SimplifycBrowser/config/history.txt file and updates the ScrollArea and the history QLabel
+	def clearHistory(self):
+		"""Clears the history by clearing the Applications/SimplifycBrowser/config/history.txt file and updates the
+		ScrollArea and history QLabel"""
 		open("Applications/SimplifycBrowser/config/history.txt", "w+").write("")
 		self.history_info.update()
 		history = ScrollArea()
@@ -211,7 +227,8 @@ class Bookmarks(QDialog):
 		self.setLayout(self.template) # Display widgets
 
 	@staticmethod # Set function newBookmark static
-	def newBookmark(): # Open the NewBookmark dialog
+	def newBookmark():
+		"""Open the NewBookmark dialog"""
 		dialog = NewBookmark()
 		dialog.exec_()
 
@@ -265,19 +282,23 @@ class Browser(QMainWindow):
 		self.newTab() # Add default tab
 		self.show() # Show widgets
 
-	def back(self): # Go back, and record the new url in the history file
+	def back(self):
+		"""Go back, and record the new url in the history file"""
 		self.tabs.currentWidget().back()
 		open("Applications/SimplifycBrowser/config/history.txt", "a+").write(f"{self.url_bar.text()}\n")
 
-	def forward(self): # Go forward, and record the new url in the history file
+	def forward(self):
+		"""Go forward, and record the new url in the history file"""
 		self.tabs.currentWidget().forward()
 		open("Applications/SimplifycBrowser/config/history.txt", "a+").write(f"{self.url_bar.text()}\n")
 
-	def reload(self): # Reload, and record the new url in the history file
+	def reload(self):
+		"""Reload, and record the new url in the history file"""
 		self.tabs.currentWidget().reload()
 		open("Applications/SimplifycBrowser/config/history.txt", "a+").write(f"{self.url_bar.text()}\n")
 
-	def newTab(self, url = None, label = "New Tab"): # Create a new tab
+	def newTab(self, url = None, label = "New Tab"):
+		"""Create a new tab"""
 		if url is None: url = QUrl("https://home.danielmiao1.repl.co/")
 		engine = QWebEngineView()
 		engine.setUrl(url)
@@ -286,22 +307,27 @@ class Browser(QMainWindow):
 		engine.urlChanged.connect(lambda link, view = engine: self.updateURLBox(link, view))
 		engine.loadFinished.connect(lambda _, link = url, view = engine: self.tabs.setTabText(link, view.page().title()))
 
-	def openTab(self, url): # Call newTab function if url is valid
+	def openTab(self, url):
+		"""Call newTab function if url is valid"""
 		if url == -1: self.newTab()
 
-	def tabChanged(self, _): # Update the URL box if tab URL changed
+	def tabChanged(self, _):
+		"""Update the URL box if tab URL changed"""
 		url = self.tabs.currentWidget().url()
 		self.updateURLBox(url, self.tabs.currentWidget())
 
-	def closeTab(self, url): # Close tab
+	def closeTab(self, url):
+		"""Close tab"""
 		if self.tabs.count() < 2: return
 		self.tabs.removeTab(url)
 
-	def toHome(self): # Go to 'https://home.danielmiao1.repl.co/'
+	def toHome(self):
+		"""Go to 'https://home.danielmiao1.repl.co/'"""
 		self.tabs.currentWidget().setUrl(QUrl("https://home.danielmiao1.repl.co/"))
 		open("Applications/SimplifycBrowser/config/history.txt", "a+").write("browser://home\n")
 
-	def toURL(self): # Go to the url given in the URL box or search google
+	def toURL(self):
+		"""Go to the url given in the URL box or search google"""
 		url = QUrl(self.url_bar.text())
 		if url in ["browser://home", "browser:home"]:
 			self.tabs.currentWidget().setUrl("https://home.danielmiao1.repl.co/")
@@ -310,14 +336,16 @@ class Browser(QMainWindow):
 		elif url.scheme() == "": url.setScheme("http")
 		self.tabs.currentWidget().setUrl(url)
 
-	def updateURLBox(self, url, engine = None): # Update URL box text to the relative URL when URL changed
+	def updateURLBox(self, url, engine = None):
+		"""Update URL box text to the relative URL when URL changed"""
 		if engine != self.tabs.currentWidget(): return
 		if not url.toString == "":
 			open("Applications/SimplifycBrowser/config/history.txt", "a+").write(f"{url.toString()}\n")
 			self.url_bar.setText("") if url.toString().lower() == "https://home.danielmiao1.repl.co/" else self.url_bar.setText(url.toString())
 			self.url_bar.setCursorPosition(0)
 
-	def contextMenuEvent(self, event): # Set context menu for central widget
+	def contextMenuEvent(self, event):
+		"""Set context menu for central widget"""
 		menu = QMenu(self)
 		(back, forward, reload, home, action) = (menu.addAction("Back                "), menu.addAction("Forward             "), menu.addAction("Reload              "), menu.addAction("Home                "), menu.exec_(self.mapToGlobal(event.pos())))
 		if action == back: self.tabs.currentWidget().back()
@@ -326,11 +354,13 @@ class Browser(QMainWindow):
 		elif action == home: self.toHome()
 
 	@staticmethod # Set function openAbout static
-	def openAbout(): # Open About dialog
+	def openAbout():
+		"""Open About dialog"""
 		dialog = AboutDialog()
 		dialog.exec_()
 
 	@staticmethod # Set function openConfig static
-	def openConfig(): # Open Config dialog
+	def openConfig():
+		"""Open Config dialog"""
 		dialog = ConfigDialog()
 		dialog.exec_()

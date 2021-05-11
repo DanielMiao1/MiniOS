@@ -1,5 +1,8 @@
-# The Simplifyc Operating System main script
-# Made by Daniel M using Python 3
+"""
+System/main.py
+The Simplifyc Operating System main script
+Made by Daniel M using Python 3
+"""
 
 # Imports
 import os
@@ -24,6 +27,7 @@ except ImportError:
 print("Starting the Simplifyc Operating System...") # Print startup message
 
 class Window(QMainWindow):
+	"""Main Window"""
 	def __init__(self):
 		self.windows = None
 		super(Window, self).__init__()
@@ -34,6 +38,7 @@ class Window(QMainWindow):
 		self.dock.setIconSize(QSize(32, 32)) # Configure the dock icon size
 		self.addToolBar(Qt.BottomToolBarArea, self.dock) # Display the toolbar at the bottom of the screen
 		self.applications = [QAction(QIcon("System/images/browser.png"), "Browser", self), QAction(QIcon("System/images/terminal.png"), "Terminal", self), QAction(QIcon("System/images/calculator.png"), "Calculator", self), QAction(QIcon("System/images/textedit.png"), "TextEdit", self)] # Create list of applications
+		# Triggered signals
 		self.applications[0].triggered.connect(lambda: self.openApplication("Browser"))
 		self.applications[1].triggered.connect(lambda: self.openApplication("Terminal"))
 		self.applications[2].triggered.connect(lambda: self.openApplication("Calculator"))
@@ -42,14 +47,19 @@ class Window(QMainWindow):
 		self.show() # Show the main window
 
 	def openApplication(self, app):
+		"""Opens the specified application"""
 		exec(f"self.window = {app}()")
 		self.window.show()
+
 
 (application, window) = (QApplication(sys.argv), Window()) # Construct QApplication and QMainWindow
 # Local Imports
 
 sys.path.insert(1, "Applications/SimplifycBrowser")
-from browser import Browser
+try:
+	from browser import Browser
+except ImportError:
+	os.system("An error occurred. Please re-run the program.")
 sys.path.insert(1, "Applications/SimplifycTerminal")
 from terminal import Terminal
 sys.path.insert(1, "Applications/SimplifycCalculator")
