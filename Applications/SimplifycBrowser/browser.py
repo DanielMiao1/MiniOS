@@ -334,8 +334,3 @@ class Browser(QMainWindow):
 	def openConfig(): # Open Config dialog
 		dialog = ConfigDialog()
 		dialog.exec_()
-
-
-# app = QApplication(sys.argv)
-# browser = Browser()
-# app.exec_()
