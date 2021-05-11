@@ -13,8 +13,12 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtWebEngine import *
 
-application = QApplication(sys.argv) # Create new Qt application
-web_view = QWebEngineView() # Create new Web Engine View
-web_view.load(QUrl.fromLocalFile(os.path.abspath(os.path.join(os.path.dirname(__file__), "textedit/index.html")))) # Load HTML page at textedit/index.html
-web_view.show() # Show view
-application.exec_() # Execute Qt application
+# application = QApplication(sys.argv) # Create new Qt application
+class TextEdit(QMainWindow):
+	def __init__(self):
+		super(TextEdit, self).__init__()
+		self.web_view = QWebEngineView() # Create new Web Engine View
+		self.web_view.load(QUrl.fromLocalFile(os.path.abspath(os.path.join(os.path.dirname(__file__), "textedit/index.html")))) # Load HTML page at textedit/index.html
+		self.setCentralWidget(self.web_view)
+		self.show() # Show view
+# application.exec_() # Execute Qt application

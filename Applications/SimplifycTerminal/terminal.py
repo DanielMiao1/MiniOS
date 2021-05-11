@@ -11,19 +11,19 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 
-# Widget Overrides
-# class MainWindow(QMainWindow):
-# 	"""Add Event Filter for Main Window"""
-# 	def eventFilter(self, a0, a1):
-# 		if a0 == QLineEdit:
-# 			if a1.type() == QEvent.KeyPress:
-# 				key_event = QKeyEvent(a1)
-# 				if key_event.key() == Qt.Key_Up: return True
+#Widget Overrides
+class MainWindow(QMainWindow):
+	"""Add Event Filter for Main Window"""
+	@staticmethod
+	def eventFilter(a0, a1):
+		if a0 == QLineEdit:
+			if a1.type() == QEvent.KeyPress:
+				key_event = QKeyEvent(a1)
+				if key_event.key() == Qt.Key_Up: return True
 
-class Terminal(QMainWindow):
+class Terminal(QWidget):
 	"""Main Window"""
 	def __init__(self):
-		print("sadhiiadsuh isaissads")
 		super(Terminal, self).__init__()
 		self.path = os.path.abspath(os.getcwd())
 		self.commands = ["ls", "echo", "pwd", "history"] # Define valid operation commands
@@ -122,6 +122,6 @@ class Terminal(QMainWindow):
 			else: new_string += i
 		return new_string
 
-app = QApplication(sys.argv)
-browser = Terminal()
-app.exec_()
+# app = QApplication(sys.argv)
+# browser = Terminal()
+# app.exec_()

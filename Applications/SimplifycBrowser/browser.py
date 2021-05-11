@@ -336,6 +336,6 @@ class Browser(QMainWindow):
 		dialog.exec_()
 
 
-app = QApplication(sys.argv)
-browser = Browser()
-app.exec_()
+# app = QApplication(sys.argv)
+# browser = Browser()
+# app.exec_()
