@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import *
 
 #Widget Overrides
 class MainWindow(QMainWindow):
-	"""Add Event Filter for Main Window"""
+	"""Add Event Filter for Main Window: Not finished"""
 	@staticmethod
 	def eventFilter(a0, a1):
 		if a0 == QLineEdit:
@@ -25,7 +25,7 @@ class Terminal(QWidget):
 	"""Main Window"""
 	def __init__(self):
 		super(Terminal, self).__init__()
-		self.path = os.path.abspath(os.getcwd())
+		self.path = os.path.abspath(os.getcwd()) # Get current path
 		self.commands = ["ls", "echo", "pwd", "history"] # Define valid operation commands
 		self.setFixedSize(QSize(450, 250)) # Set window size
 		self.input_box = QLineEdit(self) # Create the command input box
@@ -121,7 +121,3 @@ class Terminal(QWidget):
 				new_string += "\\"
 			else: new_string += i
 		return new_string
-
-# app = QApplication(sys.argv)
-# browser = Terminal()
-# app.exec_()
