@@ -271,8 +271,7 @@ class Browser(QMainWindow):
 		self.navigation.addAction(self.reload)
 		self.home.triggered.connect(self.toHome)
 		self.navigation.addAction(self.home)
-		# Pin the 'navigation' tool bar
-		self.navigation.setMovable(False)
+		self.navigation.setMovable(False) # Pin the 'navigation' tool bar
 		self.url_bar.returnPressed.connect(self.toURL) # Call function toURL when 'enter' key is pressed in the 'url_bar'
 		self.navigation.addWidget(self.url_bar) # Add 'url_bar' to the 'navigation' tool bar
 		self.config.triggered.connect(self.openConfig) # Call function openConfig when 'config' QAction is pressed

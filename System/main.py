@@ -13,10 +13,10 @@ try: import PyQt5
 except ImportError:
 	if input("The PyQt5 Library is not installed. Enter 'install' to install the module, or anything else to stop the process: ").lower() == "install":
 		os.system("pip3 install PyQt5")
-finally:
-	from PyQt5.QtGui import *
-	from PyQt5.QtCore import *
-	from PyQt5.QtWidgets import *
+
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
 
 # Check if PyQt5.QtWebEngineWidgets is installed for the browser application, if the module is not installed using pip, ask the user to install it
 try: import PyQt5.QtWebEngineWidgets
@@ -26,11 +26,40 @@ except ImportError:
 
 print("Starting the Simplifyc Operating System...") # Print startup message
 
+# noinspection PyUnresolvedReferences,PyArgumentList
+class AboutDialog(QDialog):
+	"""About Dialog"""
+	def __init__(self, parent = None):
+		super(AboutDialog, self).__init__(parent = parent)
+		template = QGridLayout() # Set layout to grid
+		# Set fixed width and height
+		self.setFixedHeight(self.height() - 175)
+		self.setFixedWidth(self.width() + 100)
+		title = QLabel("SimplifycOS") # Add title
+		title_font = title.font() # Add new font
+		title_font.setPointSize(50) # Set point size for font
+		title_font.setBold(True) # Make font bold
+		title.setFont(title_font) # Set font for title widget
+		image_label = QLabel(self) # Create QLabel for image
+		image = QPixmap("System/images/logo.png") # Load image at System/images/logo.png
+		image_resized = image.scaled(345, 300)
+		image_label.setPixmap(image_resized) # Render image
+		# Add widgets to layout
+		template.addWidget(title, 1, 2)
+		template.addWidget(QLabel("The SimplifycOS was made by Daniel M using Python 3"), 2, 2)
+		template.addWidget(image_label, 2, 1)
+		for i in range(template.count()): template.itemAt(i).setAlignment(Qt.AlignHCenter) # Align all widgets to center
+		self.setStyleSheet("color: white; background-color: #18082C;") # Set background color of dialog to #18082C and color of text to white
+		self.setLayout(template) # Display the widgets
+
 class Window(QMainWindow):
 	"""Main Window"""
 	def __init__(self):
-		self.windows = None
 		super(Window, self).__init__()
+		self.windows = None
+		self.about = self.menuBar().addMenu("About")
+		self.about.triggered.connect(self.openAbout)
+		self.about.addAction(QAction("About", self))
 		self.setMinimumSize(1280, 720)
 		self.dock = QToolBar("Dock") # Create a dock
 		self.dock.setMovable(False) # Make the dock fixed
@@ -50,6 +79,12 @@ class Window(QMainWindow):
 		"""Opens the specified application"""
 		exec(f"self.window = {app}()")
 		self.window.show()
+	
+	@staticmethod
+	def openAbout():
+		"""Opens the about dialog"""
+		dialog = AboutDialog()
+		dialog.exec_()
 
 
 (application, window) = (QApplication(sys.argv), Window()) # Construct QApplication and QMainWindow

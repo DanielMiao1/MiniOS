@@ -2,8 +2,8 @@
 """
 Applications/SimplifycCalculator/calculator.py
 Simplifyc Calculator
-# Calculator made by Daniel M using Python 3, HTML, CSS, and JavaScript for the SimplifycOS project: https://github.com/DanielMiao1/SimplifycOS
-# Main calculator code at calculator/index.html
+Calculator made by Daniel M using Python 3, HTML, CSS, and JavaScript for the SimplifycOS project: https://github.com/DanielMiao1/SimplifycOS
+Main calculator code at calculator/index.html
 """
 
 # Imports
@@ -14,7 +14,6 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtWebEngineWidgets import *
-from PyQt5.QtWebEngine import *
 
 class Calculator(QMainWindow):
 	"""Main Window"""
