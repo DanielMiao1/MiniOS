@@ -7,12 +7,16 @@ Made by Daniel M using Python 3
 # Imports
 import os
 import sys
+import datetime
 
 # Try to import PyQt5, if PyQt5 is not installed using pip, ask the user to install it
 try: import PyQt5
 except ImportError:
 	if input("The PyQt5 Library is not installed. Enter 'install' to install the module, or anything else to stop the process: ").lower() == "install":
 		os.system("pip3 install PyQt5")
+	else:
+		print("You can manually install the PyQt5 Library by running the 'pip3 install PyQt5' command in the terminal")
+		sys.exit()
 
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
@@ -23,6 +27,9 @@ try: import PyQt5.QtWebEngineWidgets
 except ImportError:
 	if input("The PyQtWebEngineWidgets Library is not installed. Enter 'install' to install the module, or anything else to stop the process: ").lower() == "install":
 		os.system("pip3 install PyQtWebEngine")
+	else:
+		print("You can manually install the PyQtWebEngineWidgets Library by running the 'pip3 install PyQtWebEngine' command in the terminal")
+		sys.exit()
 
 print("Starting the Simplifyc Operating System...") # Print startup message
 
@@ -61,13 +68,23 @@ class Window(QMainWindow):
 		self.about.triggered.connect(self.openAbout)
 		self.about.addAction(QAction("About", self))
 		self.setMinimumSize(1280, 720)
+		self.top_menu_bar = QToolBar("Top menu bar") # Create the top menu bar
+		self.top_menu_bar.setMovable(False) # Make the top menu bar fixed
+		# Add actions
+		self.clock = QAction()
+		self.clock_content = QTimer(self)
+		self.clock_content.timeout.connect(self.updateTime)
+		self.clock_content.start(1000)
+		# Add actions to the Tool Bar
+		self.top_menu_bar.addAction(self.clock)
+		self.addToolBar(Qt.TopToolBarArea, self.top_menu_bar) # Add Tool Bar to the Window
 		self.dock = QToolBar("Dock") # Create a dock
 		self.dock.setMovable(False) # Make the dock fixed
 		self.dock.setToolButtonStyle(Qt.ToolButtonIconOnly) # Always display icons instead of text in the dock
 		self.dock.setIconSize(QSize(32, 32)) # Configure the dock icon size
 		self.addToolBar(Qt.BottomToolBarArea, self.dock) # Display the toolbar at the bottom of the screen
 		self.applications = [QAction(QIcon("System/images/browser.png"), "Browser", self), QAction(QIcon("System/images/terminal.png"), "Terminal", self), QAction(QIcon("System/images/calculator.png"), "Calculator", self), QAction(QIcon("System/images/textedit.png"), "TextEdit", self)] # Create list of applications
-		# Triggered signals
+		# Trigger signals
 		self.applications[0].triggered.connect(lambda: self.openApplication("Browser"))
 		self.applications[1].triggered.connect(lambda: self.openApplication("Terminal"))
 		self.applications[2].triggered.connect(lambda: self.openApplication("Calculator"))
@@ -85,6 +102,14 @@ class Window(QMainWindow):
 		"""Opens the about dialog"""
 		dialog = AboutDialog()
 		dialog.exec_()
+
+	def updateTime(self):
+		"""Updates the clock"""
+		current_time = f"{('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun')[datetime.datetime.today().weekday()]} {dict([['01', 'Jan'], ['02', 'Feb'], ['03', 'Mar'], ['04', 'Apr'], ['05', 'May'], ['06', 'Jun'], ['07', 'Jul'], ['08', 'Aug'], ['09', 'Sep'], ['10', 'Oct'], ['11', 'Nov'], ['12', 'Dec']])[QDateTime.currentDateTime().toString('MM')]} {QDateTime.currentDateTime().toString('dd hh:mm:ss')}"
+		self.clock.setText(current_time)
+		self.clock.setToolTip("Time")
+	
+	def contextMenuEvent(self, _): """Set empty context menu"""
 
 
 (application, window) = (QApplication(sys.argv), Window()) # Construct QApplication and QMainWindow
