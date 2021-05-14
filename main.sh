@@ -1,2 +1,2 @@
 echo "Welcome to the Simplifyc Operating System"
-python main.py
+python3 System/main.py
