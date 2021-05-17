@@ -31,8 +31,6 @@ except ImportError:
 		print("You can manually install the PyQtWebEngineWidgets Library by running the 'pip3 install PyQtWebEngine' command in the terminal")
 		sys.exit()
 
-print("Starting the Simplifyc Operating System...") # Print startup message
-
 # noinspection PyUnresolvedReferences,PyArgumentList
 class AboutDialog(QDialog):
 	"""About Dialog"""
