@@ -69,7 +69,7 @@ class Window(QMainWindow):
 		self.top_menu_bar = QToolBar("Top menu bar") # Create the top menu bar
 		self.top_menu_bar.setMovable(False) # Make the top menu bar fixed
 		# Add actions
-		self.clock = QAction()
+		self.clock = QAction(self)
 		self.clock_content = QTimer(self)
 		self.clock_content.timeout.connect(self.updateTime)
 		self.clock_content.start(1000)
