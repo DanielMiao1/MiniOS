@@ -9,27 +9,34 @@ import os
 import sys
 import datetime
 
+rerun = False
+
 # Try to import PyQt5, if PyQt5 is not installed using pip, ask the user to install it
-try: import PyQt5
+try:
+	from PyQt5.QtGui import *
+	from PyQt5.QtCore import *
+	from PyQt5.QtWidgets import *
 except ImportError:
+	rerun = True
 	if input("The PyQt5 Library is not installed. Enter 'install' to install the module, or anything else to stop the process: ").lower() == "install":
 		os.system("pip3 install PyQt5")
 	else:
 		print("You can manually install the PyQt5 Library by running the 'pip3 install PyQt5' command in the terminal")
-		sys.exit()
-
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+		exit()
 
 # Check if PyQt5.QtWebEngineWidgets is installed for the browser application, if the module is not installed using pip, ask the user to install it
 try: import PyQt5.QtWebEngineWidgets
 except ImportError:
+	rerun = True
 	if input("The PyQtWebEngineWidgets Library is not installed. Enter 'install' to install the module, or anything else to stop the process: ").lower() == "install":
 		os.system("pip3 install PyQtWebEngine")
 	else:
 		print("You can manually install the PyQtWebEngineWidgets Library by running the 'pip3 install PyQtWebEngine' command in the terminal")
-		sys.exit()
+		exit()
+
+if rerun: os.system("python3 System/rerun.py")
+
+print("Starting the Simplifyc Operating System...")
 
 # noinspection PyUnresolvedReferences,PyArgumentList
 class AboutDialog(QDialog):
@@ -113,17 +120,17 @@ class Window(QMainWindow):
 (application, window) = (QApplication(sys.argv), Window()) # Construct QApplication and QMainWindow
 # Local Imports
 
-sys.path.insert(1, "Applications/SimplifycBrowser")
 try:
+	sys.path.insert(1, "Applications/SimplifycBrowser")
 	from browser import Browser
+	sys.path.insert(1, "Applications/SimplifycTerminal")
+	from terminal import Terminal
+	sys.path.insert(1, "Applications/SimplifycCalculator")
+	from calculator import Calculator
+	sys.path.insert(1, "Applications/SimplifycTextEdit")
+	from textedit import TextEdit
 except ImportError:
 	os.system("An error occurred. Please re-run the program.")
-sys.path.insert(1, "Applications/SimplifycTerminal")
-from terminal import Terminal
-sys.path.insert(1, "Applications/SimplifycCalculator")
-from calculator import Calculator
-sys.path.insert(1, "Applications/SimplifycTextEdit")
-from textedit import TextEdit
 
 window.show() # Show Main Window
 application.exec_() # Execute QApplication
