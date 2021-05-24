@@ -7,8 +7,6 @@ Web browser made by Daniel M using Python 3 for the SimplifycOS project: https:/
 
 # Imports
 import os
-import sys
-
 # import json
 
 from PyQt5.QtGui import *
@@ -17,9 +15,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtWebEngineWidgets import *
 
 # PyQt5 widget overrides
-# noinspection PyArgumentList
 class PushButton(QPushButton):
-	# noinspection PyUnresolvedReferences
 	"""Add QPushButton Animation"""
 	def __init__(self):
 		super().__init__()
@@ -74,20 +70,8 @@ class ScrollArea(QScrollArea):
 
 class WebEngineView(QWebEngineView):
 	"""Handle target='_blank' hyperlinks in webpages"""
-	def createWindow(self, _type):
-		"""Create new window function"""
-		if _type in [QWebEnginePage.WebBrowserTab, QWebEnginePage.WebBrowserBackgroundTab]: return self._tab_factory_func()
-		return self._window_factory_func
-
-class TabWidget(QTabWidget):
-	"""Set default tab title of QTabWidget to 'New Tab'"""
-	def createTab(self):
-		"""Create new tab"""
-		view = WebEngineView() # Make view
-		self.addTab(view, "New Tab") # Create tab
 
 # Dialogs
-# noinspection PyUnresolvedReferences,PyArgumentList
 class AboutDialog(QDialog):
 	"""About Simplifyc Browser dialog"""
 	def __init__(self, parent = None):
@@ -112,7 +96,6 @@ class AboutDialog(QDialog):
 		self.setStyleSheet("color: white; background-color: #18082C;") # Set background color of dialog to #18082C and color of text to white
 		self.setLayout(template) # Display the widgets
 
-# noinspection PyUnresolvedReferences,PyArgumentList
 class ConfigDialog(QDialog):
 	"""Browser settings dialog"""
 	def __init__(self, parent = None):
@@ -192,15 +175,13 @@ class History(QDialog):
 		self.setLayout(self.template) # Display the widgets
 
 	def clearHistory(self):
-		"""Clears the history by clearing the Applications/SimplifycBrowser/config/history.txt file and updates the
-		ScrollArea and history QLabel"""
+		"""Clears the history by clearing the Applications/SimplifycBrowser/config/history.txt file and updates the ScrollArea and history QLabel"""
 		open("Applications/SimplifycBrowser/config/history.txt", "w+").write("")
 		self.history_info.update()
 		history = ScrollArea()
 		history.setText("")
 		self.history.update()
 
-# noinspection PyUnresolvedReferences,PyArgumentList
 class Bookmarks(QDialog):
 	"""Bookmarks Dialog"""
 	def __init__(self, parent = None):
@@ -232,7 +213,6 @@ class Bookmarks(QDialog):
 		dialog = NewBookmark()
 		dialog.exec_()
 
-# noinspection PyArgumentList
 class NewBookmark(QDialog):
 	"""New Bookmark Dialog"""
 	def __init__(self, parent = None):
@@ -247,7 +227,6 @@ class NewBookmark(QDialog):
 
 class Browser(QMainWindow):
 	"""Main Window"""
-	# noinspection PyArgumentList
 	def __init__(self):
 		super(Browser, self).__init__()
 		(self.tabs, self.bookmarks, self.url_bar, self.navigation, self.back, self.forward, self.reload, self.home, about_menu, about, self.config) = (QTabWidget(), QToolBar("Bookmarks"), LineEdit(), QToolBar("Navigation"), QAction("←", self), QAction("→", self), QAction("↺", self), QAction("🏠", self), self.menuBar().addMenu("About"), QAction(QIcon(os.path.join("images", "question.png")), "About", self), QAction("⚙", self)) # Define variables
@@ -299,7 +278,7 @@ class Browser(QMainWindow):
 	def newTab(self, url = None, label = "New Tab"):
 		"""Create a new tab"""
 		if url is None: url = QUrl("https://home.danielmiao1.repl.co/")
-		engine = QWebEngineView()
+		engine = WebEngineView()
 		engine.setUrl(url)
 		url = self.tabs.addTab(engine, label)
 		self.tabs.setCurrentIndex(url)
