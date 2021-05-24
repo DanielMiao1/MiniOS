@@ -68,8 +68,18 @@ class ScrollArea(QScrollArea):
 		"""Set text of button"""
 		self.label.setText(text)
 
-class WebEngineView(QWebEngineView):
-	"""Handle target='_blank' hyperlinks in webpages"""
+class WebEnginePage(QWebEnginePage):
+	"""Load target='_blank' anchors in the current tab"""
+	def createWindow(self, QWebEnginePage_WebWindowType):
+		page = WebEnginePage(self)
+		page.urlChanged.connect(self.onURLChanged)
+		return page
+	
+	@pyqtSlot(QUrl)
+	def onURLChanged(self, url):
+		page = self.sender()
+		self.setUrl(url)
+		page.deleteLater()
 
 # Dialogs
 class AboutDialog(QDialog):
@@ -278,8 +288,10 @@ class Browser(QMainWindow):
 	def newTab(self, url = None, label = "New Tab"):
 		"""Create a new tab"""
 		if url is None: url = QUrl("https://home.danielmiao1.repl.co/")
-		engine = WebEngineView()
-		engine.setUrl(url)
+		engine = QWebEngineView()
+		engine.load(url)
+		page = WebEnginePage(engine)
+		engine.setPage(page)
 		url = self.tabs.addTab(engine, label)
 		self.tabs.setCurrentIndex(url)
 		engine.urlChanged.connect(lambda link, view = engine: self.updateURLBox(link, view))
