@@ -68,6 +68,8 @@ class Window(QMainWindow):
 	"""Main Window"""
 	def __init__(self):
 		super(Window, self).__init__()
+		self.setMinimumWidth(QDesktopWidget().screenGeometry(-1).width())
+		self.setMinimumHeight(QDesktopWidget().screenGeometry(-1).height() - 100)
 		self.windows = None
 		self.about = self.menuBar().addMenu("About")
 		self.about.triggered.connect(self.openAbout)

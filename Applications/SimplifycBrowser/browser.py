@@ -185,12 +185,9 @@ class History(QDialog):
 		self.setLayout(self.template) # Display the widgets
 
 	def clearHistory(self):
-		"""Clears the history by clearing the Applications/SimplifycBrowser/config/history.txt file and updates the ScrollArea and history QLabel"""
+		"""Clears the history by clearing the Applications/SimplifycBrowser/config/history.txt file and closes the window"""
 		open("Applications/SimplifycBrowser/config/history.txt", "w+").write("")
-		self.history_info.update()
-		history = ScrollArea()
-		history.setText("")
-		self.history.update()
+		self.close()
 
 class Bookmarks(QDialog):
 	"""Bookmarks Dialog"""
@@ -239,10 +236,12 @@ class Browser(QMainWindow):
 	"""Main Window"""
 	def __init__(self):
 		super(Browser, self).__init__()
+		self.setMinimumWidth(QDesktopWidget().screenGeometry(-1).width() - 1000)
+		self.setMinimumHeight(QDesktopWidget().screenGeometry(-1).height() - 500)
 		(self.tabs, self.bookmarks, self.url_bar, self.navigation, self.back, self.forward, self.reload, self.home, about_menu, about, self.config) = (QTabWidget(), QToolBar("Bookmarks"), LineEdit(), QToolBar("Navigation"), QAction("←", self), QAction("→", self), QAction("↺", self), QAction("🏠", self), self.menuBar().addMenu("About"), QAction(QIcon(os.path.join("images", "question.png")), "About", self), QAction("⚙", self)) # Define variables
 		self.navigation.setStyleSheet("font-size: 15px;") # Set font size of all items in the QToolBar named 'navigation' to 15px
 		self.tabs.setDocumentMode(True) # Set document mode for the QTabWidget named 'tabs' to True
-		self.tabs.tabBarDoubleClicked.connect(self.openTab) # Call the function openTab when the tab bar is double clicked
+		self.tabs.tabBarDoubleClicked.connect(lambda: self.newTab(url = QUrl("https://home.danielmiao1.repl.co/")))
 		self.tabs.currentChanged.connect(self.tabChanged) # Call the function tabChanged when tab is changed
 		self.tabs.setTabsClosable(True) # Set tabs closable
 		self.tabs.tabCloseRequested.connect(self.closeTab) # Call the function closeTab when user attempts to close a tab
@@ -267,9 +266,9 @@ class Browser(QMainWindow):
 		self.navigation.addAction(self.config) # Add 'config' QAction to 'navigation' tool bar
 		about.triggered.connect(self.openAbout) # Call function openAbout when 'about' is triggered
 		about_menu.addAction(about) # Add 'about' to the 'about_menu'
-		self.newTab() # Add default tab
+		self.newTab(url = QUrl("https://home.danielmiao1.repl.co/"))  # Add default tab
 		self.show() # Show widgets
-
+		
 	def back(self):
 		"""Go back, and record the new url in the history file"""
 		self.tabs.currentWidget().back()
@@ -285,21 +284,16 @@ class Browser(QMainWindow):
 		self.tabs.currentWidget().reload()
 		open("Applications/SimplifycBrowser/config/history.txt", "a+").write(f"{self.url_bar.text()}\n")
 
-	def newTab(self, url = None, label = "New Tab"):
+	def newTab(self, url = QUrl("https://home.danielmiao1.repl.co/"), label = "New Tab"):
 		"""Create a new tab"""
-		if url is None: url = QUrl("https://home.danielmiao1.repl.co/")
-		engine = QWebEngineView()
-		engine.load(url)
-		page = WebEnginePage(engine)
-		engine.setPage(page)
-		url = self.tabs.addTab(engine, label)
-		self.tabs.setCurrentIndex(url)
-		engine.urlChanged.connect(lambda link, view = engine: self.updateURLBox(link, view))
-		engine.loadFinished.connect(lambda _, link = url, view = engine: self.tabs.setTabText(link, view.page().title()))
-
-	def openTab(self, url):
-		"""Call newTab function if url is valid"""
-		if url == -1: self.newTab()
+		engine = QWebEngineView() # Create new web engine view
+		page = WebEnginePage(engine) # Create new web engine page
+		engine.setPage(page) # Set page of view
+		index = self.tabs.addTab(engine, label) # Add tab with the view and title
+		self.tabs.setCurrentIndex(index) # Set current index of tabs
+		engine.load(url) # Load URL
+		engine.urlChanged.connect(lambda link, view = engine: self.updateURLBox(link, view)) # Update URL Box when the url changes
+		engine.loadFinished.connect(lambda _, link = url, view = engine: self.tabs.setTabText(link, view.page().title())) # Set tab text
 
 	def tabChanged(self, _):
 		"""Update the URL box if tab URL changed"""
@@ -331,7 +325,7 @@ class Browser(QMainWindow):
 		if engine != self.tabs.currentWidget(): return
 		if not url.toString == "":
 			open("Applications/SimplifycBrowser/config/history.txt", "a+").write(f"{url.toString()}\n")
-			self.url_bar.setText("") if url.toString().lower() == "https://home.danielmiao1.repl.co/" else self.url_bar.setText(url.toString())
+			self.url_bar.setText(url.toString())
 			self.url_bar.setCursorPosition(0)
 
 	def contextMenuEvent(self, event):
