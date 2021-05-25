@@ -126,15 +126,10 @@ class ConfigDialog(QDialog):
 		self.history = PushButton()
 		self.history.setText("History")
 		self.history.clicked.connect(self.openHistory)
-		# Add PushButton with text 'Bookmarks' and call function openBookmarks in the current class when clicked
-		self.bookmarks = PushButton()
-		self.bookmarks.setText("Bookmarks")
-		self.bookmarks.clicked.connect(self.openBookmarks)
 		# Add widgets to the layout
 		self.template.addWidget(title, 1, 1)
 		self.template.addWidget(self.history_size, 2, 1)
 		self.template.addWidget(self.history, 2, 2)
-		self.template.addWidget(self.bookmarks, 3, 1)
 		for i in range(self.template.count()): self.template.itemAt(i).setAlignment(Qt.AlignHCenter) # Align all widgets to center
 		self.setStyleSheet("color: white; background-color: #18082C;") # Set background color of dialog to #18082C and color of text to white
 		self.setLayout(self.template) # Display the widgets
@@ -143,12 +138,6 @@ class ConfigDialog(QDialog):
 	def openHistory():
 		"""Open the History dialog"""
 		dialog = History()
-		dialog.exec_()
-
-	@staticmethod # Set function openBookmarks static
-	def openBookmarks():
-		""" Open the Bookmarks dialog"""
-		dialog = Bookmarks()
 		dialog.exec_()
 
 class History(QDialog):
@@ -189,56 +178,13 @@ class History(QDialog):
 		open("Applications/SimplifycBrowser/config/history.txt", "w+").write("")
 		self.close()
 
-class Bookmarks(QDialog):
-	"""Bookmarks Dialog"""
-	def __init__(self, parent = None):
-		super(Bookmarks, self).__init__(parent = parent)
-		self.setWindowTitle("Bookmarks") # Set window title to 'Bookmarks'
-		self.template = QVBoxLayout() # Set layout of dialog to Vertical Box Layout
-		# Set fixed width adn height
-		self.setFixedWidth(500)
-		self.setFixedHeight(500)
-		title = QLabel("Bookmarks") # Add QLabel named 'title' with text 'Bookmarks'
-		# Create new font named 'title_font'
-		title_font = title.font()
-		title_font.setPointSize(25)
-		title.setFont(title_font) # Set font of QLabel 'title' to 'title_font'
-		# Add new PushButton with text 'New Bookmark' and open the function newBookmark in the current class when clicked
-		new_bookmark = PushButton()
-		new_bookmark.setText("New Bookmark")
-		new_bookmark.clicked.connect(self.newBookmark)
-		# Add widgets to the layout
-		self.template.addWidget(title)
-		self.template.addWidget(new_bookmark)
-		for i in range(self.template.count()): self.template.itemAt(i).setAlignment(Qt.AlignHCenter) # Set alignment for all widgets in the layout to center
-		self.setStyleSheet("color: white; background-color: #18082C;") # Set background color of dialog to #18082C and color of text to white
-		self.setLayout(self.template) # Display widgets
-
-	@staticmethod # Set function newBookmark static
-	def newBookmark():
-		"""Open the NewBookmark dialog"""
-		dialog = NewBookmark()
-		dialog.exec_()
-
-class NewBookmark(QDialog):
-	"""New Bookmark Dialog"""
-	def __init__(self, parent = None):
-		# NOT FINISHED
-		super(NewBookmark, self).__init__(parent = parent)
-		self.setWindowTitle("New Bookmark")
-		self.template = QVBoxLayout()
-		self.setFixedWidth(500)
-		self.setFixedHeight(500)
-		self.setStyleSheet("color: white; background-color: #18082C;")
-		self.setLayout(self.template)
-
 class Browser(QMainWindow):
 	"""Main Window"""
 	def __init__(self):
 		super(Browser, self).__init__()
 		self.setMinimumWidth(QDesktopWidget().screenGeometry(-1).width() - 1000)
 		self.setMinimumHeight(QDesktopWidget().screenGeometry(-1).height() - 500)
-		(self.tabs, self.bookmarks, self.url_bar, self.navigation, self.back, self.forward, self.reload, self.home, about_menu, about, self.config) = (QTabWidget(), QToolBar("Bookmarks"), LineEdit(), QToolBar("Navigation"), QAction("←", self), QAction("→", self), QAction("↺", self), QAction("🏠", self), self.menuBar().addMenu("About"), QAction(QIcon(os.path.join("images", "question.png")), "About", self), QAction("⚙", self)) # Define variables
+		self.tabs, self.bookmarks, self.url_bar, self.navigation, self.back, self.forward, self.reload, self.home, about_menu, about, self.config = QTabWidget(), QToolBar("Bookmarks"), LineEdit(), QToolBar("Navigation"), QAction("←", self), QAction("→", self), QAction("↺", self), QAction("🏠", self), self.menuBar().addMenu("About"), QAction("About", self), QAction("⚙", self) # Define variables
 		self.navigation.setStyleSheet("font-size: 15px;") # Set font size of all items in the QToolBar named 'navigation' to 15px
 		self.tabs.setDocumentMode(True) # Set document mode for the QTabWidget named 'tabs' to True
 		self.tabs.tabBarDoubleClicked.connect(lambda: self.newTab(url = QUrl("https://home.danielmiao1.repl.co/")))
@@ -246,7 +192,7 @@ class Browser(QMainWindow):
 		self.tabs.setTabsClosable(True) # Set tabs closable
 		self.tabs.tabCloseRequested.connect(self.closeTab) # Call the function closeTab when user attempts to close a tab
 		self.setCentralWidget(self.tabs) # Set central widget for the window as the tab widget
-		# Add the tool bars 'navigation' and 'bookmarks', with a break between them
+		# Add the tool bars 'navigation', and 'bookmarks', with a break between them
 		self.addToolBar(self.navigation)
 		self.addToolBarBreak()
 		self.addToolBar(self.bookmarks)
@@ -259,6 +205,14 @@ class Browser(QMainWindow):
 		self.navigation.addAction(self.reload)
 		self.home.triggered.connect(self.toHome)
 		self.navigation.addAction(self.home)
+		self.bookmarks.setMovable(False)
+		# Add bookmark actions
+		self.bookmarks_actions = [QAction("Google", self), QAction("YouTube", self), QAction("Gmail", self), QAction("Google Docs", self)]
+		self.bookmarks_actions[0].triggered.connect(lambda: self.newTab(url = QUrl("https://www.google.com"), label = "Google"))
+		self.bookmarks_actions[1].triggered.connect(lambda: self.newTab(url = QUrl("https://www.youtube.com"), label = "YouTube"))
+		self.bookmarks_actions[2].triggered.connect(lambda: self.newTab(url = QUrl("https://mail.google.com"), label = "Gmail"))
+		self.bookmarks_actions[3].triggered.connect(lambda: self.newTab(url = QUrl("https://docs.google.com"), label = "Google Docs"))
+		for i in range(4): self.bookmarks.addAction(self.bookmarks_actions[i])
 		self.navigation.setMovable(False) # Pin the 'navigation' tool bar
 		self.url_bar.returnPressed.connect(self.toURL) # Call function toURL when 'enter' key is pressed in the 'url_bar'
 		self.navigation.addWidget(self.url_bar) # Add 'url_bar' to the 'navigation' tool bar
@@ -293,8 +247,8 @@ class Browser(QMainWindow):
 		self.tabs.setCurrentIndex(index) # Set current index of tabs
 		engine.load(url) # Load URL
 		engine.urlChanged.connect(lambda link, view = engine: self.updateURLBox(link, view)) # Update URL Box when the url changes
-		engine.loadFinished.connect(lambda _, link = url, view = engine: self.tabs.setTabText(link, view.page().title())) # Set tab text
-
+		engine.loadFinished.connect(lambda _, link = index, view = engine: self.tabs.setTabText(link, view.page().title())) # Set tab text
+		
 	def tabChanged(self, _):
 		"""Update the URL box if tab URL changed"""
 		url = self.tabs.currentWidget().url()
@@ -317,7 +271,7 @@ class Browser(QMainWindow):
 			self.tabs.currentWidget().setUrl("https://home.danielmiao1.repl.co/")
 			return
 		if list(url.toString()).count(".") == 0: url = QUrl(f"https://www.google.com/search?q={url.toString()}")
-		elif url.scheme() == "": url.setScheme("http")
+		elif url.scheme() == "": url = QUrl("http://" + url.toString())
 		self.tabs.currentWidget().setUrl(url)
 
 	def updateURLBox(self, url, engine = None):
