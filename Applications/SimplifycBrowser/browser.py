@@ -7,7 +7,6 @@ Web browser made by Daniel M using Python 3 for the SimplifycOS project: https:/
 
 # Imports
 import os
-# import json
 
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
@@ -21,7 +20,7 @@ class PushButton(QPushButton):
 		super().__init__()
 		self._animation = QVariantAnimation(startValue = QColor("white"), endValue = QColor("#18082C"), valueChanged = self.valueChanged, duration = 200)
 		self.updateStylesheet(QColor("#18082C"), QColor("white"))
-		self.setCursor(QCursor(Qt.PointingHandCursor))
+		self.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
 	def valueChanged(self, color):
 		"""If value changed"""
@@ -60,9 +59,9 @@ class ScrollArea(QScrollArea):
 		self.setWidget(text)
 		template = QVBoxLayout(text)
 		self.label = QLabel(text)
-		self.label.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+		self.label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
 		self.label.setWordWrap(True)
-		template.addWidget(self.label)
+		template.addWidget(self.label, alignment = Qt.AlignmentFlag.AlignHCenter)
 
 	def setText(self, text):
 		"""Set text of button"""
@@ -102,7 +101,7 @@ class AboutDialog(QDialog):
 		template.addWidget(title, 1, 2)
 		template.addWidget(QLabel("The Simplifyc Browser is made using Python 3 and the\nPyQt Library by Daniel M"), 2, 2)
 		template.addWidget(image_label, 2, 1)
-		for i in range(template.count()): template.itemAt(i).setAlignment(Qt.AlignHCenter) # Align all widgets to center
+		for i in range(template.count()): template.itemAt(i).setAlignment(Qt.AlignmentFlag.AlignHCenter) # Align all widgets to center
 		self.setStyleSheet("color: white; background-color: #18082C;") # Set background color of dialog to #18082C and color of text to white
 		self.setLayout(template) # Display the widgets
 
@@ -130,7 +129,7 @@ class ConfigDialog(QDialog):
 		self.template.addWidget(title, 1, 1)
 		self.template.addWidget(self.history_size, 2, 1)
 		self.template.addWidget(self.history, 2, 2)
-		for i in range(self.template.count()): self.template.itemAt(i).setAlignment(Qt.AlignHCenter) # Align all widgets to center
+		for i in range(self.template.count()): self.template.itemAt(i).setAlignment(Qt.AlignmentFlag.AlignHCenter) # Align all widgets to center
 		self.setStyleSheet("color: white; background-color: #18082C;") # Set background color of dialog to #18082C and color of text to white
 		self.setLayout(self.template) # Display the widgets
 
@@ -165,11 +164,10 @@ class History(QDialog):
 		clear_history.setText("Clear History")
 		clear_history.clicked.connect(self.clearHistory)
 		# Add widgets to the layout
-		self.template.addWidget(title)
-		self.template.addWidget(self.history_info)
-		self.template.addWidget(self.history)
-		self.template.addWidget(clear_history)
-		for i in range(self.template.count() - 1): self.template.itemAt(i).setAlignment(Qt.AlignHCenter) # Align all widgets to center
+		self.template.addWidget(title, alignment = Qt.AlignmentFlag.AlignHCenter)
+		self.template.addWidget(self.history_info, alignment = Qt.AlignmentFlag.AlignHCenter)
+		self.template.addWidget(self.history, alignment = Qt.AlignmentFlag.AlignHCenter)
+		self.template.addWidget(clear_history, alignment = Qt.AlignmentFlag.AlignHCenter)
 		self.setStyleSheet("color: white; background-color: #18082C;") # Set background color of dialog to #18082C and color of text to white
 		self.setLayout(self.template) # Display the widgets
 
