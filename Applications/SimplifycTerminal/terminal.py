@@ -17,18 +17,18 @@ from PyQt5.QtWidgets import *
 # Widget Overrides
 class MainWindow(QMainWindow):
 	"""Add Event Filter for Main Window: Not finished"""
-	@staticmethod
-	def eventFilter(a0, a1):
+	def eventFilter(self, a0: QObject, a1: QEvent):
 		"""Add event filter"""
 		if a0 == QLineEdit:
-			if a1.type() == QEvent.KeyPress:
+			if a1.type() == QEvent.Type.KeyPress:
 				key_event = QKeyEvent(a1)
-				if key_event.key() == Qt.Key_Up: return True
+				if key_event.key() == Qt.Key.Key_Up: return True
 
 class Terminal(QWidget):
 	"""Main Window"""
 	def __init__(self):
 		super(Terminal, self).__init__()
+		self.setStyleSheet("QLineEdit {qproperty-frame: false;}")
 		self.path = os.path.abspath(os.getcwd()) # Get current path
 		self.commands = ["ls", "echo", "pwd", "history"] # Define valid operation commands
 		self.setFixedSize(QSize(450, 250)) # Set window size
@@ -38,12 +38,14 @@ class Terminal(QWidget):
 		self.input_box.resize(400, 25) # Resize the command input box
 		self.input_box.setPlaceholderText("Enter command...") # Set placeholder text
 		self.input_box.returnPressed.connect(self.evalCommand)
+		self.input_box.setAttribute(Qt.WidgetAttribute.WA_MacShowFocusRect, 0)
 		self.output_box = QTextEdit(self) # Create the output box
 		self.output_box.setReadOnly(True) # Make the output box read only
 		self.output_box.setFont(QFont("Consolas", 15)) # Set font and font size of output box
 		self.output_box.setPlaceholderText("Output") # Set placeholder text
 		self.output_box.move(20, 65) # Align the output box
 		self.output_box.resize(400, 165) # Resize the output box
+		self.output_box.setFrameStyle(QFrame.NoFrame)
 		self.show() # Show widgets
 
 	def evalCommand(self):
@@ -58,7 +60,10 @@ class Terminal(QWidget):
 			return # Exit from function
 		elif operation_command == "ls": # List command
 			if len(arguments) == 0: self.output_box.setText("    ".join(str(i) for i in os.listdir("./") if not i.startswith("."))) # If the arguments list is empty; output files and directories in the current directory
-			elif len(arguments) == 1: pass
+			elif len(arguments) == 1:
+				if arguments[0] == "-a": self.output_box.setText("    ".join(str(i) for i in [".", ".."] + os.listdir("./")))
+				elif arguments[0] == "-A": self.output_box.setText("    ".join(str(i) for i in os.listdir("./")))
+				elif arguments[0] == "-1": self.output_box.setText("\n".join(str(i) for i in os.listdir("./")))
 			elif len(arguments) == 2: pass
 			elif len(arguments) == 3: pass
 			else: pass
@@ -120,14 +125,15 @@ class Terminal(QWidget):
 		string = list(string)
 		new_string = ""
 		for i in string:
-			if string[string.index(i)] == "\\" and string[string.index(i) + 1] == "n":
-				del string[string.index(i) + 1], string[string.index(i)]
-				new_string += "\n"
-			elif string[string.index(i)] == "\\" and string[string.index(i) + 1] == "t":
-				del string[string.index(i) + 1], string[string.index(i)]
-				new_string += "\t"
-			elif string[string.index(i)] == "\\" and string[string.index(i) + 1] == "\\":
-				del string[string.index(i) + 1], string[string.index(i)]
-				new_string += "\\"
+			if string[string.index(i)] == "\\" and string[string.index(i) + 1] in ["n", "t", "\\"]: del string[string.index(i) + 1], string[string.index(i)]
+			if string[string.index(i)] == "\\" and string[string.index(i) + 1] == "n": new_string += "\n"
+			elif string[string.index(i)] == "\\" and string[string.index(i) + 1] == "t": new_string += "\t"
+			elif string[string.index(i)] == "\\" and string[string.index(i) + 1] == "\\": new_string += "\\"
 			else: new_string += i
 		return new_string
+
+
+if __name__ == "__main__":
+	app, window = QApplication(sys.argv), Terminal()
+	window.show()
+	app.exec_()

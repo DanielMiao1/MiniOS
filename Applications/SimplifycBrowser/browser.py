@@ -80,6 +80,14 @@ class WebEnginePage(QWebEnginePage):
 		self.setUrl(url)
 		page.deleteLater()
 
+class TabWidget(QTabWidget):
+	def __init__(self):
+		super(TabWidget, self).__init__()
+		self.setAcceptDrops(True)
+	
+	def dropEvent(self, event):
+		print(event)
+
 # Dialogs
 class AboutDialog(QDialog):
 	"""About Simplifyc Browser dialog"""
@@ -182,7 +190,7 @@ class Browser(QMainWindow):
 		super(Browser, self).__init__()
 		self.setMinimumWidth(QDesktopWidget().screenGeometry(-1).width() - 1000)
 		self.setMinimumHeight(QDesktopWidget().screenGeometry(-1).height() - 500)
-		self.tabs, self.bookmarks, self.url_bar, self.navigation, self.back, self.forward, self.reload, self.home, about_menu, about, self.config = QTabWidget(), QToolBar("Bookmarks"), LineEdit(), QToolBar("Navigation"), QAction("←", self), QAction("→", self), QAction("↺", self), QAction("🏠", self), self.menuBar().addMenu("About"), QAction("About", self), QAction("⚙", self) # Define variables
+		self.tabs, self.bookmarks, self.url_bar, self.navigation, self.back, self.forward, self.reload, self.home, about_menu, about, self.config = TabWidget(), QToolBar("Bookmarks"), LineEdit(), QToolBar("Navigation"), QAction("←", self), QAction("→", self), QAction("↺", self), QAction("🏠", self), self.menuBar().addMenu("About"), QAction("About", self), QAction("⚙", self) # Define action variables
 		self.navigation.setStyleSheet("font-size: 15px;") # Set font size of all items in the QToolBar named 'navigation' to 15px
 		self.tabs.setDocumentMode(True) # Set document mode for the QTabWidget named 'tabs' to True
 		self.tabs.tabBarDoubleClicked.connect(lambda: self.newTab(url = QUrl("https://home.danielmiao1.repl.co/")))
@@ -235,7 +243,7 @@ class Browser(QMainWindow):
 		"""Reload, and record the new url in the history file"""
 		self.tabs.currentWidget().reload()
 		open("Applications/SimplifycBrowser/config/history.txt", "a+").write(f"{self.url_bar.text()}\n")
-
+		
 	def newTab(self, url = QUrl("https://home.danielmiao1.repl.co/"), label = "New Tab"):
 		"""Create a new tab"""
 		engine = QWebEngineView() # Create new web engine view
@@ -265,12 +273,11 @@ class Browser(QMainWindow):
 	def toURL(self):
 		"""Go to the url given in the URL box or search google"""
 		url = QUrl(self.url_bar.text())
-		if url in ["browser://home", "browser:home"]:
-			self.tabs.currentWidget().setUrl("https://home.danielmiao1.repl.co/")
-			return
-		if list(url.toString()).count(".") == 0: url = QUrl(f"https://www.google.com/search?q={url.toString()}")
-		elif url.scheme() == "": url = QUrl("http://" + url.toString())
-		self.tabs.currentWidget().setUrl(url)
+		if url in ["browser://home", "browser:home"]: self.tabs.currentWidget().setUrl("https://home.danielmiao1.repl.co/")
+		else:
+			if list(url.toString()).count(".") == 0: url = QUrl(f"https://www.google.com/search?q={url.toString()}")
+			elif url.scheme() == "": url = QUrl("http://" + url.toString())
+			self.tabs.currentWidget().setUrl(url)
 
 	def updateURLBox(self, url, engine = None):
 		"""Update URL box text to the relative URL when URL changed"""
@@ -279,7 +286,7 @@ class Browser(QMainWindow):
 			open("Applications/SimplifycBrowser/config/history.txt", "a+").write(f"{url.toString()}\n")
 			self.url_bar.setText(url.toString())
 			self.url_bar.setCursorPosition(0)
-
+			
 	def contextMenuEvent(self, event):
 		"""Set context menu for central widget"""
 		menu = QMenu(self)
