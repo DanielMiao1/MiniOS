@@ -43,7 +43,7 @@ print("Starting the Simplifyc Operating System...") # Print starting message
 
 class Window(QMainWindow):
 	"""Main Window"""
-	def __init__(self):
+	def __init__(self) -> None:
 		super(Window, self).__init__()
 		self.setMinimumWidth(QDesktopWidget().screenGeometry(-1).width())
 		self.setMinimumHeight(QDesktopWidget().screenGeometry(-1).height() - 100)
@@ -54,6 +54,7 @@ class Window(QMainWindow):
 		self.setMinimumSize(1280, 720)
 		self.top_menu_bar = QToolBar("Top menu bar") # Create the top menu bar
 		self.top_menu_bar.setMovable(False) # Make the top menu bar fixed
+		self.top_menu_bar.setStyleSheet("background-color: white; border: 2px solid white; font-size: 15px;") # Set stylesheet properties for the top menu bar
 		# Add actions
 		self.clock = QAction(self)
 		self.clock_content = QTimer(self)
@@ -72,27 +73,27 @@ class Window(QMainWindow):
 		# Trigger signals
 		for x in range(len(self.dock_items)): exec(f"self.dock_items[{x}][0].triggered.connect(lambda _, self = self: self.openApplication('{applications[self.dock_items[x][1]]['run_class']}'))")
 		for x in self.dock_items: self.dock.addAction(x[0]) # Add applications to the dock
-		self.dock.setStyleSheet("background-color: white; border: none;")
+		self.dock.setStyleSheet("background-color: white; border: none;") # Make the dock's background color white
 		self.show() # Show the main window
 
-	def openApplication(self, app):
+	def openApplication(self, app: str) -> None:
 		"""Opens the specified application"""
 		exec(f"self.window = {app}()")
 		self.window.show()
 	
 	@staticmethod
-	def openAbout():
+	def openAbout() -> None:
 		"""Opens the about dialog"""
 		dialog = AboutDialog()
 		dialog.exec_()
 
-	def updateTime(self):
+	def updateTime(self) -> None:
 		"""Updates the clock"""
 		current_time = f"{('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun')[datetime.datetime.today().weekday()]} {dict([['01', 'Jan'], ['02', 'Feb'], ['03', 'Mar'], ['04', 'Apr'], ['05', 'May'], ['06', 'Jun'], ['07', 'Jul'], ['08', 'Aug'], ['09', 'Sep'], ['10', 'Oct'], ['11', 'Nov'], ['12', 'Dec']])[QDateTime.currentDateTime().toString('MM')]} {QDateTime.currentDateTime().toString('dd hh:mm:ss')}"
 		self.clock.setText(current_time)
-		self.clock.setToolTip("Time")
+		self.clock.setToolTip(str())
 	
-	def contextMenuEvent(self, _): """Set empty context menu"""
+	def contextMenuEvent(self, _) -> None: """Set empty context menu"""
 
 
 (application, window) = (QApplication(sys.argv), Window()) # Construct QApplication and QMainWindow

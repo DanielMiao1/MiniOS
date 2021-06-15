@@ -17,7 +17,7 @@ from PyQt5.QtWidgets import *
 # Widget Overrides
 class MainWindow(QMainWindow):
 	"""Add Event Filter for Main Window: Not finished"""
-	def eventFilter(self, a0: QObject, a1: QEvent):
+	def eventFilter(self, a0: QObject, a1: QEvent) -> bool or None:
 		"""Add event filter"""
 		if a0 == QLineEdit:
 			if a1.type() == QEvent.Type.KeyPress:
@@ -26,7 +26,7 @@ class MainWindow(QMainWindow):
 
 class Terminal(QWidget):
 	"""Main Window"""
-	def __init__(self):
+	def __init__(self) -> None:
 		super(Terminal, self).__init__()
 		self.setStyleSheet("QLineEdit {qproperty-frame: false;}")
 		self.path = os.path.abspath(os.getcwd()) # Get current path
@@ -48,7 +48,7 @@ class Terminal(QWidget):
 		self.output_box.setFrameStyle(QFrame.NoFrame)
 		self.show() # Show widgets
 
-	def evalCommand(self):
+	def evalCommand(self) -> None:
 		"""Evaluate the command in the command input box and write to the output box"""
 		if self.input_box.text() == "": return # Exit function if the input box is empty
 		open("Applications/SimplifycTerminal/history.txt", "a+").write(f"{self.input_box.text()}\n") # Write current command to the history file
@@ -110,17 +110,17 @@ class Terminal(QWidget):
 		self.input_box.setText("") # Clear the input box
 
 	@staticmethod # Make the removeSpaces function static
-	def removeSpaces(text):
+	def removeSpaces(text: str) -> str:
 		"""Return the text without spaces in the front using re.search, if spaces exists"""
 		return text[re.search(r"[^ ]", text).start():]
 
 	@staticmethod # Make the getListFromCommand function static
-	def getListFromCommand(command):
+	def getListFromCommand(command: str) -> str:
 		"""Return command as a list separated at spaces"""
 		return command.split(" ")
 
 	@staticmethod # Make the updateEscapeCharacters function static
-	def processEscapeCharacters(string):
+	def processEscapeCharacters(string: str) -> str:
 		"""Process escape characters"""
 		string = list(string)
 		new_string = ""

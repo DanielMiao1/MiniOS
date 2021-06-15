@@ -15,7 +15,7 @@ from PyQt5.QtWebEngineWidgets import *
 
 class Calculator(QMainWindow):
 	"""Main Window"""
-	def __init__(self):
+	def __init__(self) -> None:
 		super(Calculator, self).__init__()
 		self.view = QWebEngineView() # Create new web engine view
 		self.setCentralWidget(self.view) # Set central widget

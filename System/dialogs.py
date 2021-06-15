@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import *
 
 class AboutDialog(QDialog):
 	"""About Dialog"""
-	def __init__(self, parent = None):
+	def __init__(self, parent = None) -> None:
 		super(AboutDialog, self).__init__(parent = parent)
 		template = QGridLayout() # Set layout to grid
 		# Set fixed width and height
