@@ -1,7 +1,3 @@
-// script.js
-// JavaScript for SimplifycCalculator application
-// Made by Daniel M
-
 function addChar(char) {
   if (document.getElementById("text").value == "" && [" ÷ ", " + ", " × "].includes(char)) {
     return

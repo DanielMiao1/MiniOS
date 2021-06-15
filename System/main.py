@@ -11,7 +11,8 @@ import sys
 import datetime
 
 # Local File Imports
-from getApplications import returnApplications
+from applications import returnApplications
+from dialogs import *
 
 # Define global variables
 rerun, applications = False, returnApplications()
@@ -31,8 +32,7 @@ except ImportError:
 try: import PyQt5.QtWebEngineWidgets
 except ImportError:
 	rerun = True # Set rerun variable to True
-	if input("The PyQtWebEngineWidgets Library is not installed. Enter 'install' to install the module, or anything else to stop the process: ").lower() == "install":
-		os.system("pip3 install PyQtWebEngine")
+	if input("The PyQtWebEngineWidgets Library is not installed. Enter 'install' to install the module, or anything else to stop the process: ").lower() == "install": os.system("pip3 install PyQtWebEngine")
 	else:
 		print("You can manually install the PyQtWebEngineWidgets Library by running the 'pip3 install PyQtWebEngine' command in the terminal")
 		exit()
@@ -40,31 +40,6 @@ except ImportError:
 if rerun: os.system("python3 System/rerun.py") # Run System/rerun.py script if rerun variable is True
 
 print("Starting the Simplifyc Operating System...") # Print starting message
-
-class AboutDialog(QDialog):
-	"""About Dialog"""
-	def __init__(self, parent = None):
-		super(AboutDialog, self).__init__(parent = parent)
-		template = QGridLayout() # Set layout to grid
-		# Set fixed width and height
-		self.setFixedHeight(self.height() - 175)
-		self.setFixedWidth(self.width() + 100)
-		title = QLabel("SimplifycOS") # Add title
-		title_font = title.font() # Add new font
-		title_font.setPointSize(50) # Set point size for font
-		title_font.setBold(True) # Make font bold
-		title.setFont(title_font) # Set font for title widget
-		image_label = QLabel(self) # Create QLabel for image
-		image = QPixmap("System/images/logo.png") # Load image at System/images/logo.png
-		image_resized = image.scaled(345, 300)
-		image_label.setPixmap(image_resized) # Render image
-		# Add widgets to layout
-		template.addWidget(title, 1, 2)
-		template.addWidget(QLabel("The SimplifycOS was made by Daniel M using Python 3"), 2, 2)
-		template.addWidget(image_label, 2, 1)
-		for i in range(template.count()): template.itemAt(i).setAlignment(Qt.AlignHCenter) # Align all widgets to center
-		self.setStyleSheet("color: white; background-color: #18082C;") # Set background color of dialog to #18082C and color of text to white
-		self.setLayout(template) # Display the widgets
 
 class Window(QMainWindow):
 	"""Main Window"""
@@ -97,6 +72,7 @@ class Window(QMainWindow):
 		# Trigger signals
 		for x in range(len(self.dock_items)): exec(f"self.dock_items[{x}][0].triggered.connect(lambda _, self = self: self.openApplication('{applications[self.dock_items[x][1]]['run_class']}'))")
 		for x in self.dock_items: self.dock.addAction(x[0]) # Add applications to the dock
+		self.dock.setStyleSheet("background-color: white; border: none;")
 		self.show() # Show the main window
 
 	def openApplication(self, app):
