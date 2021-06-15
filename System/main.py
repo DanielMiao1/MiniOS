@@ -1,13 +1,19 @@
+# -*- coding: utf-8 -*-
 """
 System/main.py
 The Simplifyc Operating System main script
 Made by Daniel M using Python 3
 """
 
-# Imports
+# Library Imports
 import os
 import sys
 import datetime
+
+# Local File Imports
+from getApplications import returnApplications
+
+print(returnApplications())
 
 rerun = False
 

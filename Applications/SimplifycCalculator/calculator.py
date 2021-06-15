@@ -19,7 +19,7 @@ class TabWidget(QTabWidget):
 	"""Tab Widget"""
 	def createTab(self):
 		"""Create new tab"""
-		view = WebEngineView() # Make view
+		view = QWebEngineView() # Make view
 		self.addTab(view, "") # Create tab
 
 class Calculator(QMainWindow):
@@ -36,7 +36,7 @@ class Calculator(QMainWindow):
 		# self.web_view.load(QUrl.fromLocalFile(os.path.abspath(os.path.join(os.path.dirname(__file__), "calculator/index.html")))) # Load HTML page at calculator/index.html
 		# self.setCentralWidget(self.web_view) # Set Central Widget
 		self.show() # Show Window
-	
+		
 	def newTab(self, path, label):
 		"""Create new tab for tab widget"""
 		engine = QWebEngineView()
