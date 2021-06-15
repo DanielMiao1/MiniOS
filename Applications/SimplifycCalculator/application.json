@@ -1,4 +1,5 @@
 {
   "name": "calculator",
-  "run": "calculator.py"
+  "run": "calculator.py",
+  "run_class": "Calculator"
 }

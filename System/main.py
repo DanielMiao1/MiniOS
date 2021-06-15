@@ -13,19 +13,16 @@ import datetime
 # Local File Imports
 from getApplications import returnApplications
 
-print(returnApplications())
-
-rerun = False
-
+# Define global variables
+rerun, applications = False, returnApplications()
 # Try to import PyQt5, if PyQt5 is not installed using pip, ask the user to install it
 try:
 	from PyQt5.QtGui import *
 	from PyQt5.QtCore import *
 	from PyQt5.QtWidgets import *
 except ImportError:
-	rerun = True
-	if input("The PyQt5 Library is not installed. Enter 'install' to install the module, or anything else to stop the process: ").lower() == "install":
-		os.system("pip3 install PyQt5")
+	rerun = True # Set rerun variable to True
+	if input("The PyQt5 Library is not installed. Enter 'install' to install the module, or anything else to stop the process: ").lower() == "install": os.system("pip3 install PyQt5")
 	else:
 		print("You can manually install the PyQt5 Library by running the 'pip3 install PyQt5' command in the terminal")
 		exit()
@@ -33,18 +30,17 @@ except ImportError:
 # Check if PyQt5.QtWebEngineWidgets is installed for the browser application, if the module is not installed using pip, ask the user to install it
 try: import PyQt5.QtWebEngineWidgets
 except ImportError:
-	rerun = True
+	rerun = True # Set rerun variable to True
 	if input("The PyQtWebEngineWidgets Library is not installed. Enter 'install' to install the module, or anything else to stop the process: ").lower() == "install":
 		os.system("pip3 install PyQtWebEngine")
 	else:
 		print("You can manually install the PyQtWebEngineWidgets Library by running the 'pip3 install PyQtWebEngine' command in the terminal")
 		exit()
 
-if rerun: os.system("python3 System/rerun.py")
+if rerun: os.system("python3 System/rerun.py") # Run System/rerun.py script if rerun variable is True
 
-print("Starting the Simplifyc Operating System...")
+print("Starting the Simplifyc Operating System...") # Print starting message
 
-# noinspection PyUnresolvedReferences,PyArgumentList
 class AboutDialog(QDialog):
 	"""About Dialog"""
 	def __init__(self, parent = None):
@@ -96,13 +92,11 @@ class Window(QMainWindow):
 		self.dock.setToolButtonStyle(Qt.ToolButtonIconOnly) # Always display icons instead of text in the dock
 		self.dock.setIconSize(QSize(32, 32)) # Configure the dock icon size
 		self.addToolBar(Qt.BottomToolBarArea, self.dock) # Display the toolbar at the bottom of the screen
-		self.applications = [QAction(QIcon("System/images/browser.png"), "Browser", self), QAction(QIcon("System/images/terminal.png"), "Terminal", self), QAction(QIcon("System/images/calculator.png"), "Calculator", self), QAction(QIcon("System/images/textedit.png"), "TextEdit", self)] # Create list of applications
+		self.dock_items = [] # Create dock_items list
+		for x in applications.keys(): self.dock_items.append([QAction(QIcon(f"Applications/{x}/images/logo_small.png"), applications[x]["name"], self), x]) # Add values to dock_items list
 		# Trigger signals
-		self.applications[0].triggered.connect(lambda: self.openApplication("Browser"))
-		self.applications[1].triggered.connect(lambda: self.openApplication("Terminal"))
-		self.applications[2].triggered.connect(lambda: self.openApplication("Calculator"))
-		self.applications[3].triggered.connect(lambda: self.openApplication("TextEdit"))
-		for i in self.applications: self.dock.addAction(i) # Add application to the dock
+		for x in range(len(self.dock_items)): exec(f"self.dock_items[{x}][0].triggered.connect(lambda _, self = self: self.openApplication('{applications[self.dock_items[x][1]]['run_class']}'))")
+		for x in self.dock_items: self.dock.addAction(x[0]) # Add applications to the dock
 		self.show() # Show the main window
 
 	def openApplication(self, app):
@@ -126,19 +120,9 @@ class Window(QMainWindow):
 
 
 (application, window) = (QApplication(sys.argv), Window()) # Construct QApplication and QMainWindow
-# Local Imports
 
-try:
-	sys.path.insert(1, "Applications/SimplifycBrowser")
-	from browser import Browser
-	sys.path.insert(1, "Applications/SimplifycTerminal")
-	from terminal import Terminal
-	sys.path.insert(1, "Applications/SimplifycCalculator")
-	from calculator import Calculator
-	sys.path.insert(1, "Applications/SimplifycTextEdit")
-	from textedit import TextEdit
-except ImportError:
-	os.system("An error occurred. Please re-run the program.")
+# Application Imports
+for i in applications.keys(): exec(f"sys.path.insert(1, 'Applications/{i}'); " + "from " + applications[i]['file'][:-3] + " import " + applications[i]['run_class'])
 
 window.show() # Show Main Window
 application.exec_() # Execute QApplication

@@ -1,4 +1,5 @@
 {
   "name": "browser",
-  "run": "browser.py"
+  "run": "browser.py",
+  "run_class": "Browser"
 }

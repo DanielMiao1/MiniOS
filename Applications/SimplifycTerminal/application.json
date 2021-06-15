@@ -1,4 +1,5 @@
 {
   "name": "terminal",
-  "run": "terminal.py"
+  "run": "terminal.py",
+  "run_class": "Terminal"
 }

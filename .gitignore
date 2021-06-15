@@ -1,6 +1,6 @@
 /.idea
-/Applications/SimplifycBrowser/config/history.txt
-/Applications/SimplifycTerminal/history.txt
+**/Applications/SimplifycBrowser/config/history.txt
+**/Applications/SimplifycTerminal/history.txt
 /venv
 **/.DS_Store
 **/__pycache__
