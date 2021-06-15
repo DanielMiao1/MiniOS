@@ -10,3 +10,9 @@ ls -A
 ls 
 ls
 history
+ls 
+ls
+ls
+l
+ls
+history
