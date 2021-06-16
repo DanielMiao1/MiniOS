@@ -1,5 +1,5 @@
 {
-  "name": "textedit",
+  "name": "TextEdit",
   "run": "textedit.py",
   "run_class": "TextEdit"
 }

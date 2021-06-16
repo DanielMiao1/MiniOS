@@ -10,12 +10,14 @@ from import_modules import checkModules
 checkModules()
 
 # Library Imports
+import os
 import sys
 import datetime
 
 # Local File Imports
 from config import *
 from dialogs import *
+# from overrides import *
 from applications import returnApplications
 
 # PyQt imports
@@ -33,6 +35,7 @@ class Window(QMainWindow):
 	"""Main Window"""
 	def __init__(self, parent = None) -> None:
 		super(Window, self).__init__(parent = parent)
+		self.setStyleSheet("background-color: " + color_properties["background-color"])
 		self.setMinimumWidth(QDesktopWidget().screenGeometry(-1).width())
 		self.setMinimumHeight(QDesktopWidget().screenGeometry(-1).height() - 100)
 		self.windows = None
@@ -42,7 +45,7 @@ class Window(QMainWindow):
 		self.setMinimumSize(1280, 720)
 		self.top_menu_bar = QToolBar("Top menu bar") # Create the top menu bar
 		self.top_menu_bar.setMovable(False) # Make the top menu bar fixed
-		self.top_menu_bar.setStyleSheet(f"background-color: {color_properties['secondary-background-color']}; border: 2px solid {color_properties['secondary-background-color']}; color: {color_properties['text-color']}") # Set stylesheet properties for the top menu bar
+		self.top_menu_bar.setStyleSheet(f"background-color: {color_properties['secondary-background-color']}; border: 4px solid {color_properties['secondary-background-color']}; color: {color_properties['text-color']}") # Set stylesheet properties for the top menu bar
 		# Add actions
 		self.clock = QAction(self)
 		self.clock.setFont(QFont(font_properties["font-family"], int(font_properties["font-size"])))
@@ -58,7 +61,9 @@ class Window(QMainWindow):
 		self.dock.setIconSize(QSize(32, 32)) # Configure the dock icon size
 		self.addToolBar(Qt.ToolBarArea.BottomToolBarArea, self.dock) # Display the toolbar at the bottom of the screen
 		self.dock_items = [] # Create dock_items list
-		for x in applications.keys(): self.dock_items.append([QAction(QIcon(f"Applications/{x}/images/logo_small.png"), applications[x]["name"], self), x]) # Add values to dock_items list
+		for x in applications.keys():
+			if os.path.exists(f"Applications/{x}/images/logo_small.png"): self.dock_items.append([QAction(QIcon(f"Applications/{x}/images/logo_small.png"), applications[x]["name"], self), x]) # Add values to dock_items list
+			else: self.dock_items.append([QAction(applications[x]["name"], self), x]) # Add values to dock_items list
 		# Trigger signals
 		for x in range(len(self.dock_items)): exec(f"self.dock_items[{x}][0].triggered.connect(lambda _, self = self: self.openApplication('{applications[self.dock_items[x][1]]['run_class']}'))")
 		for x in range(len(self.dock_items)): self.dock_items[x][0].setFont(QFont(font_properties["font-family"], int(font_properties["font-size"])))
@@ -84,7 +89,7 @@ class Window(QMainWindow):
 		self.clock.setToolTip(str())
 	
 	def contextMenuEvent(self, _) -> None: """Set empty context menu"""
-
+	
 
 (application, window) = (QApplication(sys.argv), Window()) # Construct QApplication and QMainWindow
 

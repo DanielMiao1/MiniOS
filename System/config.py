@@ -28,6 +28,7 @@ class ColorConfig:
 			if "background-color" not in loaded_file: Config.appendJSON({"background-color": "#ffffff"}, "System/config/colors.json")
 			if "secondary-background-color" not in loaded_file: Config.appendJSON({"secondary-background-color": "#ffffff"}, "System/config/colors.json")
 			if "text-color" not in loaded_file: Config.appendJSON({"text-color": "#000000"}, "System/config/colors.json")
+			if "border-color" not in loaded_file: Config.appendJSON({"border-color": "#000000"}, "System/config/colors.json")
 			if open("System/config/colors.json", "r+").read().splitlines()[-1] != "": open("System/config/colors.json", "a").write("\n")
 	
 	@staticmethod
