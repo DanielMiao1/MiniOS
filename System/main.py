@@ -12,10 +12,12 @@ import datetime
 
 # Local File Imports
 from applications import returnApplications
+from config import *
 from dialogs import *
 
 # Define global variables
-rerun, applications = False, returnApplications()
+rerun, applications, color_config = False, returnApplications(), Config()
+
 # Try to import PyQt5, if PyQt5 is not installed using pip, ask the user to install it
 try:
 	from PyQt5.QtGui import *

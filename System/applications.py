@@ -18,7 +18,7 @@ def getApplicationProperties(rel_path: str) -> dict:
 def returnApplications() -> dict:
 	"""Returns a dictionary of valid applications"""
 	applications = {}
-	for i in __import__("os").listdir("Applications"):
+	for i in sorted(__import__("os").listdir("Applications"))[1:]:
 		properties = getApplicationProperties(f"Applications/{i}")
 		if properties["valid"]: applications[i] = {"name": properties["name"], "path": properties["path"], "file": properties["path"].split("/")[-1], "run_class": properties["run_class"]}
 	return applications
