@@ -5,48 +5,34 @@ The Simplifyc Operating System main script
 Made by Daniel M using Python 3
 """
 
+# Check if the PyQt5 library is installed with pip
+from import_modules import checkModules
+checkModules()
+
 # Library Imports
-import os
 import sys
 import datetime
 
 # Local File Imports
-from applications import returnApplications
 from config import *
 from dialogs import *
+from applications import returnApplications
+
+# PyQt imports
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
 
 # Define global variables
-rerun, applications, color_config = False, returnApplications(), Config()
-
-# Try to import PyQt5, if PyQt5 is not installed using pip, ask the user to install it
-try:
-	from PyQt5.QtGui import *
-	from PyQt5.QtCore import *
-	from PyQt5.QtWidgets import *
-except ImportError:
-	rerun = True # Set rerun variable to True
-	if input("The PyQt5 Library is not installed. Enter 'install' to install the module, or anything else to stop the process: ").lower() == "install": os.system("pip3 install PyQt5")
-	else:
-		print("You can manually install the PyQt5 Library by running the 'pip3 install PyQt5' command in the terminal")
-		exit()
-
-# Check if PyQt5.QtWebEngineWidgets is installed for the browser application, if the module is not installed using pip, ask the user to install it
-try: import PyQt5.QtWebEngineWidgets
-except ImportError:
-	rerun = True # Set rerun variable to True
-	if input("The PyQtWebEngineWidgets Library is not installed. Enter 'install' to install the module, or anything else to stop the process: ").lower() == "install": os.system("pip3 install PyQtWebEngine")
-	else:
-		print("You can manually install the PyQtWebEngineWidgets Library by running the 'pip3 install PyQtWebEngine' command in the terminal")
-		exit()
-
-if rerun: os.system("python3 System/rerun.py") # Run System/rerun.py script if rerun variable is True
+rerun, applications, config = False, returnApplications(), Config()
+color_properties = ColorConfig.returnConfig()
 
 print("Starting the Simplifyc Operating System...") # Print starting message
 
 class Window(QMainWindow):
 	"""Main Window"""
-	def __init__(self) -> None:
-		super(Window, self).__init__()
+	def __init__(self, parent = None) -> None:
+		super(Window, self).__init__(parent = parent)
 		self.setMinimumWidth(QDesktopWidget().screenGeometry(-1).width())
 		self.setMinimumHeight(QDesktopWidget().screenGeometry(-1).height() - 100)
 		self.windows = None
@@ -56,7 +42,7 @@ class Window(QMainWindow):
 		self.setMinimumSize(1280, 720)
 		self.top_menu_bar = QToolBar("Top menu bar") # Create the top menu bar
 		self.top_menu_bar.setMovable(False) # Make the top menu bar fixed
-		self.top_menu_bar.setStyleSheet("background-color: white; border: 2px solid white; font-size: 15px;") # Set stylesheet properties for the top menu bar
+		self.top_menu_bar.setStyleSheet(f"background-color: {color_properties['secondary-background-color']}; border: 2px solid {color_properties['secondary-background-color']}; font-size: 15px; color: {color_properties['text-color']}") # Set stylesheet properties for the top menu bar
 		# Add actions
 		self.clock = QAction(self)
 		self.clock_content = QTimer(self)
@@ -64,18 +50,18 @@ class Window(QMainWindow):
 		self.clock_content.start(1000)
 		# Add actions to the Tool Bar
 		self.top_menu_bar.addAction(self.clock)
-		self.addToolBar(Qt.TopToolBarArea, self.top_menu_bar) # Add Tool Bar to the Window
+		self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.top_menu_bar) # Add Tool Bar to the Window
 		self.dock = QToolBar("Dock") # Create a dock
 		self.dock.setMovable(False) # Make the dock fixed
-		self.dock.setToolButtonStyle(Qt.ToolButtonIconOnly) # Always display icons instead of text in the dock
+		self.dock.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly) # Always display icons instead of text in the dock
 		self.dock.setIconSize(QSize(32, 32)) # Configure the dock icon size
-		self.addToolBar(Qt.BottomToolBarArea, self.dock) # Display the toolbar at the bottom of the screen
+		self.addToolBar(Qt.ToolBarArea.BottomToolBarArea, self.dock) # Display the toolbar at the bottom of the screen
 		self.dock_items = [] # Create dock_items list
 		for x in applications.keys(): self.dock_items.append([QAction(QIcon(f"Applications/{x}/images/logo_small.png"), applications[x]["name"], self), x]) # Add values to dock_items list
 		# Trigger signals
 		for x in range(len(self.dock_items)): exec(f"self.dock_items[{x}][0].triggered.connect(lambda _, self = self: self.openApplication('{applications[self.dock_items[x][1]]['run_class']}'))")
 		for x in self.dock_items: self.dock.addAction(x[0]) # Add applications to the dock
-		self.dock.setStyleSheet("background-color: white; border: none;") # Make the dock's background color white
+		self.dock.setStyleSheet(f"background-color: {color_properties['secondary-background-color']}; border: none;") # Make the dock's background color white
 		self.show() # Show the main window
 
 	def openApplication(self, app: str) -> None:

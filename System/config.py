@@ -9,8 +9,7 @@ from json import load, dump
 
 class Config:
 	def __init__(self):
-		self.color_config = ColorConfig()
-		self.color_config.formatJSON(False)
+		ColorConfig.formatJSON()
 
 	@staticmethod
 	def appendJSON(values: dict, file_name: str) -> None:
@@ -21,16 +20,17 @@ class Config:
 			dump(data, file, indent = 2)
 
 class ColorConfig:
-	def __init__(self): pass
+	@staticmethod
+	def formatJSON() -> None:
+		with open("System/config/colors.json") as file:
+			loaded_file = load(file)
+			if open("System/config/colors.json", "r+").read() == "": open("System/config/colors.json", "w").write("{ }")
+			if "background-color" not in loaded_file: Config.appendJSON({"background-color": "#ffffff"}, "System/config/colors.json")
+			if "secondary-background-color" not in loaded_file: Config.appendJSON({"secondary-background-color": "#ffffff"}, "System/config/colors.json")
+			if "text-color" not in loaded_file: Config.appendJSON({"text-color": "#000000"}, "System/config/colors.json")
+			if open("System/config/colors.json", "r+").read().splitlines()[-1] != "": open("System/config/colors.json", "a").write("\n")
 	
 	@staticmethod
-	def formatJSON(return_value: bool) -> dict:
-		if all(True for i in list(open("System/config/colors.json", "r").read()) if i == " ") or open("System/config/colors.json", "r").read() == "": open("System/config/colors.json", "w").write("{ }")
-		if "background-color" not in load(open("System/config/colors.json")).keys(): Config.appendJSON({"background-color": "#ffffff"}, "System/config/colors.json")
-		if "secondary-background-color" not in load(open("System/config/colors.json")).keys(): Config.appendJSON({"secondary-background-color": "#ffffff"}, "System/config/colors.json")
-		if open("System/config/colors.json", "r").read().splitlines()[-1] != "": open("System/config/colors.json", "a").write("\n")
-		if return_value: return load(open("System/config/colors.json"))
-	
-	def returnConfig(self) -> bool or dict:
+	def returnConfig() -> bool or dict:
 		if not __import__("os").path.exists("System/config/colors.json"): return False
-		return self.formatJSON(True)
+		return load(open("System/config/colors.json"))
