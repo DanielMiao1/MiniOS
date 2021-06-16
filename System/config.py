@@ -28,6 +28,7 @@ class ColorConfig:
 		if all(True for i in list(open("System/config/colors.json", "r").read()) if i == " ") or open("System/config/colors.json", "r").read() == "": open("System/config/colors.json", "w").write("{ }")
 		if "background-color" not in load(open("System/config/colors.json")).keys(): Config.appendJSON({"background-color": "#ffffff"}, "System/config/colors.json")
 		if "secondary-background-color" not in load(open("System/config/colors.json")).keys(): Config.appendJSON({"secondary-background-color": "#ffffff"}, "System/config/colors.json")
+		if open("System/config/colors.json", "r").read().splitlines()[-1] != "": open("System/config/colors.json", "a").write("\n")
 		if return_value: return load(open("System/config/colors.json"))
 	
 	def returnConfig(self) -> bool or dict:
