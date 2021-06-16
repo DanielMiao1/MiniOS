@@ -31,6 +31,17 @@ class ColorConfig:
 			if open("System/config/colors.json", "r+").read().splitlines()[-1] != "": open("System/config/colors.json", "a").write("\n")
 	
 	@staticmethod
-	def returnConfig() -> bool or dict:
-		if not __import__("os").path.exists("System/config/colors.json"): return False
-		return load(open("System/config/colors.json"))
+	def returnConfig() -> bool or dict: return load(open("System/config/colors.json"))
+
+class FontConfig:
+	@staticmethod
+	def formatJSON() -> None:
+		with open("System/config/font.json") as file:
+			loaded_file = load(file)
+			if open("System/config/font.json", "r+").read() == "": open("System/config/font.json", "w").write("{ }")
+			if "font-family" not in loaded_file: Config.appendJSON({"font-family": "Arial"}, "System/config/font.json")
+			if "font-size" not in loaded_file: Config.appendJSON({"font-size": "15"}, "System/config/font.json")
+			if open("System/config/font.json", "r+").read().splitlines()[-1] != "": open("System/config/font.json", "a").write("\n")
+	
+	@staticmethod
+	def returnConfig() -> bool or dict: return load(open("System/config/font.json"))

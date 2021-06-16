@@ -25,7 +25,7 @@ from PyQt5.QtWidgets import *
 
 # Define global variables
 rerun, applications, config = False, returnApplications(), Config()
-color_properties = ColorConfig.returnConfig()
+color_properties, font_properties = ColorConfig.returnConfig(), FontConfig.returnConfig()
 
 print("Starting the Simplifyc Operating System...") # Print starting message
 
@@ -42,9 +42,10 @@ class Window(QMainWindow):
 		self.setMinimumSize(1280, 720)
 		self.top_menu_bar = QToolBar("Top menu bar") # Create the top menu bar
 		self.top_menu_bar.setMovable(False) # Make the top menu bar fixed
-		self.top_menu_bar.setStyleSheet(f"background-color: {color_properties['secondary-background-color']}; border: 2px solid {color_properties['secondary-background-color']}; font-size: 15px; color: {color_properties['text-color']}") # Set stylesheet properties for the top menu bar
+		self.top_menu_bar.setStyleSheet(f"background-color: {color_properties['secondary-background-color']}; border: 2px solid {color_properties['secondary-background-color']}; color: {color_properties['text-color']}") # Set stylesheet properties for the top menu bar
 		# Add actions
 		self.clock = QAction(self)
+		self.clock.setFont(QFont(font_properties["font-family"], int(font_properties["font-size"])))
 		self.clock_content = QTimer(self)
 		self.clock_content.timeout.connect(self.updateTime)
 		self.clock_content.start(1000)
@@ -60,8 +61,9 @@ class Window(QMainWindow):
 		for x in applications.keys(): self.dock_items.append([QAction(QIcon(f"Applications/{x}/images/logo_small.png"), applications[x]["name"], self), x]) # Add values to dock_items list
 		# Trigger signals
 		for x in range(len(self.dock_items)): exec(f"self.dock_items[{x}][0].triggered.connect(lambda _, self = self: self.openApplication('{applications[self.dock_items[x][1]]['run_class']}'))")
+		for x in range(len(self.dock_items)): self.dock_items[x][0].setFont(QFont(font_properties["font-family"], int(font_properties["font-size"])))
 		for x in self.dock_items: self.dock.addAction(x[0]) # Add applications to the dock
-		self.dock.setStyleSheet(f"background-color: {color_properties['secondary-background-color']}; border: none;") # Make the dock's background color white
+		self.dock.setStyleSheet(f"background-color: {color_properties['secondary-background-color']}; border: none; font-size: {font_properties['font-size']}") # Make the dock's background color white
 		self.show() # Show the main window
 
 	def openApplication(self, app: str) -> None:
