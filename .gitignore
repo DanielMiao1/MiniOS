@@ -1,5 +1,5 @@
 /.idea
-**history.txt
+**/history.txt
 /venv
 **/.DS_Store
 **/__pycache__
