@@ -44,5 +44,6 @@ class Preferences(QDialog):
 			open("System/config/colors.json", "w").write(str(data).replace("'", "\""))
 		
 	def closeEvent(self, a0: QCloseEvent) -> None:
-		print("Restarting...")
-		__import__("os").execl(sys.executable, sys.executable, *sys.argv)
+		if self.restart_required:
+			print("Restarting...")
+			__import__("os").execl(sys.executable, sys.executable, *sys.argv)
