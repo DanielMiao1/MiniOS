@@ -4,3 +4,8 @@ ls
 ls
 s
 ls
+l
+ls
+his
+hist
+history
