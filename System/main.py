@@ -80,7 +80,7 @@ class Window(QMainWindow):
 			self.files[-1][0].setIconSize(QSize(75, 75))
 			self.files[-1][0].resize(75, 100)
 			self.files[-1][0].setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
-			self.files[-1][0].move(0, (len(self.files) * 100) - 68)
+			self.files[-1][0].move(0, (len(self.files) * 100) - 75)
 		self.show() # Show the main window
 
 	def openApplication(self, app: str) -> None:
