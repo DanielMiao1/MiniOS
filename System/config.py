@@ -42,6 +42,7 @@ class FontConfig:
 			if open("System/config/font.json", "r+").read() == "": open("System/config/font.json", "w").write("{ }")
 			if "font-family" not in loaded_file: Config.appendJSON({"font-family": "Arial"}, "System/config/font.json")
 			if "font-size" not in loaded_file: Config.appendJSON({"font-size": "15"}, "System/config/font.json")
+			if "fonts" not in loaded_file: Config.appendJSON({"fonts": ["Arial", "Gill Sans", "Times", "Courier", "Symbol", "Calibri", "Cambria", "Candara", "Comic Sans MS", "Consolas", "Constantia", "Corbel", "Courier New", "Franklin Gothic Medium", "Gabriola", "Georgia", "Helvetica", "Impact", "MS Gothic", "Rockwell", "SimSun", "SimSun-ExtB", "Tahoma", "Times New Roman", "Trebuchet MS", "Verdana", "Webdings", "Wingdings"]}, "System/config/font.json")
 			if open("System/config/font.json", "r+").read().splitlines()[-1] != "": open("System/config/font.json", "a").write("\n")
 	
 	@staticmethod

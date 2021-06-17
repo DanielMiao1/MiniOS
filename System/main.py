@@ -5,7 +5,6 @@ The Simplifyc Operating System main script
 Made by Daniel M using Python 3
 """
 
-# Check if the PyQt5 library is installed with pip
 from import_modules import checkModules
 checkModules()
 
@@ -17,7 +16,8 @@ import datetime
 # Local File Imports
 from config import *
 from dialogs import *
-# from overrides import *
+from overrides import *
+from desktop_files import returnItems
 from applications import returnApplications
 
 # PyQt imports
@@ -69,6 +69,15 @@ class Window(QMainWindow):
 		for x in range(len(self.dock_items)): self.dock_items[x][0].setFont(QFont(font_properties["font-family"], int(font_properties["font-size"])))
 		for x in self.dock_items: self.dock.addAction(x[0]) # Add applications to the dock
 		self.dock.setStyleSheet(f"background-color: {color_properties['secondary-background-color']}; border: none; font-size: {font_properties['font-size']}") # Make the dock's background color white
+		self.files = []
+		for x in returnItems().keys():
+			self.files.append([QToolButton(self), returnItems()[x]])
+			self.files[-1][0].setText(returnItems()[x]["displayname"])
+			self.files[-1][0].setIcon(QIcon("System/images/file_icons/directory.png"))
+			self.files[-1][0].setIconSize(QSize(75, 75))
+			self.files[-1][0].resize(100, 100)
+			self.files[-1][0].setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+		for x in range(len(self.files)): self.files[x][0].move(100, 100 + (x * 100))
 		self.show() # Show the main window
 
 	def openApplication(self, app: str) -> None:

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-System/getApplications.py
+System/applications.py
 Gets all applications
 Made by Daniel M using Python 3
 """
