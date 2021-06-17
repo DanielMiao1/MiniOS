@@ -15,7 +15,7 @@ class Config:
 	def appendJSON(values: dict, file_name: str) -> None:
 		with open(file_name, "r+") as file:
 			data = load(file)
-			data.update(values)
+			data.updateElements()
 			file.seek(0)
 			dump(data, file, indent = 2)
 
@@ -47,3 +47,5 @@ class FontConfig:
 	
 	@staticmethod
 	def returnConfig() -> bool or dict: return load(open("System/config/font.json"))
+
+def returnProperties() -> dict: return {**ColorConfig.returnConfig(), **FontConfig.returnConfig()}

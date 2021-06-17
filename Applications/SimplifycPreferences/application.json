@@ -1,5 +1,0 @@
-{
-  "name": "System Preferences",
-  "run": "preferences.py",
-  "run_class": "Preferences"
-}
