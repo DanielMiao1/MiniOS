@@ -28,11 +28,12 @@ class ColorConfig:
 			if "background-color" not in loaded_file: Config.appendJSON({"background-color": "#ffffff"}, "System/config/colors.json")
 			if "secondary-background-color" not in loaded_file: Config.appendJSON({"secondary-background-color": "#ffffff"}, "System/config/colors.json")
 			if "text-color" not in loaded_file: Config.appendJSON({"text-color": "#000000"}, "System/config/colors.json")
-			if "border-color" not in loaded_file: Config.appendJSON({"border-color": "#000000"}, "System/config/colors.json")
 			if open("System/config/colors.json", "r+").read().splitlines()[-1] != "": open("System/config/colors.json", "a").write("\n")
 	
 	@staticmethod
-	def returnConfig() -> bool or dict: return load(open("System/config/colors.json"))
+	def returnConfig() -> bool or dict:
+		if __import__("os").path.exists("System/config/colors.json"): return load(open("System/config/colors.json"))
+		return False
 
 class FontConfig:
 	@staticmethod
@@ -46,6 +47,8 @@ class FontConfig:
 			if open("System/config/font.json", "r+").read().splitlines()[-1] != "": open("System/config/font.json", "a").write("\n")
 	
 	@staticmethod
-	def returnConfig() -> bool or dict: return load(open("System/config/font.json"))
+	def returnConfig() -> bool or dict:
+		if __import__("os").path.exists("System/config/font.json"): return load(open("System/config/font.json"))
+		return False
 
 def returnProperties() -> dict: return {**ColorConfig.returnConfig(), **FontConfig.returnConfig()}

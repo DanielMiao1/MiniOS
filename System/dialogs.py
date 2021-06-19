@@ -10,7 +10,6 @@ from json import load
 # Local file imports
 from overrides import PushButton
 from config import returnProperties
-from calculations import getInvertedColor
 
 # PyQt imports
 from PyQt5.QtGui import *
@@ -25,23 +24,22 @@ class Preferences(QWidget):
 		self.setWindowTitle("Preferences")
 		self.update_function = update_function
 		self.layout = QGridLayout()
+		self.text_color, self.background_color, self.secondary_background_color = returnProperties()["text-color"], returnProperties()["background-color"], returnProperties()["secondary-background-color"]
 		self.widgets = {
 			"background-color-label": [QLabel("Background Color"), [2, 1]],
 			"background-color": [QPushButton(self), [2, 2]],
-			"reset-background-color": [PushButton("Reset"), [2, 3]],
+			"reset-background-color": [PushButton("Reset", self.text_color), [2, 3]],
 			"secondary-background-color-label": [QLabel("Secondary Background Color"), [3, 1]],
 			"secondary-background-color": [QPushButton(self), [3, 2]],
-			"reset-secondary-background-color": [PushButton("Reset"), [3, 3]],
+			"reset-secondary-background-color": [PushButton("Reset", self.text_color), [3, 3]],
 			"text-color-label": [QLabel("Text Color"), [4, 1]],
 			"text-color": [QPushButton(self), [4, 2]],
-			"reset-text-color": [PushButton("Reset"), [4, 3]]
+			"reset-text-color": [PushButton("Reset", self.text_color), [4, 3]]
 		}
-		self.text_color = returnProperties()["text-color"]
-		self.background_color = returnProperties()["background-color"]
-		self.secondary_background_color = returnProperties()["secondary-background-color"]
+		for i in ["background-color-label", "secondary-background-color-label", "text-color-label"]: self.widgets[i][0].setStyleSheet("color: " + returnProperties()["text-color"])
 		for x, y in zip(["background-color", "secondary-background-color", "text-color"], [self.changeBackgroundColor, self.changeSecondaryBackgroundColor, self.changeTextColor]):
 			self.widgets[x][0].setText(self.background_color if x == "background-color" else self.secondary_background_color if x == "secondary-background-color" else self.text_color)
-			self.widgets[x][0].setStyleSheet(f"border: none; color: {self.background_color[1:]};")
+			self.widgets[x][0].setStyleSheet(f"border: none; color: {self.text_color}")
 			self.widgets[x][0].setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 			self.widgets[x][0].clicked.connect(y)
 		for x, y in zip(["reset-background-color", "reset-secondary-background-color", "reset-text-color"], [self.resetBackgroundColor, self.resetSecondaryBackgroundColor, self.resetTextColor]): self.widgets[x][0].clicked.connect(y)
@@ -50,6 +48,9 @@ class Preferences(QWidget):
 	
 	def _update(self):
 		self.setStyleSheet(f"background-color: {returnProperties()['background-color']}; color: {self.text_color}")
+		for i in ["background-color-label", "secondary-background-color-label", "text-color-label"]: self.widgets[i][0].setStyleSheet("color: " + returnProperties()["text-color"])
+		for i in ["background-color", "secondary-background-color", "text-color"]: self.widgets[i][0].setStyleSheet(f"border: none; color: {self.text_color}")
+		for i in ["reset-background-color", "reset-secondary-background-color", "reset-text-color"]: self.widgets[i][0].updateColor(self.text_color)
 		self.update_function()
 	
 	def resetTextColor(self) -> None:

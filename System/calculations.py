@@ -15,6 +15,6 @@ def getRgbFromHex(hex_color: str) -> list:
 def getHexFromRgb(rgb_value: list) -> str:
 	return str(hex_keys[int(rgb_value[0]) // 16]) + str(hex_keys[((int(rgb_value[0]) / 16) - (int(rgb_value[0]) // 16)) * 16]) + str(hex_keys[int(rgb_value[1]) // 16]) + str(hex_keys[((int(rgb_value[1]) / 16) - (int(rgb_value[1]) // 16)) * 16]) + str(hex_keys[int(rgb_value[2]) // 16]) + str(hex_keys[((int(rgb_value[2]) / 16) - (int(rgb_value[2]) // 16)) * 16])
 
-def getInvertedColor(color: str) -> str:
+def getAdjustedColor(color: str) -> str:
 	"""Gets the inverse of the given color"""
-	return "#" + getHexFromRgb([255 - int(getRgbFromHex(color)[0]), 255 - int(getRgbFromHex(color)[1]), 255 - int(getRgbFromHex(color)[2])])
+	return "#" + getHexFromRgb([128 - int(getRgbFromHex(color)[0]), 128 - int(getRgbFromHex(color)[1]), 128 - int(getRgbFromHex(color)[2])])
