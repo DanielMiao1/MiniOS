@@ -42,3 +42,47 @@ class PushButton(QPushButton):
 	def updateColor(self, color = "black"):
 		"""Update the color"""
 		self.color = color
+
+class Slider(QWidget):
+	def __init__(self, minimum, maximum, value, interval = 1, labels = None):
+		super(Slider, self).__init__()
+		levels = range(minimum, maximum + interval, interval)
+		self.levels = list(zip(levels, labels)) if labels is not None else list(zip(levels, map(str, levels)))
+		self.layout = QVBoxLayout(self)
+		self.left_margin = 10
+		self.top_margin = 10
+		self.right_margin = 10
+		self.bottom_margin = 10
+		self.layout.setContentsMargins(self.left_margin, self.top_margin, self.right_margin, self.bottom_margin)
+		self.slider = QSlider(Qt.Orientation.Horizontal, self)
+		self.slider.setMinimum(minimum)
+		self.slider.setMaximum(maximum)
+		self.slider.setValue(value)
+		self.slider.setTickPosition(QSlider.TicksBelow)
+		self.slider.setMinimumWidth(300)
+		self.slider.setTickInterval(interval)
+		self.slider.setSingleStep(1)
+		self.layout.addWidget(self.slider)
+		
+	def paintEvent(self, event):
+		super(Slider, self).paintEvent(event)
+		style = self.slider.style()
+		painter = QPainter(self)
+		style_slider = QStyleOptionSlider()
+		style_slider.initFrom(self.slider)
+		style_slider.orientation = self.slider.orientation()
+		length = style.pixelMetric(QStyle.PM_SliderLength, style_slider, self.slider)
+		available = style.pixelMetric(QStyle.PM_SliderSpaceAvailable, style_slider, self.slider)
+		for x, y in self.levels:
+			rect = painter.drawText(QRect(), Qt.TextFlag.TextDontPrint, y)
+			position = QStyle.sliderPositionFromValue(self.slider.minimum(), self.slider.maximum(), x, available) + length // 2
+			bottom = self.rect().bottom()
+			if x == self.slider.minimum():
+				if position-rect.width() // 2 + self.left_margin <= 0: self.left_margin = rect.width() // 2 - position
+				if self.bottom_margin <= rect.height(): self.bottom_margin = rect.height()
+				self.layout.setContentsMargins(self.left_margin, self.top_margin, self.right_margin, self.bottom_margin)
+			if x == self.slider.maximum() and rect.width() // 2 >= self.right_margin:
+				self.right_margin = rect.width() // 2
+				self.layout.setContentsMargins(self.left_margin, self.top_margin, self.right_margin, self.bottom_margin)
+			painter.drawText(QPoint(position - rect.width() // 2 + self.left_margin, bottom), y)
+		return

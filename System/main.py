@@ -5,8 +5,7 @@ The Simplifyc Operating System main script
 Made by Daniel M using Python 3
 """
 
-from import_modules import checkModules
-checkModules()
+__import__("import_modules").checkModules()
 
 # Library Imports
 import os
@@ -27,8 +26,8 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 
 # Define global variables
-rerun, applications, config = False, returnApplications(), Config()
-color_properties, font_properties = ColorConfig.returnConfig(), FontConfig.returnConfig()
+applications, config = returnApplications(), Config()
+color_properties, font_properties, window_properties = ColorConfig.returnConfig(), FontConfig.returnConfig(), WindowConfig.returnConfig()
 
 print("Starting the Simplifyc Operating System...") # Print starting message
 
@@ -37,8 +36,9 @@ class Window(QMainWindow):
 	def __init__(self, parent = None) -> None:
 		super(Window, self).__init__(parent = parent)
 		self.setStyleSheet("background-color: " + color_properties["background-color"])
-		self.setMinimumWidth(QDesktopWidget().screenGeometry(-1).width())
-		self.setMinimumHeight(QDesktopWidget().screenGeometry(-1).height() - 100)
+		self.window_size = window_properties["size"] if window_properties["size"] != "full" else [screen.availableGeometry().width(), screen.availableGeometry().height()] # Get window size property
+		self.resize(self.window_size[0], self.window_size[1]) # Resize window
+		self.setMinimumSize(256, 144) # Set minimum size
 		self.windows = None
 		self.about = self.menuBar().addMenu("About")
 		self.about.triggered.connect(self.openAbout)
@@ -74,15 +74,21 @@ class Window(QMainWindow):
 		for x in self.dock_items: self.dock.addAction(x[0]) # Add applications to the dock
 		self.dock.setStyleSheet(f"background-color: {color_properties['secondary-background-color']}; border: none; font-size: {font_properties['font-size']}") # Make the dock's background color white
 		self.files = []
+		row = 0
+		column = 25
 		for x in returnItems().keys():
+			if column + 100 > self.window_size[1]:
+				row += 1
+				column = 25
 			self.files.append([QToolButton(self), returnItems()[x]])
-			self.files[-1][0].setStyleSheet("color: " + returnProperties()["text-color"])
+			self.files[-1][0].setStyleSheet(f"color: {returnProperties()['text-color']}; border: none")
 			self.files[-1][0].setText(returnItems()[x]["displayname"])
 			self.files[-1][0].setIcon(getFileIcon(returnItems()[x]["extension"], returnItems()[x]["type"]))
 			self.files[-1][0].setIconSize(QSize(75, 75))
 			self.files[-1][0].resize(68, 100)
 			self.files[-1][0].setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
-			self.files[-1][0].move(0, (len(self.files) * 100) - 75)
+			self.files[-1][0].move(row * 70, column)
+			column += 100
 		self.show() # Show the main window
 
 	def openApplication(self, app: str) -> None:
@@ -118,9 +124,13 @@ class Window(QMainWindow):
 		for x in range(1, len(self.dock_items)): self.dock_items[x][0].setFont(QFont(font_properties["font-family"], int(font_properties["font-size"]))) # Update the dock items' font
 		self.dock.setStyleSheet(f"background-color: {color_properties['secondary-background-color']}; border: none; font-size: {font_properties['font-size']}") # Update the dock's stylesheet
 		self.clock.setFont(QFont(font_properties["font-family"], int(font_properties["font-size"]))) # Update the clock's font
-	
+		
 
-(application, window) = (QApplication(sys.argv), Window()) # Construct QApplication and QMainWindow
+application = QApplication(sys.argv) # Construct application
+
+screen = application.primaryScreen()
+
+window = Window() # Call main Window class
 
 # Application Imports
 for i in applications.keys(): exec(f"sys.path.insert(1, 'Applications/{i}'); " + "from " + applications[i]['file'][:-3] + " import " + applications[i]['run_class'])
