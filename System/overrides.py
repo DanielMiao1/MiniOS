@@ -42,11 +42,12 @@ class PushButton(QPushButton):
 	def updateColor(self, color = "black"):
 		"""Update the color"""
 		self.color = color
-
+	
 class Slider(QWidget):
-	def __init__(self, minimum, maximum, value, interval = 1, labels = None):
+	def __init__(self, minimum, maximum, value, update_function, interval = 1, labels = None):
 		super(Slider, self).__init__()
 		levels = range(minimum, maximum + interval, interval)
+		self.update_function = update_function
 		self.levels = list(zip(levels, labels)) if labels is not None else list(zip(levels, map(str, levels)))
 		self.layout = QVBoxLayout(self)
 		self.left_margin = 10
@@ -62,8 +63,13 @@ class Slider(QWidget):
 		self.slider.setMinimumWidth(300)
 		self.slider.setTickInterval(interval)
 		self.slider.setSingleStep(1)
+		self.slider.valueChanged.connect(self.update_function)
 		self.layout.addWidget(self.slider)
 		
+	def value(self) -> int or float: return self.slider.value()
+	
+	def setValue(self, value) -> None: self.slider.setValue(value)
+	
 	def paintEvent(self, event):
 		super(Slider, self).paintEvent(event)
 		style = self.slider.style()

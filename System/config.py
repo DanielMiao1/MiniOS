@@ -46,13 +46,13 @@ class FontConfig:
 	def formatJSON() -> None:
 		with open("System/config/font.json") as file:
 			try: load(file)
-			except json.decoder.JSONDecodeError: open("System/config/font.json", "w").write("{\n  \"fonts\": [\n    \"Arial\",\n    \"Gill Sans\",\n    \"Times\",\n    \"Courier\",\n    \"Symbol\",\n    \"Calibri\",\n    \"Cambria\",\n    \"Candara\",\n    \"Comic Sans MS\",\n    \"Consolas\",\n    \"Constantia\",\n    \"Corbel\",\n    \"Courier New\",\n    \"Franklin Gothic Medium\",\n    \"Gabriola\",\n    \"Georgia\",\n    \"Helvetica\",\n    \"Impact\",\n    \"MS Gothic\",\n    \"Rockwell\",\n    \"SimSun\",\n    \"SimSun-ExtB\",\n    \"Tahoma\",\n    \"Times New Roman\",\n    \"Trebuchet MS\",\n    \"Verdana\",\n    \"Webdings\",\n    \"Wingdings\"\n  ],\n  \"font-family\": \"Helvetica\",\n  \"font-size\": \"12\"\n}")
+			except json.decoder.JSONDecodeError: open("System/config/font.json", "w").write("{\n  \"fonts\": [\n    \"Arial\",\n    \"Gill Sans\",\n    \"Times\",\n    \"Courier\",\n    \"Symbol\",\n    \"Calibri\",\n    \"Cambria\",\n    \"Candara\",\n    \"Comic Sans MS\",\n    \"Consolas\",\n    \"Constantia\",\n    \"Corbel\",\n    \"Courier New\",\n    \"Gabriola\",\n    \"Georgia\",\n    \"Helvetica\",\n    \"Impact\",\n    \"MS Gothic\",\n    \"Rockwell\",\n    \"SimSun\",\n    \"SimSun-ExtB\",\n    \"Tahoma\",\n    \"Times New Roman\",\n    \"Trebuchet MS\",\n    \"Verdana\",\n    \"Webdings\",\n    \"Wingdings\"\n  ],\n  \"font-family\": \"Helvetica\",\n  \"font-size\": \"12\"\n}")
 			file = open("System/config/font.json")
 			loaded_file = load(file)
 			if open("System/config/font.json", "r+").read() == "": open("System/config/font.json", "w").write("{ }")
 			if "font-family" not in loaded_file: Config.appendJSON({"font-family": "Arial"}, "System/config/font.json")
 			if "font-size" not in loaded_file: Config.appendJSON({"font-size": "12"}, "System/config/font.json")
-			if "fonts" not in loaded_file: Config.appendJSON({"fonts": ["Arial", "Gill Sans", "Times", "Courier", "Symbol", "Calibri", "Cambria", "Candara", "Comic Sans MS", "Consolas", "Constantia", "Corbel", "Courier New", "Franklin Gothic Medium", "Gabriola", "Georgia", "Helvetica", "Impact", "MS Gothic", "Rockwell", "SimSun", "SimSun-ExtB", "Tahoma", "Times New Roman", "Trebuchet MS", "Verdana", "Webdings", "Wingdings"]}, "System/config/font.json")
+			if "fonts" not in loaded_file: Config.appendJSON({"fonts": ["Arial", "Gill Sans", "Times", "Courier", "Symbol", "Calibri", "Cambria", "Candara", "Comic Sans MS", "Consolas", "Constantia", "Corbel", "Courier New", "Gabriola", "Georgia", "Helvetica", "Impact", "MS Gothic", "Rockwell", "SimSun", "SimSun-ExtB", "Tahoma", "Times New Roman", "Trebuchet MS", "Verdana", "Webdings", "Wingdings"]}, "System/config/font.json")
 			if open("System/config/font.json", "r+").read().splitlines()[-1] != "": open("System/config/font.json", "a").write("\n")
 	
 	@staticmethod

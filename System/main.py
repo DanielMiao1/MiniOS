@@ -111,16 +111,17 @@ class Window(QMainWindow):
 		"""Updates the clock"""
 		current_time = f"{('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun')[datetime.datetime.today().weekday()]} {dict([['01', 'Jan'], ['02', 'Feb'], ['03', 'Mar'], ['04', 'Apr'], ['05', 'May'], ['06', 'Jun'], ['07', 'Jul'], ['08', 'Aug'], ['09', 'Sep'], ['10', 'Oct'], ['11', 'Nov'], ['12', 'Dec']])[QDateTime.currentDateTime().toString('MM')]} {QDateTime.currentDateTime().toString('dd hh:mm:ss')}"
 		self.clock.setText(current_time)
-		self.clock.setToolTip(str())
 	
 	def contextMenuEvent(self, _) -> None: """Set empty context menu"""
 	
 	def updateElements(self) -> None:
 		global color_properties, font_properties
 		color_properties, font_properties = ColorConfig.returnConfig(), FontConfig.returnConfig()
-		self.top_menu_bar.setStyleSheet(f"background-color: {color_properties['secondary-background-color']}; border: 4px solid {color_properties['secondary-background-color']}; color: {color_properties['text-color']}") # Update stylesheet properties for the top menu bar
+		self.top_menu_bar.setStyleSheet(f"background-color: {color_properties['secondary-background-color']}; border: 4px solid {color_properties['secondary-background-color']}; color: {color_properties['text-color']}; font-family: {font_properties['font-family']}") # Update stylesheet properties for the top menu bar
 		self.setStyleSheet(f"background-color: {color_properties['background-color']}; color: {color_properties['text-color']}") # Update the window stylesheet
-		for x in range(len(self.files)): self.files[x][0].setStyleSheet("color: " + returnProperties()["text-color"])
+		for x in range(len(self.files)):
+			self.files[x][0].setStyleSheet(f"color: {returnProperties()['text-color']}; border: none")
+			self.files[x][0].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
 		for x in range(1, len(self.dock_items)): self.dock_items[x][0].setFont(QFont(font_properties["font-family"], int(font_properties["font-size"]))) # Update the dock items' font
 		self.dock.setStyleSheet(f"background-color: {color_properties['secondary-background-color']}; border: none; font-size: {font_properties['font-size']}") # Update the dock's stylesheet
 		self.clock.setFont(QFont(font_properties["font-family"], int(font_properties["font-size"]))) # Update the clock's font
