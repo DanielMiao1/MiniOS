@@ -8,11 +8,6 @@ Made by Daniel M using Python 3
 from json import load
 
 # Local file imports
-from typing import Any, Dict, List, Union
-
-from PyQt5.QtWidgets import QLabel, QPushButton
-
-from System.overrides import PushButton
 from config import returnProperties
 from overrides import PushButton, Slider
 
