@@ -7,4 +7,4 @@ Made by Daniel M using Python 3 for Application Support in the SimplifycOS proje
 __import__("sys").path.insert(1, "System/")
 import config
 
-def returnProperties() -> dict: return {**config.ColorConfig.returnConfig(), **config.FontConfig.returnConfig()}
+def returnProperties() -> dict: return {**config.ThemeConfig.returnConfig(), **config.FontConfig.returnConfig(), **config.WindowConfig.returnConfig()}

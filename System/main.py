@@ -27,7 +27,6 @@ from PyQt5.QtWidgets import *
 
 # Define global variables
 applications, config = returnApplications(), Config()
-color_properties, font_properties, window_properties = ColorConfig.returnConfig(), FontConfig.returnConfig(), WindowConfig.returnConfig()
 
 print("Starting the Simplifyc Operating System...") # Print starting message
 
@@ -35,8 +34,8 @@ class Window(QMainWindow):
 	"""Main Window"""
 	def __init__(self, parent = None) -> None:
 		super(Window, self).__init__(parent = parent)
-		self.setStyleSheet("background-color: " + color_properties["background-color"])
-		self.window_size = window_properties["size"] if window_properties["size"] != "full" else [screen.availableGeometry().width(), screen.availableGeometry().height()] # Get window size property
+		self.setStyleSheet("background-color: " + returnBackgroundProperties()["background-color"])
+		self.window_size = returnProperties()["size"] if returnProperties()["size"] != "full" else [screen.availableGeometry().width(), screen.availableGeometry().height()] # Get window size property
 		self.resize(self.window_size[0], self.window_size[1]) # Resize window
 		self.setMinimumSize(256, 144) # Set minimum size
 		self.windows = None
@@ -46,10 +45,10 @@ class Window(QMainWindow):
 		self.setMinimumSize(1280, 720)
 		self.top_menu_bar = QToolBar("Top menu bar") # Create the top menu bar
 		self.top_menu_bar.setMovable(False) # Make the top menu bar fixed
-		self.top_menu_bar.setStyleSheet(f"background-color: {color_properties['secondary-background-color']}; border: 4px solid {color_properties['secondary-background-color']}; color: {color_properties['text-color']}") # Set stylesheet properties for the top menu bar
+		self.top_menu_bar.setStyleSheet(f"background-color: {returnBackgroundProperties()['secondary-background-color']}; border: 4px solid {returnBackgroundProperties()['secondary-background-color']}; color: {returnBackgroundProperties()['text-color']}") # Set stylesheet properties for the top menu bar
 		# Add actions
 		self.clock = QAction(self)
-		self.clock.setFont(QFont(font_properties["font-family"], int(font_properties["font-size"])))
+		self.clock.setFont(QFont(returnProperties()["font-family"], int(returnProperties()["font-size"])))
 		self.clock_content = QTimer(self)
 		self.clock_content.timeout.connect(self.updateTime)
 		self.clock_content.start(1000)
@@ -70,9 +69,9 @@ class Window(QMainWindow):
 		# Trigger signals
 		for x in range(1, len(self.dock_items)):
 			exec(f"self.dock_items[{x}][0].triggered.connect(lambda _, self = self: self.openApplication('{applications[self.dock_items[x][1]]['run_class']}'))")
-			self.dock_items[x][0].setFont(QFont(font_properties["font-family"], int(font_properties["font-size"])))
+			self.dock_items[x][0].setFont(QFont(returnProperties()["font-family"], int(returnProperties()["font-size"])))
 		for x in self.dock_items: self.dock.addAction(x[0]) # Add applications to the dock
-		self.dock.setStyleSheet(f"background-color: {color_properties['secondary-background-color']}; border: none; font-size: {font_properties['font-size']}") # Make the dock's background color white
+		self.dock.setStyleSheet(f"background-color: {returnBackgroundProperties()['secondary-background-color']}; border: none; font-size: {returnProperties()['font-size']}") # Make the dock's background color white
 		self.files = []
 		row = 0
 		column = 25
@@ -81,7 +80,7 @@ class Window(QMainWindow):
 				row += 1
 				column = 25
 			self.files.append([QToolButton(self), returnItems()[x]])
-			self.files[-1][0].setStyleSheet(f"color: {returnProperties()['text-color']}; border: none")
+			self.files[-1][0].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none")
 			self.files[-1][0].setText(returnItems()[x]["displayname"])
 			self.files[-1][0].setIcon(getFileIcon(returnItems()[x]["extension"], returnItems()[x]["type"]))
 			self.files[-1][0].setIconSize(QSize(75, 75))
@@ -115,16 +114,14 @@ class Window(QMainWindow):
 	def contextMenuEvent(self, _) -> None: """Set empty context menu"""
 	
 	def updateElements(self) -> None:
-		global color_properties, font_properties
-		color_properties, font_properties = ColorConfig.returnConfig(), FontConfig.returnConfig()
-		self.top_menu_bar.setStyleSheet(f"background-color: {color_properties['secondary-background-color']}; border: 4px solid {color_properties['secondary-background-color']}; color: {color_properties['text-color']}; font-family: {font_properties['font-family']}") # Update stylesheet properties for the top menu bar
-		self.setStyleSheet(f"background-color: {color_properties['background-color']}; color: {color_properties['text-color']}") # Update the window stylesheet
+		self.top_menu_bar.setStyleSheet(f"background-color: {returnBackgroundProperties()['secondary-background-color']}; border: 4px solid {returnBackgroundProperties()['secondary-background-color']}; color: {returnBackgroundProperties()['text-color']}; font-family: {returnProperties()['font-family']}") # Update stylesheet properties for the top menu bar
+		self.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color']}; color: {returnBackgroundProperties()['text-color']}") # Update the window stylesheet
 		for x in range(len(self.files)):
-			self.files[x][0].setStyleSheet(f"color: {returnProperties()['text-color']}; border: none")
+			self.files[x][0].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none")
 			self.files[x][0].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
-		for x in range(1, len(self.dock_items)): self.dock_items[x][0].setFont(QFont(font_properties["font-family"], int(font_properties["font-size"]))) # Update the dock items' font
-		self.dock.setStyleSheet(f"background-color: {color_properties['secondary-background-color']}; border: none; font-size: {font_properties['font-size']}") # Update the dock's stylesheet
-		self.clock.setFont(QFont(font_properties["font-family"], int(font_properties["font-size"]))) # Update the clock's font
+		for x in range(1, len(self.dock_items)): self.dock_items[x][0].setFont(QFont(returnProperties()["font-family"], int(returnProperties()["font-size"]))) # Update the dock items' font
+		self.dock.setStyleSheet(f"background-color: {returnBackgroundProperties()['secondary-background-color']}; border: none; font-size: {returnProperties()['font-size']}") # Update the dock's stylesheet
+		self.clock.setFont(QFont(returnProperties()["font-family"], int(returnProperties()["font-size"]))) # Update the clock's font
 		
 
 application = QApplication(sys.argv) # Construct application
