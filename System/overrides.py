@@ -72,8 +72,8 @@ class Slider(QWidget):
 	
 	def paintEvent(self, event):
 		super(Slider, self).paintEvent(event)
-		style = self.slider.style()
 		painter = QPainter(self)
+		style = self.slider.style()
 		style_slider = QStyleOptionSlider()
 		style_slider.initFrom(self.slider)
 		style_slider.orientation = self.slider.orientation()

@@ -21,7 +21,7 @@ class Preferences(QWidget):
 	def __init__(self, update_function) -> None:
 		super(Preferences, self).__init__()
 		self.setFixedSize(QSize(800, 350))
-		self.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color']}")
+		self.setStyleSheet(f"background-color: {returnBackgroundProperties()['secondary-background-color']}")
 		self.setWindowTitle("Preferences")
 		self.update_function = update_function
 		self.layout = QGridLayout()
@@ -41,7 +41,7 @@ class Preferences(QWidget):
 		# Specific widget properties
 		# # Font family properties
 		self.widgets["font-family"][0].addItems(returnProperties()["fonts"])
-		self.widgets["font-family"][0].setStyleSheet("QComboBox QAbstractItemView { selection-color: #AAAAAA; };")
+		self.widgets["font-family"][0].setStyleSheet(f"QComboBox QAbstractItemView {{ selection-color: {'#AAAAAA' if returnProperties()['theme'] == 'light' else '#555555'}; color: {returnBackgroundProperties()['text-color']}; }};")
 		self.widgets["font-family"][0].setCurrentIndex(returnProperties()["fonts"].index(self.font_family))
 		self.widgets["font-family"][0].currentIndexChanged.connect(self.changeFontFamily)
 		# # Reset font size properties
@@ -55,18 +55,34 @@ class Preferences(QWidget):
 		self.group_box_layout = QHBoxLayout()
 		for i in self.group_box_widgets: self.group_box_layout.addWidget(self.group_box_widgets[i][0])
 		self.widgets["theme-group-box"][0].setLayout(self.group_box_layout)
+		self.widgets["theme-group-box"][0].setFixedSize(540, 100)
 		# # Theme button properties
 		for i in ["theme-light", "theme-dark"]:
-			self.group_box_widgets[i][0].setIcon(QIcon("System/images/theme_icons/white.png" if i == "theme-light" else "System/images/theme_icons/black.png"))
+			if returnProperties()["theme"] != i[6:]: self.group_box_widgets[i][0].setIcon(QIcon("System/images/theme_icons/white.png" if i == "theme-light" else "System/images/theme_icons/black.png"))
+			else: self.group_box_widgets[i][0].setIcon(QIcon("System/images/theme_icons/white_selected.png" if i == "theme-light" else "System/images/theme_icons/black_selected.png"))
+			self.group_box_widgets[i][0].setText(i[6:].title())
+			self.group_box_widgets[i][0].setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+			self.group_box_widgets[i][0].setCursor(Qt.CursorShape.PointingHandCursor)
+			self.group_box_widgets[i][0].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none")
+			self.group_box_widgets[i][0].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
+			self.group_box_widgets[i][0].setIconSize(QSize(25, 25))
+			if i == "theme-light": self.group_box_widgets[i][0].pressed.connect(self.changeToLightTheme)
+			else: self.group_box_widgets[i][0].pressed.connect(self.changeToDarkTheme)
 		# Add to layout
 		for i in self.widgets.keys(): self.layout.addWidget(self.widgets[i][0], self.widgets[i][1][0], self.widgets[i][1][1])
 		self.setLayout(self.layout) # Set layout
 	
 	def _update(self):
+		self.setStyleSheet(f"background-color: {returnBackgroundProperties()['secondary-background-color']}")
 		for i in ["theme-label", "font-size-label", "font-family-label"]:
 			self.widgets[i][0].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; font-size: {returnProperties()['font-size']}")
 			self.widgets[i][0].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
+		for i in ["theme-light", "theme-dark"]:
+			self.group_box_widgets[i][0].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none")
+			self.group_box_widgets[i][0].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
 		self.widgets["font-family"][0].setStyleSheet("QComboBox QAbstractItemView {selection-color: #AAAAAA}")
+		if returnProperties()["theme"] == "light": self.widgets["font-family"][0].setStyleSheet("QComboBox QAbstractItemView { selection-color: #AAAAAA; color: #000000; };")
+		else: self.widgets["font-family"][0].setStyleSheet("QComboBox QAbstractItemView { selection-color: #555555; color: #FFFFFF; };")
 		self.update_function()
 		
 	def resetFontSize(self) -> None:
@@ -94,13 +110,18 @@ class Preferences(QWidget):
 			open("System/config/font.json", "w").write(str(data).replace("'", "\""))
 		self._update()
 		
-	def changeTheme(self, theme) -> None:
-		self.theme = QColorDialog.getColor().name()
-		print(theme)
-		with open("System/config/colors.json", "r+") as file:
+	def changeToLightTheme(self) -> None: self.changeTheme("light")
+	
+	def changeToDarkTheme(self) -> None: self.changeTheme("dark")
+	
+	def changeTheme(self, theme):
+		self.theme = theme
+		self.group_box_widgets["theme-" + theme][0].setIcon(QIcon("System/images/theme_icons/white_selected.png" if theme == "light" else "System/images/theme_icons/black_selected.png"))
+		self.group_box_widgets["theme-" + {"light": "dark", "dark": "light"}[theme]][0].setIcon(QIcon("System/images/theme_icons/white.png" if theme == "dark" else "System/images/theme_icons/black.png"))
+		with open("System/config/theme.json", "r+") as file:
 			data = load(file)
 			data["theme"] = self.theme
-			open("System/config/colors.json", "w").write(str(data).replace("'", "\""))
+			open("System/config/theme.json", "w").write(str(data).replace("'", "\""))
 		self._update()
 	
 class AboutDialog(QDialog):
