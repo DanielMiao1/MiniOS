@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Applications/SimplifycTextEdit/textedit.py
-Simplifyc Text Edit
-Text Editor made by Daniel M using Python 3 for the SimplifycOS project: https://github.com/DanielMiao1/SimplifycOS
+Applications/MiniTextEdit/textedit.py
+Mini Text Edit
+Text Editor made by Daniel M using Python 3 for the MiniOS project: https://github.com/DanielMiao1/MiniOS
 """
 
 # Imports

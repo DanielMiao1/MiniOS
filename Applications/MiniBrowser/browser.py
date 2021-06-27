@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Applications/SimplifycBrowser/browser.py
-Simplifyc Browser
-Web browser made by Daniel M using Python 3 for the SimplifycOS project: https://github.com/DanielMiao1/SimplifycOS
+Applications/MiniBrowser/browser.py
+Mini Browser
+Web browser made by Daniel M using Python 3 for the MiniOS project: https://github.com/DanielMiao1/MiniOS
 """
 
 # Imports
@@ -90,14 +90,14 @@ class TabWidget(QTabWidget):
 
 # Dialogs
 class AboutDialog(QDialog):
-	"""About Simplifyc Browser dialog"""
+	"""About Mini Browser dialog"""
 	def __init__(self, parent = None) -> None:
 		super(AboutDialog, self).__init__(parent = parent)
 		template = QGridLayout() # Set layout to grid
 		# Set fixed width and height
 		self.setFixedHeight(self.height() - 175)
 		self.setFixedWidth(self.width() + 100)
-		title = QLabel("Simplifyc Browser") # Add title
+		title = QLabel("Mini Browser") # Add title
 		title_font = title.font() # Add new font
 		title_font.setPointSize(50) # Set point size for font
 		title_font.setBold(True) # Make font bold
@@ -107,7 +107,7 @@ class AboutDialog(QDialog):
 		image_label.setPixmap(image) # Render image
 		# Add widgets to layout
 		template.addWidget(title, 1, 2)
-		template.addWidget(QLabel("The Simplifyc Browser is made using Python 3 and the\nPyQt Library by Daniel M"), 2, 2)
+		template.addWidget(QLabel("The Mini Browser is made using Python 3 and the\nPyQt Library by Daniel M"), 2, 2)
 		template.addWidget(image_label, 2, 1)
 		for i in range(template.count()): template.itemAt(i).setAlignment(Qt.AlignmentFlag.AlignHCenter) # Align all widgets to center
 		self.setStyleSheet("color: white; background-color: #18082C;") # Set background color of dialog to #18082C and color of text to white
@@ -127,8 +127,8 @@ class ConfigDialog(QDialog):
 		title_font.setPointSize(25) # Set point size for font
 		title.setFont(title_font) # Set font for title QLabel as title_font
 		# Add QLabel for history entries
-		entries = open("Applications/SimplifycBrowser/config/history.txt", "r").read().count("\n")
-		self.history_size = QLabel(f"History Size: {os.stat('Applications/SimplifycBrowser/config/history.txt').st_size} Bytes; {entries} Entries")
+		entries = open("Applications/MiniBrowser/config/history.txt", "r").read().count("\n")
+		self.history_size = QLabel(f"History Size: {os.stat('Applications/MiniBrowser/config/history.txt').st_size} Bytes; {entries} Entries")
 		# Add PushButton with text 'History' and call function openHistory in the current class when clicked
 		self.history = PushButton()
 		self.history.setText("History")
@@ -162,11 +162,11 @@ class History(QDialog):
 		title_font.setPointSize(25)
 		title.setFont(title_font) # Set the 'title' QLabel's font to 'title_font'
 		# Add QLabel for history entries
-		entries = open("Applications/SimplifycBrowser/config/history.txt", "r").read().count("\n")
-		self.history_info = QLabel(f"{os.stat('Applications/SimplifycBrowser/config/history.txt').st_size} Bytes with {entries} Entries")
-		# Add new ScrollArea containing the text of Applications/SimplifycBrowser/config/history.txt
+		entries = open("Applications/MiniBrowser/config/history.txt", "r").read().count("\n")
+		self.history_info = QLabel(f"{os.stat('Applications/MiniBrowser/config/history.txt').st_size} Bytes with {entries} Entries")
+		# Add new ScrollArea containing the text of Applications/MiniBrowser/config/history.txt
 		self.history = ScrollArea()
-		self.history.setText(str(open("Applications/SimplifycBrowser/config/history.txt", "r").read()))
+		self.history.setText(str(open("Applications/MiniBrowser/config/history.txt", "r").read()))
 		# Add new PushButton with text 'Clear History' and open the function clearHistory in the current class when clicked
 		clear_history = PushButton()
 		clear_history.setText("Clear History")
@@ -180,8 +180,8 @@ class History(QDialog):
 		self.setLayout(self.template) # Display the widgets
 
 	def clearHistory(self) -> None:
-		"""Clears the history by clearing the Applications/SimplifycBrowser/config/history.txt file and closes the window"""
-		open("Applications/SimplifycBrowser/config/history.txt", "w+").write("")
+		"""Clears the history by clearing the Applications/MiniBrowser/config/history.txt file and closes the window"""
+		open("Applications/MiniBrowser/config/history.txt", "w+").write("")
 		self.close()
 
 class Browser(QMainWindow):
@@ -232,17 +232,17 @@ class Browser(QMainWindow):
 	def back(self) -> None:
 		"""Go back, and record the new url in the history file"""
 		self.tabs.currentWidget().back()
-		open("Applications/SimplifycBrowser/config/history.txt", "a+").write(f"{self.url_bar.text()}\n")
+		open("Applications/MiniBrowser/config/history.txt", "a+").write(f"{self.url_bar.text()}\n")
 
 	def forward(self) -> None:
 		"""Go forward, and record the new url in the history file"""
 		self.tabs.currentWidget().forward()
-		open("Applications/SimplifycBrowser/config/history.txt", "a+").write(f"{self.url_bar.text()}\n")
+		open("Applications/MiniBrowser/config/history.txt", "a+").write(f"{self.url_bar.text()}\n")
 
 	def reload(self) -> None:
 		"""Reload, and record the new url in the history file"""
 		self.tabs.currentWidget().reload()
-		open("Applications/SimplifycBrowser/config/history.txt", "a+").write(f"{self.url_bar.text()}\n")
+		open("Applications/MiniBrowser/config/history.txt", "a+").write(f"{self.url_bar.text()}\n")
 		
 	def newTab(self, url = QUrl("https://home.danielmiao1.repl.co/"), label = "New Tab") -> None:
 		"""Create a new tab"""
@@ -268,7 +268,7 @@ class Browser(QMainWindow):
 	def toHome(self) -> None:
 		"""Go to 'https://home.danielmiao1.repl.co/'"""
 		self.tabs.currentWidget().setUrl(QUrl("https://home.danielmiao1.repl.co/"))
-		open("Applications/SimplifycBrowser/config/history.txt", "a+").write("browser://home\n")
+		open("Applications/MiniBrowser/config/history.txt", "a+").write("browser://home\n")
 
 	def toURL(self) -> None:
 		"""Go to the url given in the URL box or search google"""
@@ -283,7 +283,7 @@ class Browser(QMainWindow):
 		"""Update URL box text to the relative URL when URL changed"""
 		if engine != self.tabs.currentWidget(): return
 		if not url.toString == "":
-			open("Applications/SimplifycBrowser/config/history.txt", "a+").write(f"{url.toString()}\n")
+			open("Applications/MiniBrowser/config/history.txt", "a+").write(f"{url.toString()}\n")
 			self.url_bar.setText(url.toString())
 			self.url_bar.setCursorPosition(0)
 			

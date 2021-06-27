@@ -132,7 +132,7 @@ class AboutDialog(QDialog):
 		# Set fixed width and height
 		self.setFixedHeight(self.height() - 175)
 		self.setFixedWidth(self.width() + 100)
-		title = QLabel("SimplifycOS") # Add title
+		title = QLabel("MiniOS") # Add title
 		title_font = title.font() # Add new font
 		title_font.setPointSize(50) # Set point size for font
 		title_font.setBold(True) # Make font bold

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Applications/SimplifycTerminal/terminal.py
-Simplifyc Terminal
-Terminal Emulator made by Daniel M using Python 3 for the SimplifycOS project: https://github.com/DanielMiao1/SimplifycOS
+Applications/MiniTerminal/terminal.py
+Mini Terminal
+Terminal Emulator made by Daniel M using Python 3 for the MiniOS project: https://github.com/DanielMiao1/MiniOS
 """
 
 # Imports
@@ -51,7 +51,7 @@ class Terminal(QWidget):
 	def evalCommand(self) -> None:
 		"""Evaluate the command in the command input box and write to the output box"""
 		if self.input_box.text() == "": return # Exit function if the input box is empty
-		open("Applications/SimplifycTerminal/history.txt", "a+").write(f"{self.input_box.text()}\n") # Write current command to the history file
+		open("Applications/MiniTerminal/history.txt", "a+").write(f"{self.input_box.text()}\n") # Write current command to the history file
 		arguments = self.getListFromCommand(self.removeSpaces(self.input_box.text()))[1:] if len(self.getListFromCommand(self.removeSpaces(self.input_box.text()))) > 1 else [] # Get command
 		operation_command = self.getListFromCommand(self.removeSpaces(self.input_box.text()))[0] if self.getListFromCommand(self.removeSpaces(self.input_box.text()))[0] in self.commands else None # Get the operation command
 		if operation_command is None: # If operation command is None
@@ -97,16 +97,16 @@ class Terminal(QWidget):
 				if arguments[0].startswith("-") and len(arguments[0]) > 1: # If the first argument starts with a hyphen and there are more than one arguments
 					option = list(arguments[0][1:]) # Assign variable option to the first argument excluding the first hyphen as a list
 					if "c" in option: # If 'option' contains a 'c'
-						open("Applications/SimplifycTerminal/history.txt", "w+").write("") # Clear the Applications/SimplifycTerminal/history.txt file
+						open("Applications/MiniTerminal/history.txt", "w+").write("") # Clear the Applications/MiniTerminal/history.txt file
 						self.output_box.setText("\n") # Clear the output
 						self.input_box.setText("") # Clear the input box
 						return # Exit function
-					else: self.output_box.setText(open("Applications/SimplifycTerminal/history.txt", "r").read()) # Otherwise, output the contents of Applications/SimplifycTerminal/history.txt
+					else: self.output_box.setText(open("Applications/MiniTerminal/history.txt", "r").read()) # Otherwise, output the contents of Applications/MiniTerminal/history.txt
 				elif arguments[0].isnumeric(): # If the first argument is a non-negative whole number
-					if open("Applications/SimplifycTerminal/history.txt", "r").read().count("\n") < (int(arguments[0]) - 1): self.output_box.setText(open("Applications/SimplifycTerminal/history.txt", "r").read()) # If the history entries in Applications/SimplifycTerminal/history.txt is less than the amount entered, output the entire history
-					else: self.output_box.setText("\n".join(str(i) for i in str(open("Applications/SimplifycTerminal/history.txt", "r").read()).splitlines()[::-1][:int(arguments[0])])) # Otherwise, output the first given amount of history entries
-				else: self.output_box.setText(open("Applications/SimplifycTerminal/history.txt", "r").read()) # Otherwise, output the contents of Applications/SimplifycTerminal/history.txt
-			else: self.output_box.setText(open("Applications/SimplifycTerminal/history.txt", "r").read()) # Otherwise, output the contents of Applications/SimplifycTerminal/history.txt
+					if open("Applications/MiniTerminal/history.txt", "r").read().count("\n") < (int(arguments[0]) - 1): self.output_box.setText(open("Applications/MiniTerminal/history.txt", "r").read()) # If the history entries in Applications/MiniTerminal/history.txt is less than the amount entered, output the entire history
+					else: self.output_box.setText("\n".join(str(i) for i in str(open("Applications/MiniTerminal/history.txt", "r").read()).splitlines()[::-1][:int(arguments[0])])) # Otherwise, output the first given amount of history entries
+				else: self.output_box.setText(open("Applications/MiniTerminal/history.txt", "r").read()) # Otherwise, output the contents of Applications/MiniTerminal/history.txt
+			else: self.output_box.setText(open("Applications/MiniTerminal/history.txt", "r").read()) # Otherwise, output the contents of Applications/MiniMiniTerminal/history.txt
 		self.input_box.setText("") # Clear the input box
 
 	@staticmethod # Make the removeSpaces function static
