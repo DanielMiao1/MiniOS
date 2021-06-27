@@ -1,7 +1,7 @@
 # MiniOS
 #### A graphical OS in application form made by Daniel M using Python 3 and the PyQt library.
 ## Run
-To run the program, run the main.py file using the `python3 main.py` bash command
+`cd` into the downloaded MiniOS-master directory, and run the main.py file using the `python3 main.py` bash command.
 ## Requirements
 ### Python 3
 This program requires Python 3.5 or later to run. To download python, visit https://www.python.org/downloads/.
