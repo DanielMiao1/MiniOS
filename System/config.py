@@ -6,6 +6,7 @@ Made by Daniel M using Python 3
 """
 
 import json.decoder
+import os
 from json import dump, load
 
 class Config:
@@ -19,14 +20,14 @@ class Config:
 		with open(file_name, "r+") as file:
 			data = load(file)
 			for i in values.keys(): data[i] = values[i]
-			print(data)
 			file.seek(0)
 			dump(data, file, indent = 2)
 
 class ThemeConfig:
 	"""
 	Theme Configuration
-	DO NOT MODIFY THIS FILE DIRECTLY. TO MODIFY THEME COLORS, EDIT System/default_config/themes.json
+	DO NOT MODIFY THIS FILE DIRECTLY. TO MODIFY THEME COLORS, EDIT System/config/themes/dark.json or System/config/themes/light.json
+	TO CREATE A NEW THEM, ADD A JSON FILE AT System/config/themes.
 	"""
 	@staticmethod
 	def formatJSON() -> None:
@@ -42,7 +43,7 @@ class ThemeConfig:
 	@staticmethod
 	def returnConfig() -> bool or dict:
 		ThemeConfig.formatDefault()
-		if not __import__("os").path.exists("System/config/theme.json"): open("System/config/theme.json", "w").write(f"{{\"theme\": \"{ThemeConfig.returnDefault()['default']}\"}}\n")
+		if not os.path.exists("System/config/theme.json"): open("System/config/theme.json", "w").write(f"{{\"theme\": \"{ThemeConfig.returnDefault()['default']}\"}}\n")
 		return load(open("System/config/theme.json"))
 	
 	@staticmethod
@@ -52,7 +53,7 @@ class ThemeConfig:
 	
 	@staticmethod
 	def formatDefault() -> None:
-		if not __import__("os").path.exists("System/default_config/themes.json"): open("System/config/themes.json", "w").write("{\n  \"default\": \"light\",\n  \"light\": {\n    \"color\": \"#000000\",\n    \"background-color\": \"#FFFFFF\",\n    \"secondary-background-color\": \"#EFEFEF\"\n  },\n  \"dark\": {\n    \"color\": \"#FFFFFF\",\n    \"background-color\": \"#000000\",\n    \"secondary-background-color\": \"#010101\"\n  }\n}\n")
+		if not os.path.exists("System/default_config/themes.json"): open("System/config/themes.json", "w").write("{\n  \"default\": \"light\"\n}\n")
 
 class FontConfig:
 	"""
@@ -75,7 +76,7 @@ class FontConfig:
 	@staticmethod
 	def returnConfig() -> bool or dict:
 		FontConfig.formatDefault()
-		if not __import__("os").path.exists("System/config/font.json"): open("System/config/font.json", "w").write(f"{{\n  \"fonts\": [\n    \"Arial\",\n    \"Gill Sans\",\n    \"Times\",\n    \"Courier\",\n    \"Symbol\",\n    \"Calibri\",\n    \"Cambria\",\n    \"Candara\",\n    \"Comic Sans MS\",\n    \"Consolas\",\n    \"Constantia\",\n    \"Corbel\",\n    \"Courier New\",\n    \"Gabriola\",\n    \"Georgia\",\n    \"Helvetica\",\n    \"Impact\",\n    \"MS Gothic\",\n    \"Rockwell\",\n    \"SimSun\",\n    \"SimSun-ExtB\",\n    \"Tahoma\",\n    \"Times New Roman\",\n    \"Trebuchet MS\",\n    \"Verdana\",\n    \"Webdings\",\n    \"Wingdings\"\n  ],\n  \"font-family\": \"{FontConfig.returnDefault()['default-font']}\",\n  \"font-size\": \"{FontConfig.returnDefault()['default-size']}\"\n}}")
+		if not os.path.exists("System/config/font.json"): open("System/config/font.json", "w").write(f"{{\n  \"fonts\": [\n    \"Arial\",\n    \"Gill Sans\",\n    \"Times\",\n    \"Courier\",\n    \"Symbol\",\n    \"Calibri\",\n    \"Cambria\",\n    \"Candara\",\n    \"Comic Sans MS\",\n    \"Consolas\",\n    \"Constantia\",\n    \"Corbel\",\n    \"Courier New\",\n    \"Gabriola\",\n    \"Georgia\",\n    \"Helvetica\",\n    \"Impact\",\n    \"MS Gothic\",\n    \"Rockwell\",\n    \"SimSun\",\n    \"SimSun-ExtB\",\n    \"Tahoma\",\n    \"Times New Roman\",\n    \"Trebuchet MS\",\n    \"Verdana\",\n    \"Webdings\",\n    \"Wingdings\"\n  ],\n  \"font-family\": \"{FontConfig.returnDefault()['default-font']}\",\n  \"font-size\": \"{FontConfig.returnDefault()['default-size']}\"\n}}")
 		return load(open("System/config/font.json"))
 	
 	@staticmethod
@@ -85,7 +86,7 @@ class FontConfig:
 	
 	@staticmethod
 	def formatDefault() -> None:
-		if not __import__("os").path.exists("System/default_config/font.json"): open("System/config/font.json", "w").write("{\n  \"default-font\": \"Helvetica\",\n  \"default-size\": 12\n}\n")
+		if not os.path.exists("System/default_config/font.json"): open("System/config/font.json", "w").write("{\n  \"default-font\": \"Helvetica\",\n  \"default-size\": 12\n}\n")
 	
 class WindowConfig:
 	"""
@@ -106,7 +107,7 @@ class WindowConfig:
 	@staticmethod
 	def returnConfig() -> dict:
 		WindowConfig.formatDefault()
-		if not __import__("os").path.exists("System/config/window.json"): open("System/config/window.json", "w").write(f"{{\n  \"size\": \"{WindowConfig.returnDefault()['default-size']}\"\n}}")
+		if not os.path.exists("System/config/window.json"): open("System/config/window.json", "w").write(f"{{\n  \"size\": \"{WindowConfig.returnDefault()['default-size']}\"\n}}")
 		return load(open("System/config/window.json"))
 	
 	@staticmethod
@@ -116,10 +117,15 @@ class WindowConfig:
 	
 	@staticmethod
 	def formatDefault() -> None:
-		if not __import__("os").path.exists("System/default_config/window.json"): open("System/config/window.json", "w").write("{\n  \"default-size\": [1440, 720]\n}")
+		if not os.path.exists("System/default_config/window.json"): open("System/config/window.json", "w").write("{\n  \"default-size\": [1440, 720]\n}")
+
+class Themes:
+	@staticmethod
+	def getThemes() -> dict:
+		themes = {}
+		for i in os.listdir("System/config/themes"): themes[i[:-5]] = load(open(f"System/config/themes/{i}"))
+		return themes
 
 def returnProperties() -> dict: return {**ThemeConfig.returnConfig(), **FontConfig.returnConfig(), **WindowConfig.returnConfig()}
 
-def getDefaults() -> dict: return {**ThemeConfig.returnDefault(), **FontConfig.returnDefault(), **WindowConfig.returnDefault()}
-
-def returnBackgroundProperties() -> dict: return {"background-color": getDefaults()[ThemeConfig.returnConfig()["theme"]]["background-color"], "secondary-background-color": getDefaults()[ThemeConfig.returnConfig()["theme"]]["secondary-background-color"], "text-color": getDefaults()[ThemeConfig.returnConfig()["theme"]]["color"]}
+def returnBackgroundProperties() -> dict: return Themes.getThemes()[ThemeConfig.returnConfig()["theme"]]

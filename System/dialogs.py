@@ -8,13 +8,14 @@ Made by Daniel M using Python 3
 from json import load
 
 # Local file imports
-from config import returnProperties, returnBackgroundProperties
+from config import returnProperties, returnBackgroundProperties, Themes
 from overrides import PushButton, Slider
 
 # PyQt imports
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
+from PyQt5.QtNetwork import *
 
 class Preferences(QWidget):
 	"""System Preferences Application"""
@@ -26,7 +27,7 @@ class Preferences(QWidget):
 		self.update_function = update_function
 		self.layout = QGridLayout()
 		self.theme, self.font_size, self.font_family = returnProperties()["theme"], returnProperties()["font-size"], returnProperties()["font-family"]
-		self.widgets, self.group_box_widgets = {
+		self.widgets, self.group_box_widgets, self.theme_icons = {
 			"theme-label": [QLabel("Theme"), [3, 1]],
 			"theme-group-box": [QGroupBox(self), [3, 2]],
 			"font-size-label": [QLabel("Font Size"), [5, 1]],
@@ -34,10 +35,9 @@ class Preferences(QWidget):
 			"reset-font-size": [PushButton("Reset"), [5, 3]],
 			"font-family-label": [QLabel("Font Family"), [6, 1]],
 			"font-family": [QComboBox(self), [6, 2]]
-		}, {
-			"theme-light": [QToolButton(self), [3, 2]],
-			"theme-dark": [QToolButton(self), [3, 3]]
-		}
+		}, {}, {}
+		# Append to self.group_box_widgets
+		for x, y in zip(Themes.getThemes(), range(1, len(Themes.getThemes().keys()) + 1)): self.group_box_widgets[x] = [QToolButton(self), [1, y]]
 		# Specific widget properties
 		# # Font family properties
 		self.widgets["font-family"][0].addItems(returnProperties()["fonts"])
@@ -57,27 +57,34 @@ class Preferences(QWidget):
 		self.widgets["theme-group-box"][0].setLayout(self.group_box_layout)
 		self.widgets["theme-group-box"][0].setFixedSize(540, 100)
 		# # Theme button properties
-		for i in ["theme-light", "theme-dark"]:
-			if returnProperties()["theme"] != i[6:]: self.group_box_widgets[i][0].setIcon(QIcon("System/images/theme_icons/white.png" if i == "theme-light" else "System/images/theme_icons/black.png"))
-			else: self.group_box_widgets[i][0].setIcon(QIcon("System/images/theme_icons/white_selected.png" if i == "theme-light" else "System/images/theme_icons/black_selected.png"))
-			self.group_box_widgets[i][0].setText(i[6:].title())
+		for i in self.group_box_widgets.keys():
+			# self.group_box_widgets[i][0].setIcon(QIcon("System/images/theme_icons/white.png" if i == "theme-light" else "System/images/theme_icons/black.png"))
+			self.theme_icons[i] = QNetworkAccessManager(self)
+			exec(f"self.theme_icons[i].finished.connect(lambda reply, self = self: self.setIcon(reply, '{i}'))", globals(), locals())
+			self.theme_icons[i].get(QNetworkRequest(QUrl(f"https://htmlcolors.com/color-image/{str(Themes.getThemes()[i]['background-color'])[1:].lower()}.png")))
+			self.group_box_widgets[i][0].setIcon(QIcon(f"https://htmlcolors.com/color-image/{Themes.getThemes()[i]['background-color']}.png"))
+			self.group_box_widgets[i][0].setText(i.title())
 			self.group_box_widgets[i][0].setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
 			self.group_box_widgets[i][0].setCursor(Qt.CursorShape.PointingHandCursor)
 			self.group_box_widgets[i][0].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none")
 			self.group_box_widgets[i][0].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
 			self.group_box_widgets[i][0].setIconSize(QSize(25, 25))
-			if i == "theme-light": self.group_box_widgets[i][0].pressed.connect(self.changeToLightTheme)
-			else: self.group_box_widgets[i][0].pressed.connect(self.changeToDarkTheme)
+			exec(f"self.group_box_widgets[i][0].pressed.connect(lambda self = self: self.changeTheme('{i}'))", globals(), locals())
 		# Add to layout
 		for i in self.widgets.keys(): self.layout.addWidget(self.widgets[i][0], self.widgets[i][1][0], self.widgets[i][1][1])
 		self.setLayout(self.layout) # Set layout
 	
+	def setIcon(self, reply, icon):
+		image = QImage()
+		image.loadFromData(reply.readAll())
+		self.group_box_widgets[icon][0].setIcon(QIcon(QPixmap.fromImage(image)))
+		
 	def _update(self):
 		self.setStyleSheet(f"background-color: {returnBackgroundProperties()['secondary-background-color']}")
 		for i in ["theme-label", "font-size-label", "font-family-label"]:
 			self.widgets[i][0].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; font-size: {returnProperties()['font-size']}")
 			self.widgets[i][0].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
-		for i in ["theme-light", "theme-dark"]:
+		for i in self.group_box_widgets.keys():
 			self.group_box_widgets[i][0].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none")
 			self.group_box_widgets[i][0].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
 		self.widgets["font-family"][0].setStyleSheet("QComboBox QAbstractItemView {selection-color: #AAAAAA}")
@@ -110,14 +117,8 @@ class Preferences(QWidget):
 			open("System/config/font.json", "w").write(str(data).replace("'", "\""))
 		self._update()
 		
-	def changeToLightTheme(self) -> None: self.changeTheme("light")
-	
-	def changeToDarkTheme(self) -> None: self.changeTheme("dark")
-	
 	def changeTheme(self, theme):
 		self.theme = theme
-		self.group_box_widgets["theme-" + theme][0].setIcon(QIcon("System/images/theme_icons/white_selected.png" if theme == "light" else "System/images/theme_icons/black_selected.png"))
-		self.group_box_widgets["theme-" + {"light": "dark", "dark": "light"}[theme]][0].setIcon(QIcon("System/images/theme_icons/white.png" if theme == "dark" else "System/images/theme_icons/black.png"))
 		with open("System/config/theme.json", "r+") as file:
 			data = load(file)
 			data["theme"] = self.theme
