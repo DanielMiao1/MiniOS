@@ -1,5 +1,6 @@
 {
 	"text-color": "#000000",
   "background-color": "#FFFFFF",
-  "secondary-background-color": "#EFEFEF"
+  "background-color-2": "#EFEFEF",
+	"background-color-3": "#DFDFDF"
 }

@@ -1,5 +1,6 @@
 {
   "name": "Calculator",
   "run": "calculator.py",
-  "run_class": "Calculator"
+  "run_class": "Calculator",
+	"background-color": "default"
 }

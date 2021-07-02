@@ -15,15 +15,17 @@ import datetime
 # Local File Imports
 from config import *
 from dialogs import *
+from widgets import *
 # from overrides import *
 from desktop_files import returnItems
 from get_file_icon import getFileIcon
-from applications import returnApplications
+from applications import *
 
 # PyQt imports
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
+from PyQt5.QtWebEngineWidgets import *
 
 # Define global variables
 applications, config = returnApplications(), Config()
@@ -34,26 +36,24 @@ class Window(QMainWindow):
 	"""Main Window"""
 	def __init__(self, parent = None) -> None:
 		super(Window, self).__init__(parent = parent)
+		self.setWindowFlag(Qt.FramelessWindowHint)
 		self.setStyleSheet("background-color: " + returnBackgroundProperties()["background-color"])
-		self.window_size = returnProperties()["size"] if returnProperties()["size"] != "full" else [screen.availableGeometry().width(), screen.availableGeometry().height()] # Get window size property
-		self.resize(self.window_size[0], self.window_size[1]) # Resize window
-		self.setMinimumSize(256, 144) # Set minimum size
-		self.windows = None
+		self.window_size = screen.availableGeometry().width(), screen.availableGeometry().height() # Get window size property
+		self.windows = []
 		self.about = self.menuBar().addMenu("About")
 		self.about.triggered.connect(self.openAbout)
 		self.about.addAction(QAction("About", self))
 		self.setMinimumSize(1280, 720)
 		self.top_menu_bar = QToolBar("Top menu bar") # Create the top menu bar
 		self.top_menu_bar.setMovable(False) # Make the top menu bar fixed
-		self.top_menu_bar.setStyleSheet(f"background-color: {returnBackgroundProperties()['secondary-background-color']}; border: 4px solid {returnBackgroundProperties()['secondary-background-color']}; color: {returnBackgroundProperties()['text-color']}") # Set stylesheet properties for the top menu bar
-		# Add actions
-		self.clock = QAction(self)
-		self.clock.setFont(QFont(returnProperties()["font-family"], int(returnProperties()["font-size"])))
-		self.clock_content = QTimer(self)
-		self.clock_content.timeout.connect(self.updateTime)
-		self.clock_content.start(1000)
+		self.top_menu_bar.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; border: 4px solid {returnBackgroundProperties()['background-color-2']}; color: {returnBackgroundProperties()['text-color']}") # Set stylesheet properties for the top menu bar
+		# Define actions
+		# # Clock
+		self.clock = QWebEngineView()
+		self.clock.setUrl(QUrl(f"https://home.danielmiao1.repl.co/clock.html?background_color={returnBackgroundProperties()['background-color-2'][1:]}&text_color={returnBackgroundProperties()['text-color'][1:]}&font_size={returnProperties()['font-size']}px&font_family={returnProperties()['font-family']}"))
 		# Add actions to the Tool Bar
-		self.top_menu_bar.addAction(self.clock)
+		self.top_menu_bar.addWidget(self.clock)
+		self.top_menu_bar.setFixedHeight(40)
 		self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.top_menu_bar) # Add Tool Bar to the Window
 		# Applications dock
 		self.dock = QToolBar("Dock") # Create a dock
@@ -71,14 +71,13 @@ class Window(QMainWindow):
 			exec(f"self.dock_items[{x}][0].triggered.connect(lambda _, self = self: self.openApplication('{applications[self.dock_items[x][1]]['run_class']}'))")
 			self.dock_items[x][0].setFont(QFont(returnProperties()["font-family"], int(returnProperties()["font-size"])))
 		for x in self.dock_items: self.dock.addAction(x[0]) # Add applications to the dock
-		self.dock.setStyleSheet(f"background-color: {returnBackgroundProperties()['secondary-background-color']}; border: none; font-size: {returnProperties()['font-size']}") # Make the dock's background color white
+		self.dock.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; border: none; font-size: {returnProperties()['font-size']}") # Make the dock's background color white
 		self.files = []
-		row = 0
-		column = 25
+		row, column = 0, 40
 		for x in returnItems().keys():
-			if column + 100 > self.window_size[1]:
+			if column + 137.5 > self.window_size[1]:
 				row += 1
-				column = 25
+				column = 40
 			self.files.append([QToolButton(self), returnItems()[x]])
 			self.files[-1][0].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none")
 			self.files[-1][0].setText(returnItems()[x]["displayname"])
@@ -88,42 +87,46 @@ class Window(QMainWindow):
 			self.files[-1][0].setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
 			self.files[-1][0].move(row * 70, column)
 			column += 100
+		self.showFullScreen()
 		self.show() # Show the main window
 
 	def openApplication(self, app: str) -> None:
 		"""Opens the specified application"""
-		exec(f"self.window = {app}()")
-		self.window.show()
+		exec(f"self.windows.append(ApplicationWindow(self, QPoint(0, 0), {app}(), background_color = '{returnApplicationProperties()[app]['background-color'] if returnApplicationProperties()[app]['background-color'] != 'default' else returnBackgroundProperties()['background-color']}', window_name = '{app}'))")
+		self.setCentralWidget(self.windows[-1])
 
-	def openPreferences(self):
+	def openPreferences(self) -> None:
 		"""Opens the Preferences window"""
-		self.preferences = Preferences(self.updateElements)
-		self.preferences.show()
-
+		self.windows.append(ApplicationWindow(self, QPoint(0, 0), Preferences(self.updateElements), background_color = returnBackgroundProperties()["background-color-2"], window_name = "Preferences"))
+		self.setCentralWidget(self.windows[-1])
+	
 	@staticmethod
 	def openAbout() -> None:
 		"""Opens the about dialog"""
 		dialog = AboutDialog()
 		dialog.exec_()
 
-	def updateTime(self) -> None:
-		"""Updates the clock"""
-		current_time = f"{('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun')[datetime.datetime.today().weekday()]} {dict([['01', 'Jan'], ['02', 'Feb'], ['03', 'Mar'], ['04', 'Apr'], ['05', 'May'], ['06', 'Jun'], ['07', 'Jul'], ['08', 'Aug'], ['09', 'Sep'], ['10', 'Oct'], ['11', 'Nov'], ['12', 'Dec']])[QDateTime.currentDateTime().toString('MM')]} {QDateTime.currentDateTime().toString('dd hh:mm:ss')}"
-		self.clock.setText(current_time)
-	
 	def contextMenuEvent(self, _) -> None: """Set empty context menu"""
 	
 	def updateElements(self) -> None:
-		self.top_menu_bar.setStyleSheet(f"background-color: {returnBackgroundProperties()['secondary-background-color']}; border: 4px solid {returnBackgroundProperties()['secondary-background-color']}; color: {returnBackgroundProperties()['text-color']}; font-family: {returnProperties()['font-family']}") # Update stylesheet properties for the top menu bar
+		self.top_menu_bar.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; border: 4px solid {returnBackgroundProperties()['background-color-2']}; color: {returnBackgroundProperties()['text-color']}; font-family: {returnProperties()['font-family']}") # Update stylesheet properties for the top menu bar
 		self.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color']}; color: {returnBackgroundProperties()['text-color']}") # Update the window stylesheet
 		for x in range(len(self.files)):
 			self.files[x][0].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none")
 			self.files[x][0].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
 		for x in range(1, len(self.dock_items)): self.dock_items[x][0].setFont(QFont(returnProperties()["font-family"], int(returnProperties()["font-size"]))) # Update the dock items' font
-		self.dock.setStyleSheet(f"background-color: {returnBackgroundProperties()['secondary-background-color']}; border: none; font-size: {returnProperties()['font-size']}") # Update the dock's stylesheet
-		self.clock.setFont(QFont(returnProperties()["font-family"], int(returnProperties()["font-size"]))) # Update the clock's font
+		self.dock.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; border: none; font-size: {returnProperties()['font-size']}") # Update the dock's stylesheet
 		
-
+	def resizeEvent(self, event: QResizeEvent) -> None:
+		row, column = 0, 40
+		for x in range(len(self.files)):
+			if column + 137.5 > event.size().height():
+				row += 1
+				column = 40
+			self.files[x][0].move(row * 70, column)
+			column += 100
+			
+			
 application = QApplication(sys.argv) # Construct application
 
 screen = application.primaryScreen()

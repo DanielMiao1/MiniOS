@@ -8,6 +8,7 @@ Made by Daniel M using Python 3
 from json import load
 
 # Local file imports
+# from main import Window
 from config import returnProperties, returnBackgroundProperties, Themes
 from overrides import PushButton, Slider
 
@@ -21,9 +22,8 @@ class Preferences(QWidget):
 	"""System Preferences Application"""
 	def __init__(self, update_function) -> None:
 		super(Preferences, self).__init__()
-		self.setFixedSize(QSize(800, 350))
-		self.setStyleSheet(f"background-color: {returnBackgroundProperties()['secondary-background-color']}")
-		self.setWindowTitle("Preferences")
+		# self.setFixedSize(QSize(800, 350))
+		self.setCursor(Qt.ArrowCursor)
 		self.update_function = update_function
 		self.layout = QGridLayout()
 		self.theme, self.font_size, self.font_family = returnProperties()["theme"], returnProperties()["font-size"], returnProperties()["font-family"]
@@ -62,7 +62,6 @@ class Preferences(QWidget):
 			self.theme_icons[i] = QNetworkAccessManager(self)
 			exec(f"self.theme_icons[i].finished.connect(lambda reply, self = self: self.setIcon(reply, '{i}'))", globals(), locals())
 			self.theme_icons[i].get(QNetworkRequest(QUrl(f"https://htmlcolors.com/color-image/{str(Themes.getThemes()[i]['background-color'])[1:].lower()}.png")))
-			self.group_box_widgets[i][0].setIcon(QIcon(f"https://htmlcolors.com/color-image/{Themes.getThemes()[i]['background-color']}.png"))
 			self.group_box_widgets[i][0].setText(i.title())
 			self.group_box_widgets[i][0].setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
 			self.group_box_widgets[i][0].setCursor(Qt.CursorShape.PointingHandCursor)
@@ -80,7 +79,7 @@ class Preferences(QWidget):
 		self.group_box_widgets[icon][0].setIcon(QIcon(QPixmap.fromImage(image)))
 		
 	def _update(self):
-		self.setStyleSheet(f"background-color: {returnBackgroundProperties()['secondary-background-color']}")
+		self.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}")
 		for i in ["theme-label", "font-size-label", "font-family-label"]:
 			self.widgets[i][0].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; font-size: {returnProperties()['font-size']}")
 			self.widgets[i][0].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))

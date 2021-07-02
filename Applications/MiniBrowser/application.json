@@ -1,5 +1,6 @@
 {
   "name": "Browser",
   "run": "browser.py",
-  "run_class": "Browser"
+  "run_class": "Browser",
+	"background-color": "default"
 }

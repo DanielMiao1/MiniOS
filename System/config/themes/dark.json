@@ -1,5 +1,6 @@
 {
   "text-color": "#FFFFFF",
   "background-color": "#000000",
-  "secondary-background-color": "#202020"
+  "background-color-2": "#202020",
+	"background-color-3": "#404040"
 }

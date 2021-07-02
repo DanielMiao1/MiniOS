@@ -1,5 +1,6 @@
 {
   "name": "Terminal",
   "run": "terminal.py",
-  "run_class": "Terminal"
+  "run_class": "Terminal",
+	"background-color": "default"
 }

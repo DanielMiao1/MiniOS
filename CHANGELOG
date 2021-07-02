@@ -1,0 +1,22 @@
+CHANGELOG
+For large commits
+
+
+
+Commit: Jul 1 2021
+	FILES
+		Created CHANGELOG
+		Created System/widgets.py
+	APPLICATIONS
+		Added custom windows
+		application.json: added background-color property to specify the window background color
+		Created new returnApplicationProperties function in System/applications.py
+			Returns dictionaries of application properties with direct application names (specified in Applications/*APPLICATION_NAME*/application.json) as keys
+	MAIN WINDOW
+		Added functionality so files re-organize when resized
+		Made window full screen
+		Changed clock to a HTML page (https://home.danielmiao1.repl.co/clock.html)
+	THEME PREFERENCES
+		Changed 'secondary-background-color' to 'background-color-2'
+		Added new theme property 'background-color-3'
+			Used for window toolbar background color

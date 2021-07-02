@@ -1,5 +1,6 @@
 {
   "name": "TextEdit",
   "run": "textedit.py",
-  "run_class": "TextEdit"
+  "run_class": "TextEdit",
+	"background-color": "default"
 }
