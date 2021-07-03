@@ -10,6 +10,10 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtWebEngineWidgets import *
 
+class ToolButton(QToolButton):
+	def __init__(self, parent):
+		super(ToolButton, self).__init__(parent)
+
 class PushButton(QPushButton):
 	"""Add QPushButton Animation"""
 	def __init__(self, text = "", color = "black") -> None:

@@ -90,8 +90,7 @@ class ApplicationWindow(QWidget):
 	
 	def restartWindow(self):
 		self.closeWindow()
-		if self.restart_window_function is None: return
-		else: self.restart_window_function()
+		if self.restart_window_function is not None: self.restart_window_function(self.pos())
 	
 	def setChildWidget(self, child_widget):
 		if child_widget:

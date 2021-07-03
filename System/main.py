@@ -62,7 +62,7 @@ class Window(QMainWindow):
 		self.dock.setIconSize(QSize(32, 32)) # Configure the dock icon size
 		self.addToolBar(Qt.ToolBarArea.BottomToolBarArea, self.dock) # Display the toolbar at the bottom of the screen
 		self.dock_items = [[QAction(QIcon("System/images/preferences.png"), "Preferences", self)]] # Create dock_items list
-		self.dock_items[0][0].triggered.connect(self.openPreferences)
+		self.dock_items[0][0].triggered.connect(lambda: self.openPreferences())
 		for x in applications.keys():
 			if path.exists(f"Applications/{x}/images/logo_small.png"): self.dock_items.append([QAction(QIcon(f"Applications/{x}/images/logo_small.png"), applications[x]["name"], self), x]) # Add values to dock_items list
 			else: self.dock_items.append([QAction(applications[x]["name"], self), x]) # Add values to dock_items list
@@ -72,27 +72,34 @@ class Window(QMainWindow):
 			self.dock_items[x][0].setFont(QFont(returnProperties()["font-family"], int(returnProperties()["font-size"])))
 		for x in self.dock_items: self.dock.addAction(x[0]) # Add applications to the dock
 		self.dock.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; border: none; font-size: {returnProperties()['font-size']}") # Make the dock's background color white
-		self.files, self.edit_file = [], [None, None]
+		self.files, self.edit_file, self.focused_file = [], [None, None], None
 		row, column = 0, 40
 		for x in returnItems().keys():
 			if column + 137.5 > self.window_size[1]:
 				row += 1
 				column = 40
-			self.files.append(QToolButton(self))
-			self.files[-1].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none")
+			self.files.append(ToolButton(self))
+			self.files[-1].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none;")
 			self.files[-1].setText(returnItems()[x]["displayname"])
 			self.files[-1].setIcon(getFileIcon(returnItems()[x]["extension"], returnItems()[x]["type"]))
 			self.files[-1].setIconSize(QSize(75, 75))
 			self.files[-1].resize(68, 100)
 			self.files[-1].setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
 			self.files[-1].move(row * 70, column)
+			exec(f"self.files[-1].pressed.connect(lambda self = self: self.setFocusedFile(self.files[{len(self.files) - 1}]))")
 			column += 100
 		self.showFullScreen()
 		self.show() # Show the main window
 
+	def setFocusedFile(self, file = None):
+		if file is None: return
+		if self.focused_file is not None: self.focused_file.setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none;")
+		file.setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none; background-color: {returnBackgroundProperties()['background-color-2']};")
+		self.focused_file = file
+
 	def openApplication(self, app: str) -> None: exec(f"self.windows.append(ApplicationWindow(self, QPoint(0, 0), {app}(), background_color = '{returnApplicationProperties()[app]['background-color'] if returnApplicationProperties()[app]['background-color'] != 'default' else returnBackgroundProperties()['background-color']}', window_name = '{app}', toolbar_background_color = '{returnBackgroundProperties()['background-color-3']}', window_size = {returnApplicationProperties()[app]['window-size']}))")
 
-	def openPreferences(self) -> None: self.windows.append(ApplicationWindow(self, QPoint(0, 0), Preferences(self.updateElements), background_color = returnBackgroundProperties()["background-color-2"], window_name = "Preferences", toolbar_background_color = returnBackgroundProperties()['background-color-3'], custom_stylesheet = "background-color: " + returnBackgroundProperties()["background-color-2"], restart_window_function = self.openPreferences))
+	def openPreferences(self, position = QPoint(0, 0)) -> None: self.windows.append(ApplicationWindow(self, position, Preferences(self.updateElements), background_color = returnBackgroundProperties()["background-color-2"], window_name = "Preferences", toolbar_background_color = returnBackgroundProperties()['background-color-3'], custom_stylesheet = "background-color: " + returnBackgroundProperties()["background-color-2"], restart_window_function = self.openPreferences))
 	
 	@staticmethod
 	def openAbout() -> None:
@@ -112,8 +119,8 @@ class Window(QMainWindow):
 					row += 1
 					column = 40
 				column += 100
-			self.edit_file = [QToolButton(self), FileEditLineEdit(self, cancel_function = self.newFileCancel)] # Make new QToolButton and QLineEdit
-			# QToolButton properties
+			self.edit_file = [ToolButton(self), FileEditLineEdit(self, cancel_function = self.newFileCancel)] # Make new ToolButton and QLineEdit
+			# ToolButton properties
 			self.edit_file[0].resize(68, 100) # Resize
 			self.edit_file[0].move(row * 70, (column - 8) if column - 8 != 32 else column) # Move
 			self.edit_file[0].setIcon(getFileIcon(None, None)) # Set default icon
@@ -126,7 +133,7 @@ class Window(QMainWindow):
 			self.edit_file[1].setStyleSheet(f"border: 1px solid {returnBackgroundProperties()['text-color']}; background-color: {returnBackgroundProperties()['background-color-2']}") # Set styles
 			self.edit_file[1].returnPressed.connect(lambda: self.newFileReturnPressed(row, column)) # Return key pressed signal
 			self.edit_file[1].setFocus() # Focus
-			# Show QToolButton and QLineEdit
+			# Show ToolButton and QLineEdit
 			self.edit_file[0].show()
 			self.edit_file[1].show()
 		elif action == new_directory:
@@ -137,8 +144,8 @@ class Window(QMainWindow):
 					row += 1
 					column = 40
 				column += 100
-			self.edit_file = [QToolButton(self), FileEditLineEdit(self, cancel_function = self.newFileCancel)] # Make new QToolButton and QLineEdit
-			# QToolButton properties
+			self.edit_file = [ToolButton(self), FileEditLineEdit(self, cancel_function = self.newFileCancel)] # Make new ToolButton and QLineEdit
+			# ToolButton properties
 			self.edit_file[0].resize(68, 100) # Resize
 			self.edit_file[0].move(row * 70, (column - 8) if column - 8 != 32 else column) # Move
 			self.edit_file[0].setIcon(getFileIcon(None, 'directory')) # Set default icon
@@ -151,7 +158,7 @@ class Window(QMainWindow):
 			self.edit_file[1].setStyleSheet(f"border: 1px solid {returnBackgroundProperties()['text-color']}; background-color: {returnBackgroundProperties()['background-color-2']}") # Set styles
 			self.edit_file[1].returnPressed.connect(lambda: self.newFileReturnPressed(row, column, _type = "directory")) # Return key pressed signal
 			self.edit_file[1].setFocus() # Focus
-			# Show QToolButton and QLineEdit
+			# Show ToolButton and QLineEdit
 			self.edit_file[0].show()
 			self.edit_file[1].show()
 	
@@ -162,13 +169,13 @@ class Window(QMainWindow):
 	def newFileReturnPressed(self, row, column, _type = "file") -> None:
 		file_name = f"{self.edit_file[1].text()}.minios{'dir' if _type == 'directory' else ''}"
 		system(f"{'touch' if _type == 'file' else 'mkdir'} Home/Desktop/{file_name}") # Make file
-		# Remove QToolButton and QLineEdit
+		# Remove ToolButton and QLineEdit
 		self.edit_file[0].deleteLater()
 		self.edit_file[1].deleteLater()
 		# Clear self.edit_file list
 		self.edit_file = [None, None]
 		# Make new file
-		self.files.append(QToolButton(self))
+		self.files.append(ToolButton(self))
 		self.files[-1].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none")
 		self.files[-1].setText(file_name[:-(7 if _type == "file" else 10)])
 		self.files[-1].setIcon(getFileIcon(None if len(file_name.split(".")) == 2 else file_name.split(".")[-2], _type))
@@ -187,6 +194,8 @@ class Window(QMainWindow):
 			self.files[x].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
 		for x in range(1, len(self.dock_items)): self.dock_items[x][0].setFont(QFont(returnProperties()["font-family"], int(returnProperties()["font-size"]))) # Update the dock items' font
 		self.dock.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; border: none; font-size: {returnProperties()['font-size']}") # Update the dock's stylesheet
+		self.clock.setUrl(QUrl(
+			f"https://home.danielmiao1.repl.co/clock.html?background_color={returnBackgroundProperties()['background-color-2'][1:]}&text_color={returnBackgroundProperties()['text-color'][1:]}&font_size={returnProperties()['font-size']}px&font_family={returnProperties()['font-family']}"))
 		
 	def resizeEvent(self, event: QResizeEvent) -> None:
 		row, column = 0, 40
