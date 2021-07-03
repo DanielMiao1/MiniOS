@@ -112,10 +112,10 @@ class Window(QMainWindow):
 					row += 1
 					column = 40
 				column += 100
-			self.edit_file = [QToolButton(self), FileEditLineEdit(self)] # Make new QToolButton and QLineEdit
+			self.edit_file = [QToolButton(self), FileEditLineEdit(self, cancel_function = self.newFileCancel)] # Make new QToolButton and QLineEdit
 			# QToolButton properties
 			self.edit_file[0].resize(68, 100) # Resize
-			self.edit_file[0].move(row * 70, column - 8) # Move
+			self.edit_file[0].move(row * 70, (column - 8) if column - 8 != 32 else column) # Move
 			self.edit_file[0].setIcon(getFileIcon(None, None)) # Set default icon
 			self.edit_file[0].setIconSize(QSize(75, 75)) # Set icon size
 			self.edit_file[0].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none") # Set styles
@@ -129,12 +129,40 @@ class Window(QMainWindow):
 			# Show QToolButton and QLineEdit
 			self.edit_file[0].show()
 			self.edit_file[1].show()
+		elif action == new_directory:
+			# Get row and column count
+			row, column = 0, 40  # Set default values
+			for _ in range(len(self.files)):
+				if column + 137.5 > self.window_size[1]:
+					row += 1
+					column = 40
+				column += 100
+			self.edit_file = [QToolButton(self), FileEditLineEdit(self, cancel_function = self.newFileCancel)] # Make new QToolButton and QLineEdit
+			# QToolButton properties
+			self.edit_file[0].resize(68, 100) # Resize
+			self.edit_file[0].move(row * 70, (column - 8) if column - 8 != 32 else column) # Move
+			self.edit_file[0].setIcon(getFileIcon(None, 'directory')) # Set default icon
+			self.edit_file[0].setIconSize(QSize(75, 75)) # Set icon size
+			self.edit_file[0].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none") # Set styles
+			# QLineEdit properties
+			self.edit_file[1].resize(68, 20) # Resize
+			self.edit_file[1].move(row * 70, column + 98) # Move
+			self.edit_file[1].setAttribute(Qt.WidgetAttribute.WA_MacShowFocusRect, False) # Set attribute
+			self.edit_file[1].setStyleSheet(f"border: 1px solid {returnBackgroundProperties()['text-color']}; background-color: {returnBackgroundProperties()['background-color-2']}") # Set styles
+			self.edit_file[1].returnPressed.connect(lambda: self.newFileReturnPressed(row, column, _type = "directory")) # Return key pressed signal
+			self.edit_file[1].setFocus() # Focus
+			# Show QToolButton and QLineEdit
+			self.edit_file[0].show()
+			self.edit_file[1].show()
 	
-	def newFileReturnPressed(self, row, column, signal = 1) -> None:
-		if signal != 1: return
-		file_name = f"{self.edit_file[1].text()}.minios"
-		system(f"touch Home/Desktop/{file_name}") # Make file
-		# # Remove QToolButton and QLineEdit
+	def newFileCancel(self) -> None:
+		self.edit_file[0].deleteLater()
+		self.edit_file[1].deleteLater()
+	
+	def newFileReturnPressed(self, row, column, _type = "file") -> None:
+		file_name = f"{self.edit_file[1].text()}.minios{'dir' if _type == 'directory' else ''}"
+		system(f"{'touch' if _type == 'file' else 'mkdir'} Home/Desktop/{file_name}") # Make file
+		# Remove QToolButton and QLineEdit
 		self.edit_file[0].deleteLater()
 		self.edit_file[1].deleteLater()
 		# Clear self.edit_file list
@@ -142,8 +170,8 @@ class Window(QMainWindow):
 		# Make new file
 		self.files.append(QToolButton(self))
 		self.files[-1].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none")
-		self.files[-1].setText(file_name[:-7])
-		self.files[-1].setIcon(getFileIcon(None if len(file_name.split(".")) == 2 else file_name.split(".")[-2], "file"))
+		self.files[-1].setText(file_name[:-(7 if _type == "file" else 10)])
+		self.files[-1].setIcon(getFileIcon(None if len(file_name.split(".")) == 2 else file_name.split(".")[-2], _type))
 		self.files[-1].setIconSize(QSize(75, 75))
 		self.files[-1].resize(68, 100)
 		self.files[-1].setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)

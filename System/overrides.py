@@ -103,5 +103,10 @@ class WebEngineView(QWebEngineView):
 		super(WebEngineView, self).contextMenuEvent()
 
 class FileEditLineEdit(QLineEdit):
-	def __init__(self, parent) -> None:
+	def __init__(self, parent, cancel_function = None) -> None:
 		super(FileEditLineEdit, self).__init__(parent)
+		self.cancel_function = cancel_function
+	
+	def keyPressEvent(self, event):
+		if event.key() == Qt.Key_Escape and self.cancel_function is not None: self.cancel_function()
+		super(FileEditLineEdit, self).keyPressEvent(event)
