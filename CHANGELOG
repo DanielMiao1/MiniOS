@@ -2,8 +2,10 @@ CHANGELOG
 For large commits
 
 
-
-Commit: Jul 1 2021
+Commit: a187081
+a187081df42866d6b873b6d0cd8cd2c6521fc638
+https://github.com/DanielMiao1/MiniOS/commit/a187081df42866d6b873b6d0cd8cd2c6521fc638
+Jul 1 2021
 	FILES
 		Created CHANGELOG
 		Created System/widgets.py

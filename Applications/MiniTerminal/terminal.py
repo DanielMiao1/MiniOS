@@ -38,7 +38,7 @@ class Terminal(QWidget):
 		self.input_box.resize(400, 25) # Resize the command input box
 		self.input_box.setPlaceholderText("Enter command...") # Set placeholder text
 		self.input_box.returnPressed.connect(self.evalCommand)
-		self.input_box.setAttribute(Qt.WidgetAttribute.WA_MacShowFocusRect, 0)
+		self.input_box.setAttribute(Qt.WidgetAttribute.WA_MacShowFocusRect, False)
 		self.output_box = QTextEdit(self) # Create the output box
 		self.output_box.setReadOnly(True) # Make the output box read only
 		self.output_box.setFont(QFont("Consolas", 15)) # Set font and font size of output box

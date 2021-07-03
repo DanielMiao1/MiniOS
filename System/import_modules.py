@@ -20,7 +20,7 @@ def checkModules() -> None:
 			print("You can manually install the PyQt5 Library by running the 'pip3 install PyQt5' command in the terminal")
 			exit()
 			
-	# Check if PyQt5.QtWebEngineWidgets is installed for the browser application; and if the module is not installed using pip, ask the user to install it
+	# Check if PyQt5.QtWebEngineWidgets is installed for the browser application, but if the module is not installed, ask the user to install it
 	try: import PyQt5.QtWebEngineWidgets
 	except ImportError:
 		rerun = True

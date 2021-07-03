@@ -6,6 +6,7 @@ Made by Daniel M using Python 3
 
 # Library imports
 from json import load
+from os import system
 
 # Local file imports
 # from main import Window
@@ -22,7 +23,6 @@ class Preferences(QWidget):
 	"""System Preferences Application"""
 	def __init__(self, update_function) -> None:
 		super(Preferences, self).__init__()
-		# self.setFixedSize(QSize(800, 350))
 		self.setCursor(Qt.ArrowCursor)
 		self.update_function = update_function
 		self.layout = QGridLayout()
@@ -58,7 +58,6 @@ class Preferences(QWidget):
 		self.widgets["theme-group-box"][0].setFixedSize(540, 100)
 		# # Theme button properties
 		for i in self.group_box_widgets.keys():
-			# self.group_box_widgets[i][0].setIcon(QIcon("System/images/theme_icons/white.png" if i == "theme-light" else "System/images/theme_icons/black.png"))
 			self.theme_icons[i] = QNetworkAccessManager(self)
 			exec(f"self.theme_icons[i].finished.connect(lambda reply, self = self: self.setIcon(reply, '{i}'))", globals(), locals())
 			self.theme_icons[i].get(QNetworkRequest(QUrl(f"https://htmlcolors.com/color-image/{str(Themes.getThemes()[i]['background-color'])[1:].lower()}.png")))
@@ -123,6 +122,7 @@ class Preferences(QWidget):
 			data["theme"] = self.theme
 			open("System/config/theme.json", "w").write(str(data).replace("'", "\""))
 		self._update()
+		self.parent().restartWindow()
 	
 class AboutDialog(QDialog):
 	"""About Dialog"""

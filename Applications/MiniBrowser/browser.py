@@ -220,6 +220,7 @@ class Browser(QMainWindow):
 		self.bookmarks_actions[3].triggered.connect(lambda: self.newTab(url = QUrl("https://docs.google.com"), label = "Google Docs"))
 		for i in range(4): self.bookmarks.addAction(self.bookmarks_actions[i])
 		self.navigation.setMovable(False) # Pin the 'navigation' tool bar
+		self.url_bar.setFixedWidth(self.width())
 		self.url_bar.returnPressed.connect(self.toURL) # Call function toURL when 'enter' key is pressed in the 'url_bar'
 		self.navigation.addWidget(self.url_bar) # Add 'url_bar' to the 'navigation' tool bar
 		self.config.triggered.connect(self.openConfig) # Call function openConfig when 'config' QAction is pressed
@@ -307,3 +308,7 @@ class Browser(QMainWindow):
 		"""Open Config dialog"""
 		dialog = ConfigDialog()
 		dialog.exec_()
+	
+	def resizeEvent(self, event: QResizeEvent) -> None:
+		# print(event)
+		pass

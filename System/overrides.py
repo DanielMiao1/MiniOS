@@ -8,6 +8,7 @@ Made by Daniel M using Python 3
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
+from PyQt5.QtWebEngineWidgets import *
 
 class PushButton(QPushButton):
 	"""Add QPushButton Animation"""
@@ -39,12 +40,12 @@ class PushButton(QPushButton):
 		self._animation.start()
 		super().leaveEvent(event)
 	
-	def updateColor(self, color = "black"):
+	def updateColor(self, color = "black") -> None:
 		"""Update the color"""
 		self.color = color
 	
 class Slider(QWidget):
-	def __init__(self, minimum, maximum, value, update_function, interval = 1, labels = None):
+	def __init__(self, minimum, maximum, value, update_function, interval = 1, labels = None) -> None:
 		super(Slider, self).__init__()
 		levels = range(minimum, maximum + interval, interval)
 		self.update_function = update_function
@@ -70,7 +71,7 @@ class Slider(QWidget):
 	
 	def setValue(self, value) -> None: self.slider.setValue(value)
 	
-	def paintEvent(self, event):
+	def paintEvent(self, event) -> None:
 		super(Slider, self).paintEvent(event)
 		painter = QPainter(self)
 		style = self.slider.style()
@@ -91,4 +92,16 @@ class Slider(QWidget):
 				self.right_margin = rect.width() // 2
 				self.layout.setContentsMargins(self.left_margin, self.top_margin, self.right_margin, self.bottom_margin)
 			painter.drawText(QPoint(position - rect.width() // 2 + self.left_margin, bottom), y)
-		return
+
+class WebEngineView(QWebEngineView):
+	def __init__(self, hide_context_menu = False) -> None:
+		super(WebEngineView, self).__init__()
+		self.hide_context_menu = hide_context_menu
+	
+	def contextMenuEvent(self, _) -> None:
+		if self.hide_context_menu: return
+		super(WebEngineView, self).contextMenuEvent()
+
+class FileEditLineEdit(QLineEdit):
+	def __init__(self, parent) -> None:
+		super(FileEditLineEdit, self).__init__(parent)

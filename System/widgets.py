@@ -66,9 +66,14 @@ class ApplicationWindow(QWidget):
 	out_focus_signal = pyqtSignal(bool)
 	new_geometry_signal = pyqtSignal(QRect)
 	
-	def __init__(self, parent, point, child_widget, background_color = "default", window_name = "Window", toolbar_background_color = returnBackgroundProperties()['background-color-3']):
-		super().__init__(parent = parent)
-		self.background_color, self.focus, self.is_editing, self.old_position, self.new_position, self.layout = background_color, True, True, None, None, QVBoxLayout(self)
+	def __init__(self, parent, point, child_widget, background_color = "default", window_name = "Window", toolbar_background_color = returnBackgroundProperties()['background-color-3'], custom_stylesheet = "", window_size = QSize(800, 350), restart_window_function = None, allow_resize = True):
+		super(ApplicationWindow, self).__init__(parent = parent)
+		if isinstance(window_size, list):
+			if len(window_size) == 2: window_size = QSize(window_size[0], window_size[1])
+		self.resize(window_size)
+		self.setStyleSheet(custom_stylesheet)
+		self.background_color, self.focus, self.is_editing, self.old_position, self.new_position, self.layout, self.shadow, self.restart_window_function, self.toolbar_background_color, self.allow_resize = background_color, True, True, None, None, QVBoxLayout(self), QGraphicsDropShadowEffect(), restart_window_function, toolbar_background_color, allow_resize
+		self.setGraphicsEffect(self.shadow)
 		self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)
 		self.setVisible(True)
 		self.setAutoFillBackground(False)
@@ -76,10 +81,17 @@ class ApplicationWindow(QWidget):
 		self.setFocusPolicy(Qt.ClickFocus)
 		self.setFocus()
 		self.move(point)
-		self.tool_bar = ApplicationWindowToolBar(toolbar_background_color, mouse_move_event = self.toolBarMouseMoveEvent, window_name = window_name, close_application_window_function = lambda: self.setParent(None))
+		self.tool_bar = ApplicationWindowToolBar(self.toolbar_background_color, mouse_move_event = self.toolBarMouseMoveEvent, window_name = window_name, close_application_window_function = self.closeWindow)
 		self.layout.addWidget(self.tool_bar)
 		self.setChildWidget(child_widget)
 		self.installEventFilter(parent)
+	
+	def closeWindow(self): self.setParent(None)
+	
+	def restartWindow(self):
+		self.closeWindow()
+		if self.restart_window_function is None: return
+		else: self.restart_window_function()
 	
 	def setChildWidget(self, child_widget):
 		if child_widget:
@@ -104,11 +116,10 @@ class ApplicationWindow(QWidget):
 	def paintEvent(self, event):
 		painter = QPainter(self)
 		painter.fillRect(event.rect(), QColor(self.background_color if self.background_color.lower() != "default" else returnBackgroundProperties()["background-color"]))
-		if self.focus:
-			rect = event.rect()
-			rect.adjust(0, 0, -1, -1)
-			painter.setPen(QColor(self.background_color if self.background_color.lower() != "default" else returnBackgroundProperties()["background-color"]))
-			painter.drawRect(rect)
+		rect = event.rect()
+		rect.adjust(0, 0, -1, -1)
+		painter.setPen(QColor(self.toolbar_background_color))
+		painter.drawRect(rect)
 	
 	def mousePressEvent(self, event):
 		self.position = QPoint(event.globalX() - self.geometry().x(), event.globalY() - self.geometry().y())
@@ -118,6 +129,7 @@ class ApplicationWindow(QWidget):
 		super(ApplicationWindow, self).mousePressEvent(event)
 	
 	def setCursorShape(self, position):
+		if not self.allow_resize: return
 		if ((position.y() > self.y() + self.height() - 3) and (position.x() < self.x() + 3)) or ((position.y() > self.y() + self.height() - 3) and (position.x() > self.x() + self.width() - 3)) or ((position.y() < self.y() + 3) and (position.x() < self.x() + 3)) or (position.y() < self.y() + 3) and (position.x() > self.x() + self.width() - 3):
 			if (position.y() > self.y() + self.height() - 3) and (position.x() < self.x() + 3):
 				self.mode = "resize-bottom-left"
@@ -153,7 +165,7 @@ class ApplicationWindow(QWidget):
 	
 	def mouseMoveEvent(self, event):
 		QWidget.mouseMoveEvent(self, event)
-		if not self.is_editing or not self.focus: return
+		if not self.is_editing or not self.focus or not self.allow_resize: return
 		if not event.buttons() and Qt.LeftButton:
 			p = QPoint(event.x() + self.geometry().x(), event.y() + self.geometry().y())
 			self.setCursorShape(p)
