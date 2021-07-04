@@ -203,8 +203,10 @@ class ApplicationWindow(QWidget):
 		
 	def toolBarMouseMoveEvent(self, event = None):
 		if event is None: return
-		self.new_position = event.globalPos() - self.position
-		if self.new_position.x() < 0 or self.new_position.y() < 0 or self.new_position.x() > self.parentWidget().width() - self.width(): return
-		self.move(self.new_position)
-		self.parentWidget().repaint()
-		self.new_geometry_signal.emit(self.geometry())
+		try: self.new_position = event.globalPos() - self.position
+		except TypeError: pass
+		else:
+			if self.new_position.x() < 0 or self.new_position.y() < 0 or self.new_position.x() > self.parentWidget().width() - self.width(): return
+			self.move(self.new_position)
+			self.parentWidget().repaint()
+			self.new_geometry_signal.emit(self.geometry())
