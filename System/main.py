@@ -176,17 +176,26 @@ class Window(QMainWindow):
 		# Clear self.edit_file list
 		self.edit_file = [None, None]
 		# Make new file
+		for x in self.files: x.deleteLater()
+		row, column = 0, 40
 		self.files.append(ToolButton(self))
-		self.files[-1].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none")
-		self.files[-1].setText(file_name[:-(7 if _type == "file" else 10)])
-		self.files[-1].setIcon(getFileIcon(None if len(file_name.split(".")) == 2 else file_name.split(".")[-2], _type))
-		self.files[-1].setIconSize(QSize(75, 75))
-		self.files[-1].resize(68, 100)
-		self.files[-1].setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
-		self.files[-1].move(row * 70, column)
-		self.files[-1].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
-		exec(f"self.files[-1].pressed.connect(lambda self = self: self.setFocusedFile(self.files[{len(self.files) - 1}]))")
-		self.files[-1].show()
+		for x in returnItems().keys():
+                        if column + 137.5 > self.window_size[1]:
+                                row += 1
+                                column = 40
+                        self.files.append(ToolButton(self))
+                        self.files[-1].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none;")
+                        self.files[-1].setText(returnItems()[x]["displayname"])
+                        self.files[-1].setIcon(getFileIcon(returnItems()[x]["extension"], returnItems()[x]["type"]))
+                        self.files[-1].setIconSize(QSize(75, 75))
+                        self.files[-1].resize(68, 100)
+                        self.files[-1].setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+                        self.files[-1].move(row * 70, column)
+                        self.files[-1].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
+                        exec(f"self.files[-1].pressed.connect(lambda self = self: self.setFocusedFile(self.files[{len(self.files) - 1}]))")
+                        self.files[-1].show()
+                        column += 100
+		self.focused_file = None
 	
 	def updateElements(self) -> None:
 		self.top_menu_bar.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; border: 4px solid {returnBackgroundProperties()['background-color-2']}; color: {returnBackgroundProperties()['text-color']}; font-family: {returnProperties()['font-family']}") # Update stylesheet properties for the top menu bar
@@ -207,6 +216,34 @@ class Window(QMainWindow):
 				column = 40
 			self.files[x].move(row * 70, column)
 			column += 100
+			
+	def keyPressEvent(self, event):
+                if event.key() in [Qt.Key_Delete, Qt.Key_Backspace] and QApplication.keyboardModifiers() == Qt.ControlModifier and self.focused_file is not None:
+                        self.focused_file.deleteLater()
+                        for x in returnItems().keys():
+                                if returnItems()[x]["displayname"] == self.focused_file.text():
+                                        system(f"mv Home/Desktop/{x} Home/Trash/")
+                                        self.focused_file = None
+                                        for x in self.files: x.deleteLater()
+                                        self.files, row, column = [], 0, 40
+                                        for x in returnItems().keys():
+                                                if column + 137.5 > self.window_size[1]:
+                                                        row += 1
+                                                        column = 40
+                                                self.files.append(ToolButton(self))
+                                                self.files[-1].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none;")
+                                                self.files[-1].setText(returnItems()[x]["displayname"])
+                                                self.files[-1].setIcon(getFileIcon(returnItems()[x]["extension"], returnItems()[x]["type"]))
+                                                self.files[-1].setIconSize(QSize(75, 75))
+                                                self.files[-1].resize(68, 100)
+                                                self.files[-1].setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+                                                self.files[-1].move(row * 70, column)
+                                                self.files[-1].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
+                                                exec(f"self.files[-1].pressed.connect(lambda self = self: self.setFocusedFile(self.files[{len(self.files) - 1}]))")
+                                                self.files[-1].show()
+                                                column += 100
+                                        break
+                
 			
 			
 application = QApplication(argv) # Construct application
