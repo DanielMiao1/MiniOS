@@ -25,7 +25,6 @@ from get_file_icon import getFileIcon
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
-from PyQt5.QtWebEngineWidgets import *
 
 # Define global variables
 applications, config = returnApplications(), Config()
@@ -86,6 +85,7 @@ class Window(QMainWindow):
 			self.files[-1].resize(68, 100)
 			self.files[-1].setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
 			self.files[-1].move(row * 70, column)
+			self.files[-1].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
 			exec(f"self.files[-1].pressed.connect(lambda self = self: self.setFocusedFile(self.files[{len(self.files) - 1}]))")
 			column += 100
 		self.showFullScreen()
@@ -152,6 +152,7 @@ class Window(QMainWindow):
 			self.edit_file[0].setIconSize(QSize(75, 75)) # Set icon size
 			self.edit_file[0].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none") # Set styles
 			# QLineEdit properties
+			self.edit_file[1].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
 			self.edit_file[1].resize(68, 20) # Resize
 			self.edit_file[1].move(row * 70, column + 98) # Move
 			self.edit_file[1].setAttribute(Qt.WidgetAttribute.WA_MacShowFocusRect, False) # Set attribute
@@ -183,6 +184,7 @@ class Window(QMainWindow):
 		self.files[-1].resize(68, 100)
 		self.files[-1].setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
 		self.files[-1].move(row * 70, column)
+		self.files[-1].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
 		self.files[-1].show()
 		# self.update()
 	
