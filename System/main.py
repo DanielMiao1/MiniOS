@@ -185,8 +185,8 @@ class Window(QMainWindow):
 		self.files[-1].setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
 		self.files[-1].move(row * 70, column)
 		self.files[-1].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
+		exec(f"self.files[-1].pressed.connect(lambda self = self: self.setFocusedFile(self.files[{len(self.files) - 1}]))")
 		self.files[-1].show()
-		# self.update()
 	
 	def updateElements(self) -> None:
 		self.top_menu_bar.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; border: 4px solid {returnBackgroundProperties()['background-color-2']}; color: {returnBackgroundProperties()['text-color']}; font-family: {returnProperties()['font-family']}") # Update stylesheet properties for the top menu bar
