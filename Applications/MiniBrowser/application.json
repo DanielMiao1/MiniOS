@@ -1,7 +1,7 @@
 {
-  "name": "Browser",
-  "run": "browser.py",
-  "run_class": "Browser",
+	"name": "Browser",
+	"run": "browser.py",
+	"run_class": "Browser",
 	"background-color": "default",
 	"window-size": [1500, 1000]
 }

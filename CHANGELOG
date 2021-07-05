@@ -22,3 +22,12 @@ Jul 1 2021
 		Changed 'secondary-background-color' to 'background-color-2'
 		Added new theme property 'background-color-3'
 			Used for window toolbar background color
+
+Jul 5 2021
+	CODE FORMAT
+		Fixed indentation in System/main.py
+		Fixed indentation in application.json files
+		Added comments and docstrings in System/main.py
+	BUG FIXES
+		Fixed bug in System/main.py where program crashes after creating two new files/directories
+		Fixed bug in System/main.py where program may crash after deleting a file/directory

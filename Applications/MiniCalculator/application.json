@@ -1,7 +1,7 @@
 {
-  "name": "Calculator",
-  "run": "calculator.py",
-  "run_class": "Calculator",
+	"name": "Calculator",
+	"run": "calculator.py",
+	"run_class": "Calculator",
 	"background-color": "default",
 	"window-size": [500, 500]
 }

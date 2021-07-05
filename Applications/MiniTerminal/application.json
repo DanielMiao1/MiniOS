@@ -1,7 +1,7 @@
 {
-  "name": "Terminal",
-  "run": "terminal.py",
-  "run_class": "Terminal",
+	"name": "Terminal",
+	"run": "terminal.py",
+	"run_class": "Terminal",
 	"background-color": "default",
 	"window-size": [500, 500]
 }

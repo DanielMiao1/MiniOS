@@ -1,7 +1,7 @@
 {
-  "name": "TextEdit",
-  "run": "textedit.py",
-  "run_class": "TextEdit",
+	"name": "TextEdit",
+	"run": "textedit.py",
+	"run_class": "TextEdit",
 	"background-color": "default",
 	"window-size": [500, 500]
 }
