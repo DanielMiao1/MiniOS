@@ -8,3 +8,5 @@ __import__("sys").path.insert(1, "System/")
 import config
 
 def returnProperties() -> dict: return {**config.ThemeConfig.returnConfig(), **config.FontConfig.returnConfig(), **config.WindowConfig.returnConfig()}
+
+def returnBackgroundProperties() -> dict: return config.Themes.getThemes()[config.ThemeConfig.returnConfig()["theme"]]

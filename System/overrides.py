@@ -112,5 +112,5 @@ class FileEditLineEdit(QLineEdit):
 		self.cancel_function = cancel_function
 	
 	def keyPressEvent(self, event):
-		if event.key() == Qt.Key_Escape and self.cancel_function is not None: self.cancel_function()
+		if event.key() == Qt.Key.Key_Escape and self.cancel_function is not None: self.cancel_function()
 		super(FileEditLineEdit, self).keyPressEvent(event)

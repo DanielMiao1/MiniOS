@@ -83,6 +83,7 @@ class ApplicationWindow(QWidget):
 		self.move(point)
 		self.tool_bar = ApplicationWindowToolBar(self.toolbar_background_color, mouse_move_event = self.toolBarMouseMoveEvent, window_name = window_name, close_application_window_function = self.closeWindow)
 		self.layout.addWidget(self.tool_bar)
+		self.child_widget = child_widget
 		self.setChildWidget(child_widget)
 		self.installEventFilter(parent)
 	
@@ -97,7 +98,7 @@ class ApplicationWindow(QWidget):
 			child_widget.setParent(self)
 			child_widget.releaseMouse()
 			self.layout.addWidget(child_widget)
-			self.layout.setContentsMargins(1.5, 1.5, 1.5, 1.5)
+			self.layout.setContentsMargins(1, 1, 1, 1)
 	
 	def focusInEvent(self, _):
 		self.focus = True
@@ -210,3 +211,24 @@ class ApplicationWindow(QWidget):
 			self.move(self.new_position)
 			self.parentWidget().repaint()
 			self.new_geometry_signal.emit(self.geometry())
+	
+	def resizeEvent(self, event: QResizeEvent) -> None:
+		"""
+		Try to call resize function (if available) from child widget
+		Supported child widget functions names:
+			def parentResizeEvent(event: QResizeEvent, *args): pass
+			def resizeEvent(event: QResizeEvent, *args): pass
+			def parent_resize_event(event: QResizeEvent, *args): pass
+			def parentWidgetResizeEvent(event: QResizeEvent, *args): pass
+			def parent_widget_resize_event(event: QResizeEvent, *args): pass
+		"""
+		try: self.child_widget.parentResizeEvent(event)
+		except AttributeError:
+			try: self.child_widget.resizeEvent(event)
+			except AttributeError:
+				try: self.child_widget.parent_resize_event(event)
+				except AttributeError:
+					try: self.child_widget.parentWidgetResizeEvent(event)
+					except AttributeError:
+						try: self.child_widget.parent_widget_resize_event(event)
+						except AttributeError: pass

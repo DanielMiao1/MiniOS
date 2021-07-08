@@ -23,6 +23,9 @@ Jul 1 2021
 		Added new theme property 'background-color-3'
 			Used for window toolbar background color
 
+Commit: 223e95b
+223e95b1f308189bdf6f3c01baf201f0575c749d
+https://github.com/DanielMiao1/MiniOS/commit/223e95b1f308189bdf6f3c01baf201f0575c749
 Jul 5 2021
 	CODE FORMAT
 		Fixed indentation in System/main.py

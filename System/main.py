@@ -37,7 +37,7 @@ class Window(QMainWindow):
 		"""Main window __init__"""
 		super(Window, self).__init__(parent = parent) # Call super class __init__ function
 		self.file_created_session = False # Set file_created_session variable to False
-		self.setWindowFlag(Qt.FramelessWindowHint) # Remove window frame
+		self.setWindowFlag(Qt.WindowType.FramelessWindowHint) # Remove window frame
 		self.setStyleSheet("background-color: " + returnBackgroundProperties()["background-color"]) # Set window style
 		self.window_size = application.primaryScreen().availableGeometry().width(), application.primaryScreen().availableGeometry().height() # Get window size property
 		self.windows = [] # Create windows list
@@ -45,17 +45,32 @@ class Window(QMainWindow):
 		self.about.triggered.connect(self.openAbout) # Connect about menu trigger signal
 		self.about.addAction(QAction("About", self)) # Add action "about" to about menu
 		self.setMinimumSize(1280, 720) # Set window minimum size
-		self.top_menu_bar = QToolBar("Top menu bar") # Create the top menu bar
-		self.top_menu_bar.setMovable(False) # Make the top menu bar fixed
-		self.top_menu_bar.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; border: 4px solid {returnBackgroundProperties()['background-color-2']}; color: {returnBackgroundProperties()['text-color']}") # Set stylesheet properties for the top menu bar
+		# Top tool bar
+		self.top_tool_bar = QToolBar("Top menu bar") # Create the top menu bar
+		self.top_tool_bar.setMovable(False) # Make the top menu bar fixed
+		self.top_tool_bar.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; border: 4px solid {returnBackgroundProperties()['background-color-2']}; color: {returnBackgroundProperties()['text-color']}") # Set stylesheet properties for the top menu bar
 		# Define actions
 		# # Clock
-		self.clock = WebEngineView(hide_context_menu = True) # Create new WebEngineView (class defined on line 100 of System/overrides.py)
+		self.clock = WebEngineView(hide_context_menu = True) # Create new WebEngineView
 		self.clock.setUrl(QUrl(f"https://home.danielmiao1.repl.co/clock.html?background_color={returnBackgroundProperties()['background-color-2'][1:]}&text_color={returnBackgroundProperties()['text-color'][1:]}&font_size={returnProperties()['font-size']}px&font_family={returnProperties()['font-family']}")) # Set URL for web engine view
+		# # Separator
+		self.top_tool_bar_separator = QWidget()
+		self.top_tool_bar_separator.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+		# # Options
+		self.shut_down = QAction("Shut Down", self)
+		self.shut_down.triggered.connect(lambda: self.close())
+		self.options_menu = QMenu()
+		self.options_menu.setStyleSheet(f"QMenu {{ background-color: {returnBackgroundProperties()['background-color-2']}; color: {returnBackgroundProperties()['text-color']}; border: none; }};")
+		self.options_menu.addAction(self.shut_down)
+		self.options = QPushButton("Options", self)
+		self.options.setStyleSheet("QPushButton::menu-indicator { image: none; };")
+		self.options.setMenu(self.options_menu)
 		# Add actions to the Tool Bar
-		self.top_menu_bar.addWidget(self.clock) # Add clock widget
-		self.top_menu_bar.setFixedHeight(40) # Set fixed height
-		self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.top_menu_bar) # Add Tool Bar to the Window
+		self.top_tool_bar.addWidget(self.clock) # Add clock widget
+		self.top_tool_bar.addWidget(self.top_tool_bar_separator) # Add separator
+		self.top_tool_bar.addWidget(self.options) # Add options menu button
+		self.top_tool_bar.setFixedHeight(40) # Set fixed height
+		self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.top_tool_bar) # Add Tool Bar to the Window
 		# Applications dock
 		self.dock = QToolBar("Dock") # Create a dock
 		self.dock.setMovable(False) # Make the dock fixed
@@ -92,28 +107,28 @@ class Window(QMainWindow):
 			column += 100 # Increase column count
 		self.showFullScreen() # Show window in full screen
 		self.show() # Show the main window
-
+	
 	def setFocusedFile(self, file: ToolButton or None = None):
 		"""Sets the focused file"""
 		if file is None: return # Exit function if file is None
 		if self.focused_file is not None: self.focused_file.setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none;") # If there is already a focused file, reset its stylesheet properties
 		file.setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none; background-color: {returnBackgroundProperties()['background-color-2']};") # Set the new focused file's stylesheet properties
 		self.focused_file = file # Set focused file variable to file
-
+		
 	def openApplication(self, app: str) -> None:
 		"""Opens the specified application"""
 		exec(f"self.windows.append(ApplicationWindow(self, QPoint(0, 0), {app}(), background_color = '{returnApplicationProperties()[app]['background-color'] if returnApplicationProperties()[app]['background-color'] != 'default' else returnBackgroundProperties()['background-color']}', window_name = '{app}', toolbar_background_color = '{returnBackgroundProperties()['background-color-3']}', window_size = {returnApplicationProperties()[app]['window-size']}))") # Create new window with child widget of application class
-
+		
 	def openPreferences(self, position: QPoint = QPoint(0, 0)) -> None:
 		"""Opens the preferences window"""
 		self.windows.append(ApplicationWindow(self, position, Preferences(self.updateElements), background_color = returnBackgroundProperties()["background-color-2"], window_name = "Preferences", toolbar_background_color = returnBackgroundProperties()['background-color-3'], custom_stylesheet = "background-color: " + returnBackgroundProperties()["background-color-2"], restart_window_function = self.openPreferences)) # Create new window with child of preferences class
-	
+		
 	@staticmethod
 	def openAbout() -> None:
 		"""Opens the about dialog"""
 		dialog = AboutDialog() # Call the AboutDialog class
 		dialog.exec_() # Show class
-
+		
 	def contextMenuEvent(self, event: QContextMenuEvent) -> None:
 		"""Set context menu for desktop"""
 		menu = QMenu(self) # Create menu
@@ -171,12 +186,12 @@ class Window(QMainWindow):
 			# Show ToolButton and QLineEdit
 			self.edit_file[0].show()
 			self.edit_file[1].show()
-	
+			
 	def newFileDelete(self) -> None:
 		"""Deletes new file tool button and line edit"""
 		self.edit_file[0].deleteLater() # Delete tool button
 		self.edit_file[1].deleteLater() # Delete line edit
-	
+		
 	def newFileReturnPressed(self, _type: str = "file") -> None:
 		"""Creates new file"""
 		file_name = f"{self.edit_file[1].text()}.minios{'dir' if _type == 'directory' else ''}" # Assign file_name variable (local) to the path of the new file
@@ -204,10 +219,10 @@ class Window(QMainWindow):
 			self.files[-1].show() # Show tool button
 			column += 100 # Increase column count
 		self.focused_file = None # Clear focused file
-	
+		
 	def updateElements(self) -> None:
 		"""Updates elements' properties"""
-		self.top_menu_bar.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; border: 4px solid {returnBackgroundProperties()['background-color-2']}; color: {returnBackgroundProperties()['text-color']}; font-family: {returnProperties()['font-family']}") # Update stylesheet properties for the top menu bar
+		self.top_tool_bar.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; border: 4px solid {returnBackgroundProperties()['background-color-2']}; color: {returnBackgroundProperties()['text-color']}; font-family: {returnProperties()['font-family']}") # Update stylesheet properties for the top menu bar
 		self.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color']}; color: {returnBackgroundProperties()['text-color']}") # Update the window stylesheet
 		# Update style of desktop files
 		for x in range(len(self.files)):
@@ -216,6 +231,7 @@ class Window(QMainWindow):
 		for x in range(1, len(self.dock_items)): self.dock_items[x][0].setFont(QFont(returnProperties()["font-family"], int(returnProperties()["font-size"]))) # Update font of applications
 		self.dock.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; border: none; font-size: {returnProperties()['font-size']}") # Update style of dock tool bar
 		self.clock.setUrl(QUrl(f"https://home.danielmiao1.repl.co/clock.html?background_color={returnBackgroundProperties()['background-color-2'][1:]}&text_color={returnBackgroundProperties()['text-color'][1:]}&font_size={returnProperties()['font-size']}px&font_family={returnProperties()['font-family']}")) # Update clock styles
+		self.options_menu.setStyleSheet(f"QMenu {{ background-color: {returnBackgroundProperties()['background-color-2']}; color: {returnBackgroundProperties()['text-color']}; border: none; }};")
 		
 	def resizeEvent(self, event: QResizeEvent) -> None:
 		"""Re-arranges desktop files on resize"""
@@ -227,10 +243,10 @@ class Window(QMainWindow):
 			self.files[x].move(row * 70, column) # Move file to row/column
 			column += 100
 		super(Window, self).resizeEvent(event) # Call resizeEvent function from super class
-			
+		
 	def keyPressEvent(self, event: QKeyEvent) -> None:
 		"""Processes key press events"""
-		if event.key() in [Qt.Key_Delete, Qt.Key_Backspace] and QApplication.keyboardModifiers() == Qt.ControlModifier and self.focused_file is not None: # If the Delete/Backspace key and the Control(Windows)/Command(Mac) modifier key is pressed at the same time, and there is a focused file
+		if event.key() in [Qt.Key.Key_Delete, Qt.Key.Key_Backspace] and QApplication.keyboardModifiers() == Qt.KeyboardModifier.ControlModifier and self.focused_file is not None: # If the Delete/Backspace key and the Control(Windows)/Command(Mac) modifier key is pressed at the same time, and there is a focused file
 			self.focused_file.deleteLater() # Delete the focused file
 			for x in returnItems().keys(): # Iterate through applications
 				if returnItems()[x]["displayname"] == self.focused_file.text(): # If the application is the focused file
