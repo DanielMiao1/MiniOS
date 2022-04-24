@@ -9,11 +9,12 @@ __import__("import_modules").checkModules()
 
 from os import path, system
 from sys import argv
+from sys import path as sys_path
 
 from config import *
 from dialogs import *
 from widgets import *
-from overrides import *
+from widgets.buttons import *
 from applications import *
 from desktop_files import returnItems
 from get_file_icon import getFileIcon
