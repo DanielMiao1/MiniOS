@@ -9,7 +9,8 @@ from json import load
 
 # from main import Window
 from config import returnProperties, returnBackgroundProperties, Themes
-from overrides import PushButton, Slider
+from widgets import Slider
+from widgets.buttons import PushButton
 
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
