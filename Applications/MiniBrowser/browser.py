@@ -5,7 +5,6 @@ Mini Browser
 Web browser made by Daniel M using Python 3 for the MiniOS project: https://github.com/DanielMiao1/MiniOS
 """
 
-# Imports
 import os
 
 from PyQt5.QtGui import *
@@ -13,12 +12,13 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtWebEngineWidgets import *
 
+
 # PyQt5 widget overrides
 class PushButton(QPushButton):
 	"""Add QPushButton Animation"""
 	def __init__(self) -> None:
 		super().__init__()
-		self._animation = QVariantAnimation(startValue = QColor("white"), endValue = QColor("#18082C"), valueChanged = self.valueChanged, duration = 200)
+		self._animation = QVariantAnimation(startValue=QColor("white"), endValue=QColor("#18082C"), valueChanged=self.valueChanged, duration=200)
 		self.updateStylesheet(QColor("#18082C"), QColor("white"))
 		self.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
@@ -42,13 +42,16 @@ class PushButton(QPushButton):
 		self._animation.start()
 		super().leaveEvent(event)
 
+
 class LineEdit(QLineEdit):
 	""""Add select all when pressed feature to QLineEdit"""
-	def __init__(self, parent = None) -> None: super(LineEdit, self).__init__(parent)
+	def __init__(self, parent=None) -> None:
+		super(LineEdit, self).__init__(parent)
 
 	def mousePressEvent(self, _) -> None:
 		"""Select all when pressed unless text is already selected"""
 		self.setCursorPosition(len(self.text())) if self.hasSelectedText() else self.selectAll()
+
 
 class ScrollArea(QScrollArea):
 	"""Set word wrap of QScrollArea to True"""
@@ -61,11 +64,12 @@ class ScrollArea(QScrollArea):
 		self.label = QLabel(text)
 		self.label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
 		self.label.setWordWrap(True)
-		template.addWidget(self.label, alignment = Qt.AlignmentFlag.AlignHCenter)
+		template.addWidget(self.label, alignment=Qt.AlignmentFlag.AlignHCenter)
 
 	def setText(self, text: str) -> None:
 		"""Set text of button"""
 		self.label.setText(text)
+
 
 class WebEnginePage(QWebEnginePage):
 	"""Load target='_blank' anchors in the current tab"""
@@ -80,6 +84,7 @@ class WebEnginePage(QWebEnginePage):
 		self.setUrl(url)
 		page.deleteLater()
 
+
 class TabWidget(QTabWidget):
 	def __init__(self) -> None:
 		super(TabWidget, self).__init__()
@@ -88,11 +93,12 @@ class TabWidget(QTabWidget):
 	def dropEvent(self, event) -> None:
 		print(event)
 
+
 # Dialogs
 class AboutDialog(QDialog):
 	"""About Mini Browser dialog"""
-	def __init__(self, parent = None) -> None:
-		super(AboutDialog, self).__init__(parent = parent)
+	def __init__(self, parent=None) -> None:
+		super(AboutDialog, self).__init__(parent=parent)
 		template = QGridLayout() # Set layout to grid
 		# Set fixed width and height
 		self.setFixedHeight(self.height() - 175)
@@ -109,14 +115,16 @@ class AboutDialog(QDialog):
 		template.addWidget(title, 1, 2)
 		template.addWidget(QLabel("The Mini Browser is made using Python 3 and the\nPyQt Library by Daniel M"), 2, 2)
 		template.addWidget(image_label, 2, 1)
-		for i in range(template.count()): template.itemAt(i).setAlignment(Qt.AlignmentFlag.AlignHCenter) # Align all widgets to center
+		for i in range(template.count()):
+			template.itemAt(i).setAlignment(Qt.AlignmentFlag.AlignHCenter) # Align all widgets to center
 		self.setStyleSheet("color: white; background-color: #18082C;") # Set background color of dialog to #18082C and color of text to white
 		self.setLayout(template) # Display the widgets
 
+
 class ConfigDialog(QDialog):
 	"""Browser settings dialog"""
-	def __init__(self, parent = None) -> None:
-		super(ConfigDialog, self).__init__(parent = parent)
+	def __init__(self, parent=None) -> None:
+		super(ConfigDialog, self).__init__(parent=parent)
 		self.setWindowTitle("Settings") # Set window title
 		self.template = QGridLayout() # Set layout to grid
 		# Set fixed width and height
@@ -137,7 +145,8 @@ class ConfigDialog(QDialog):
 		self.template.addWidget(title, 1, 1)
 		self.template.addWidget(self.history_size, 2, 1)
 		self.template.addWidget(self.history, 2, 2)
-		for i in range(self.template.count()): self.template.itemAt(i).setAlignment(Qt.AlignmentFlag.AlignHCenter) # Align all widgets to center
+		for i in range(self.template.count()):
+			self.template.itemAt(i).setAlignment(Qt.AlignmentFlag.AlignHCenter) # Align all widgets to center
 		self.setStyleSheet("color: white; background-color: #18082C;") # Set background color of dialog to #18082C and color of text to white
 		self.setLayout(self.template) # Display the widgets
 
@@ -147,10 +156,11 @@ class ConfigDialog(QDialog):
 		dialog = History()
 		dialog.exec_()
 
+
 class History(QDialog):
 	"""History dialog"""
-	def __init__(self, parent = None) -> None:
-		super(History, self).__init__(parent = parent)
+	def __init__(self, parent=None) -> None:
+		super(History, self).__init__(parent=parent)
 		self.setWindowTitle("History") # Set window title to 'History'
 		self.template = QVBoxLayout() # Set layout of dialog to Vertical Box Layout
 		# Set fixed width and height
@@ -172,10 +182,10 @@ class History(QDialog):
 		clear_history.setText("Clear History")
 		clear_history.clicked.connect(self.clearHistory)
 		# Add widgets to the layout
-		self.template.addWidget(title, alignment = Qt.AlignmentFlag.AlignHCenter)
-		self.template.addWidget(self.history_info, alignment = Qt.AlignmentFlag.AlignHCenter)
-		self.template.addWidget(self.history, alignment = Qt.AlignmentFlag.AlignHCenter)
-		self.template.addWidget(clear_history, alignment = Qt.AlignmentFlag.AlignHCenter)
+		self.template.addWidget(title, alignment=Qt.AlignmentFlag.AlignHCenter)
+		self.template.addWidget(self.history_info, alignment=Qt.AlignmentFlag.AlignHCenter)
+		self.template.addWidget(self.history, alignment=Qt.AlignmentFlag.AlignHCenter)
+		self.template.addWidget(clear_history, alignment=Qt.AlignmentFlag.AlignHCenter)
 		self.setStyleSheet("color: white; background-color: #18082C;") # Set background color of dialog to #18082C and color of text to white
 		self.setLayout(self.template) # Display the widgets
 
@@ -183,6 +193,7 @@ class History(QDialog):
 		"""Clears the history by clearing the Applications/MiniBrowser/config/history.txt file and closes the window"""
 		open("Applications/MiniBrowser/config/history.txt", "w+").write("")
 		self.close()
+
 
 class Browser(QMainWindow):
 	"""Main Window"""
@@ -193,7 +204,7 @@ class Browser(QMainWindow):
 		self.tabs, self.bookmarks, self.url_bar, self.navigation, self.back, self.forward, self.reload, self.home, about_menu, about, self.config = TabWidget(), QToolBar("Bookmarks"), LineEdit(), QToolBar("Navigation"), QAction("←", self), QAction("→", self), QAction("↺", self), QAction("🏠", self), self.menuBar().addMenu("About"), QAction("About", self), QAction("⚙", self) # Define action variables
 		self.navigation.setStyleSheet("font-size: 15px;") # Set font size of all items in the QToolBar named 'navigation' to 15px
 		self.tabs.setDocumentMode(True) # Set document mode for the QTabWidget named 'tabs' to True
-		self.tabs.tabBarDoubleClicked.connect(lambda: self.newTab(url = QUrl("https://home.danielmiao1.repl.co/")))
+		self.tabs.tabBarDoubleClicked.connect(lambda: self.newTab(url=QUrl("https://home.danielmiao1.repl.co/")))
 		self.tabs.currentChanged.connect(self.tabChanged) # Call the function tabChanged when tab is changed
 		self.tabs.setTabsClosable(True) # Set tabs closable
 		self.tabs.tabCloseRequested.connect(self.closeTab) # Call the function closeTab when user attempts to close a tab
@@ -202,7 +213,7 @@ class Browser(QMainWindow):
 		self.addToolBar(self.navigation)
 		self.addToolBarBreak()
 		self.addToolBar(self.bookmarks)
-		# Add back, forward, reload, and home actions to the tool bar named 'navigation', and their actions
+		# Add back, forward, reload, and home actions to the toolbar named 'navigation', and their actions
 		self.back.triggered.connect(lambda: self.tabs.currentWidget().back())
 		self.navigation.addAction(self.back)
 		self.forward.triggered.connect(lambda: self.tabs.currentWidget().forward())
@@ -214,20 +225,21 @@ class Browser(QMainWindow):
 		self.bookmarks.setMovable(False)
 		# Add bookmark actions
 		self.bookmarks_actions = [QAction("Google", self), QAction("YouTube", self), QAction("Gmail", self), QAction("Google Docs", self)]
-		self.bookmarks_actions[0].triggered.connect(lambda: self.newTab(url = QUrl("https://www.google.com"), label = "Google"))
-		self.bookmarks_actions[1].triggered.connect(lambda: self.newTab(url = QUrl("https://www.youtube.com"), label = "YouTube"))
-		self.bookmarks_actions[2].triggered.connect(lambda: self.newTab(url = QUrl("https://mail.google.com"), label = "Gmail"))
-		self.bookmarks_actions[3].triggered.connect(lambda: self.newTab(url = QUrl("https://docs.google.com"), label = "Google Docs"))
-		for i in range(4): self.bookmarks.addAction(self.bookmarks_actions[i])
-		self.navigation.setMovable(False) # Pin the 'navigation' tool bar
+		self.bookmarks_actions[0].triggered.connect(lambda: self.newTab(url=QUrl("https://www.google.com"), label="Google"))
+		self.bookmarks_actions[1].triggered.connect(lambda: self.newTab(url=QUrl("https://www.youtube.com"), label="YouTube"))
+		self.bookmarks_actions[2].triggered.connect(lambda: self.newTab(url=QUrl("https://mail.google.com"), label="Gmail"))
+		self.bookmarks_actions[3].triggered.connect(lambda: self.newTab(url=QUrl("https://docs.google.com"), label="Google Docs"))
+		for i in range(4):
+			self.bookmarks.addAction(self.bookmarks_actions[i])
+		self.navigation.setMovable(False) # Pin the 'navigation' toolbar
 		self.url_bar.setFixedWidth(self.width())
 		self.url_bar.returnPressed.connect(self.toURL) # Call function toURL when 'enter' key is pressed in the 'url_bar'
-		self.navigation.addWidget(self.url_bar) # Add 'url_bar' to the 'navigation' tool bar
+		self.navigation.addWidget(self.url_bar) # Add 'url_bar' to the 'navigation' toolbar
 		self.config.triggered.connect(self.openConfig) # Call function openConfig when 'config' QAction is pressed
-		self.navigation.addAction(self.config) # Add 'config' QAction to 'navigation' tool bar
+		self.navigation.addAction(self.config) # Add 'config' QAction to 'navigation' toolbar
 		about.triggered.connect(self.openAbout) # Call function openAbout when 'about' is triggered
 		about_menu.addAction(about) # Add 'about' to the 'about_menu'
-		self.newTab(url = QUrl("https://home.danielmiao1.repl.co/"))  # Add default tab
+		self.newTab(url=QUrl("https://home.danielmiao1.repl.co/"))  # Add default tab
 		self.show() # Show widgets
 		
 	def back(self) -> None:
@@ -245,7 +257,7 @@ class Browser(QMainWindow):
 		self.tabs.currentWidget().reload()
 		open("Applications/MiniBrowser/config/history.txt", "a+").write(f"{self.url_bar.text()}\n")
 		
-	def newTab(self, url = QUrl("https://home.danielmiao1.repl.co/"), label = "New Tab") -> None:
+	def newTab(self, url=QUrl("https://home.danielmiao1.repl.co/"), label="New Tab") -> None:
 		"""Create a new tab"""
 		engine = QWebEngineView() # Create new web engine view
 		page = WebEnginePage(engine) # Create new web engine page
@@ -253,8 +265,8 @@ class Browser(QMainWindow):
 		index = self.tabs.addTab(engine, label) # Add tab with the view and title
 		self.tabs.setCurrentIndex(index) # Set current index of tabs
 		engine.load(url) # Load URL
-		engine.urlChanged.connect(lambda link, view = engine: self.updateURLBox(link, view)) # Update URL Box when the url changes
-		engine.loadFinished.connect(lambda _, link = index, view = engine: self.tabs.setTabText(link, view.page().title())) # Set tab text
+		engine.urlChanged.connect(lambda link, view=engine: self.updateURLBox(link, view)) # Update URL Box when the url changes
+		engine.loadFinished.connect(lambda _, link=index, view=engine: self.tabs.setTabText(link, view.page().title())) # Set tab text
 		
 	def tabChanged(self, _) -> None:
 		"""Update the URL box if tab URL changed"""
@@ -263,7 +275,8 @@ class Browser(QMainWindow):
 
 	def closeTab(self, url: QUrl) -> None:
 		"""Close tab"""
-		if self.tabs.count() < 2: return
+		if self.tabs.count() < 2:
+			return
 		self.tabs.removeTab(url)
 
 	def toHome(self) -> None:
@@ -274,15 +287,19 @@ class Browser(QMainWindow):
 	def toURL(self) -> None:
 		"""Go to the url given in the URL box or search google"""
 		url = QUrl(self.url_bar.text())
-		if url in ["browser://home", "browser:home"]: self.tabs.currentWidget().setUrl("https://home.danielmiao1.repl.co/")
+		if url in ["browser://home", "browser:home"]:
+			self.tabs.currentWidget().setUrl("https://home.danielmiao1.repl.co/")
 		else:
-			if list(url.toString()).count(".") == 0: url = QUrl(f"https://www.google.com/search?q={url.toString()}")
-			elif url.scheme() == "": url = QUrl("http://" + url.toString())
+			if list(url.toString()).count(".") == 0:
+				url = QUrl(f"https://www.google.com/search?q={url.toString()}")
+			elif url.scheme() == "":
+				url = QUrl("http://" + url.toString())
 			self.tabs.currentWidget().setUrl(url)
 
-	def updateURLBox(self, url, engine = None) -> None:
+	def updateURLBox(self, url, engine=None) -> None:
 		"""Update URL box text to the relative URL when URL changed"""
-		if engine != self.tabs.currentWidget(): return
+		if engine != self.tabs.currentWidget():
+			return
 		if not url.toString == "":
 			open("Applications/MiniBrowser/config/history.txt", "a+").write(f"{url.toString()}\n")
 			self.url_bar.setText(url.toString())
@@ -292,10 +309,14 @@ class Browser(QMainWindow):
 		"""Set context menu for central widget"""
 		menu = QMenu(self)
 		(back, forward, reload, home, action) = (menu.addAction("Back                "), menu.addAction("Forward             "), menu.addAction("Reload              "), menu.addAction("Home                "), menu.exec_(self.mapToGlobal(event.pos())))
-		if action == back: self.tabs.currentWidget().back()
-		elif action == forward: self.tabs.currentWidget().forward()
-		elif action == reload: self.tabs.currentWidget().reload()
-		elif action == home: self.toHome()
+		if action == back:
+			self.tabs.currentWidget().back()
+		elif action == forward:
+			self.tabs.currentWidget().forward()
+		elif action == reload:
+			self.tabs.currentWidget().reload()
+		elif action == home:
+			self.toHome()
 
 	@staticmethod # Set function openAbout static
 	def openAbout() -> None:

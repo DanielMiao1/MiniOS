@@ -5,10 +5,10 @@ Mini Text Edit
 Text Editor made by Daniel M using Python 3 for the MiniOS project: https://github.com/DanielMiao1/MiniOS
 """
 
-# Imports
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
+
 
 class TextEdit(QWidget):
 	"""Main Window"""
@@ -20,7 +20,7 @@ class TextEdit(QWidget):
 		self.tool_bar = QToolBar(self)
 		self.editor.move(0, 0)
 		self.editor.resize(360, 512)
-		self.layout.addWidget(self.tool_bar, alignment = Qt.AlignmentFlag.AlignTop)
+		self.layout.addWidget(self.tool_bar, alignment=Qt.AlignmentFlag.AlignTop)
 		self.layout.addWidget(self.editor)
 		self.resize(360, 512)
 		

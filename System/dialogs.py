@@ -1,23 +1,21 @@
+# -*- coding: utf-8 -*-
 """
 System/dialogs.py
 Dialogs used in main script
 Made by Daniel M using Python 3
 """
 
-# Library imports
 from json import load
-from os import system
 
-# Local file imports
 # from main import Window
 from config import returnProperties, returnBackgroundProperties, Themes
 from overrides import PushButton, Slider
 
-# PyQt imports
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtNetwork import *
+
 
 class Preferences(QWidget):
 	"""System Preferences Application"""
@@ -124,10 +122,11 @@ class Preferences(QWidget):
 		self._update()
 		self.parent().restartWindow()
 	
+	
 class AboutDialog(QDialog):
 	"""About Dialog"""
-	def __init__(self, parent = None) -> None:
-		super(AboutDialog, self).__init__(parent = parent)
+	def __init__(self, parent=None) -> None:
+		super(AboutDialog, self).__init__(parent=parent)
 		template = QGridLayout() # Set layout to grid
 		# Set fixed width and height
 		self.setFixedHeight(self.height() - 175)

@@ -7,12 +7,9 @@ Made by Daniel M using Python 3
 
 __import__("import_modules").checkModules()
 
-# Library Imports
 from os import path, system
 from sys import argv
-from sys import path as sys_path
 
-# Local File Imports
 from config import *
 from dialogs import *
 from widgets import *
@@ -21,21 +18,20 @@ from applications import *
 from desktop_files import returnItems
 from get_file_icon import getFileIcon
 
-# PyQt imports
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 
-# Define global variables
 applications, config = returnApplications(), Config()
 
-print("Starting the Mini Operating System...") # Print starting message
+print("Starting the Mini Operating System...")
+
 
 class Window(QMainWindow):
 	"""Main Window"""
-	def __init__(self, parent = None) -> None:
+	def __init__(self, parent=None) -> None:
 		"""Main window __init__"""
-		super(Window, self).__init__(parent = parent) # Call super class __init__ function
+		super(Window, self).__init__(parent=parent) # Call super class __init__ function
 		self.file_created_session = False # Set file_created_session variable to False
 		self.setWindowFlag(Qt.WindowType.FramelessWindowHint) # Remove window frame
 		self.setStyleSheet("background-color: " + returnBackgroundProperties()["background-color"]) # Set window style
@@ -45,13 +41,13 @@ class Window(QMainWindow):
 		self.about.triggered.connect(self.openAbout) # Connect about menu trigger signal
 		self.about.addAction(QAction("About", self)) # Add action "about" to about menu
 		self.setMinimumSize(1280, 720) # Set window minimum size
-		# Top tool bar
+		# Top toolbar
 		self.top_tool_bar = QToolBar("Top menu bar") # Create the top menu bar
 		self.top_tool_bar.setMovable(False) # Make the top menu bar fixed
 		self.top_tool_bar.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; border: 4px solid {returnBackgroundProperties()['background-color-2']}; color: {returnBackgroundProperties()['text-color']}") # Set stylesheet properties for the top menu bar
 		# Define actions
 		# # Clock
-		self.clock = WebEngineView(hide_context_menu = True) # Create new WebEngineView
+		self.clock = WebEngineView(hide_context_menu=True) # Create new WebEngineView
 		self.clock.setUrl(QUrl(f"https://home.danielmiao1.repl.co/clock.html?background_color={returnBackgroundProperties()['background-color-2'][1:]}&text_color={returnBackgroundProperties()['text-color'][1:]}&font_size={returnProperties()['font-size']}px&font_family={returnProperties()['font-family']}")) # Set URL for web engine view
 		# # Separator
 		self.top_tool_bar_separator = QWidget()
@@ -80,12 +76,14 @@ class Window(QMainWindow):
 		self.dock_items = [[QAction(QIcon("System/images/preferences.png"), "Preferences", self)]] # Create dock_items list
 		self.dock_items[0][0].triggered.connect(lambda: self.openPreferences()) # Call self.openPreferences function when the settings icon is pressed
 		for x in applications.keys(): # Iterate through the applications dictionary
-			if path.exists(f"Applications/{x}/images/logo_small.png"): self.dock_items.append([QAction(QIcon(f"Applications/{x}/images/logo_small.png"), applications[x]["name"], self), x]) # Add values to dock_items list (with icon if icon path is valid)
+			if path.exists(f"Applications/{x}/images/logo_small.png"):
+				self.dock_items.append([QAction(QIcon(f"Applications/{x}/images/logo_small.png"), applications[x]["name"], self), x]) # Add values to dock_items list (with icon if icon path is valid)
 			else: self.dock_items.append([QAction(applications[x]["name"], self), x]) # Add values to dock_items list without icon (fallback)
 		for x in range(1, len(self.dock_items)):
 			exec(f"self.dock_items[{x}][0].triggered.connect(lambda _, self = self: self.openApplication('{applications[self.dock_items[x][1]]['run_class']}'))") # Connect dock item trigger signal
 			self.dock_items[x][0].setFont(QFont(returnProperties()["font-family"], int(returnProperties()["font-size"]))) # Set font size
-		for x in self.dock_items: self.dock.addAction(x[0]) # Add applications to the dock
+		for x in self.dock_items:
+			self.dock.addAction(x[0]) # Add applications to the dock
 		self.dock.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; border: none; font-size: {returnProperties()['font-size']}") # Set the dock's style properties
 		# Desktop
 		self.files, self.edit_file, self.focused_file = [], [None, None], None # Assign variables
@@ -110,8 +108,10 @@ class Window(QMainWindow):
 	
 	def setFocusedFile(self, file: ToolButton or None = None):
 		"""Sets the focused file"""
-		if file is None: return # Exit function if file is None
-		if self.focused_file is not None: self.focused_file.setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none;") # If there is already a focused file, reset its stylesheet properties
+		if file is None:
+			return # Exit function if file is None
+		if self.focused_file is not None:
+			self.focused_file.setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none;") # If there is already a focused file, reset its stylesheet properties
 		file.setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none; background-color: {returnBackgroundProperties()['background-color-2']};") # Set the new focused file's stylesheet properties
 		self.focused_file = file # Set focused file variable to file
 		
@@ -121,11 +121,11 @@ class Window(QMainWindow):
 		
 	def openPreferences(self, position: QPoint = QPoint(0, 0)) -> None:
 		"""Opens the preferences window"""
-		self.windows.append(ApplicationWindow(self, position, Preferences(self.updateElements), background_color = returnBackgroundProperties()["background-color-2"], window_name = "Preferences", toolbar_background_color = returnBackgroundProperties()['background-color-3'], custom_stylesheet = "background-color: " + returnBackgroundProperties()["background-color-2"], restart_window_function = self.openPreferences)) # Create new window with child of preferences class
+		self.windows.append(ApplicationWindow(self, position, Preferences(self.updateElements), background_color=returnBackgroundProperties()["background-color-2"], window_name="Preferences", toolbar_background_color=returnBackgroundProperties()['background-color-3'], custom_stylesheet="background-color: " + returnBackgroundProperties()["background-color-2"], restart_window_function=self.openPreferences)) # Create new window with child of 'Preferences' class
 		
 	@staticmethod
 	def openAbout() -> None:
-		"""Opens the about dialog"""
+		"""Opens the 'About' dialog"""
 		dialog = AboutDialog() # Call the AboutDialog class
 		dialog.exec_() # Show class
 		
@@ -141,7 +141,7 @@ class Window(QMainWindow):
 					row += 1
 					column = 40
 				column += 100
-			self.edit_file = [ToolButton(self), FileEditLineEdit(self, cancel_function = self.newFileDelete)] # Make new ToolButton and line edit
+			self.edit_file = [ToolButton(self), FileEditLineEdit(self, cancel_function=self.newFileDelete)] # Make new ToolButton and line edit
 			# ToolButton properties
 			self.edit_file[0].resize(68, 100) # Resize
 			self.edit_file[0].move(row * 70, column - (100 if self.file_created_session else 0) - (8 if column - 8 != 32 else 0 if not self.file_created_session else -100)) # Move
@@ -159,7 +159,8 @@ class Window(QMainWindow):
 			# Show ToolButton and line edit
 			self.edit_file[0].show()
 			self.edit_file[1].show()
-			if not self.file_created_session: self.file_created_session = True # Toggle self.file_created_session variable
+			if not self.file_created_session:
+				self.file_created_session = True # Toggle self.file_created_session variable
 		elif action == new_directory: # New directory
 			# Get row and column count
 			row, column = 0, 40  # Set default values
@@ -168,7 +169,7 @@ class Window(QMainWindow):
 					row += 1
 					column = 40
 				column += 100
-			self.edit_file = [ToolButton(self), FileEditLineEdit(self, cancel_function = self.newFileDelete)] # Make new ToolButton and line edit
+			self.edit_file = [ToolButton(self), FileEditLineEdit(self, cancel_function=self.newFileDelete)] # Make new ToolButton and line edit
 			# ToolButton properties
 			self.edit_file[0].resize(68, 100) # Resize
 			self.edit_file[0].move(row * 70, column - (100 if self.file_created_session else 0) - (8 if column - 8 != 32 else 0 if not self.file_created_session else -100)) # Move
@@ -181,7 +182,7 @@ class Window(QMainWindow):
 			self.edit_file[1].move(row * 70, (column - (100 if self.file_created_session else 0) - (8 if column - 8 != 32 else 0 if not self.file_created_session else -100)) + 98) # Move
 			self.edit_file[1].setAttribute(Qt.WidgetAttribute.WA_MacShowFocusRect, False) # Set attribute
 			self.edit_file[1].setStyleSheet(f"border: 1px solid {returnBackgroundProperties()['text-color']}; background-color: {returnBackgroundProperties()['background-color-2']}") # Set styles
-			self.edit_file[1].returnPressed.connect(lambda: self.newFileReturnPressed(_type = "directory")) # Return key pressed signal
+			self.edit_file[1].returnPressed.connect(lambda: self.newFileReturnPressed(_type="directory")) # Return key pressed signal
 			self.edit_file[1].setFocus() # Focus
 			# Show ToolButton and QLineEdit
 			self.edit_file[0].show()
@@ -199,7 +200,8 @@ class Window(QMainWindow):
 		self.newFileDelete() # Remove tool button and line edit
 		self.edit_file = [None, None] # Clear self.edit_file list
 		# Display new file (by reloading all desktop files)
-		for x in self.files: x.deleteLater() # Remove all desktop widgets
+		for x in self.files:
+			x.deleteLater() # Remove all desktop widgets
 		row, column = 0, 40 # Set default row/column values
 		self.files = [ToolButton(self)] # Reset self.files
 		for x in returnItems().keys(): # Add to desktop
@@ -228,8 +230,9 @@ class Window(QMainWindow):
 		for x in range(len(self.files)):
 			self.files[x].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none") # Set stylesheet
 			self.files[x].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"])) # Set font
-		for x in range(1, len(self.dock_items)): self.dock_items[x][0].setFont(QFont(returnProperties()["font-family"], int(returnProperties()["font-size"]))) # Update font of applications
-		self.dock.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; border: none; font-size: {returnProperties()['font-size']}") # Update style of dock tool bar
+		for x in range(1, len(self.dock_items)):
+			self.dock_items[x][0].setFont(QFont(returnProperties()["font-family"], int(returnProperties()["font-size"]))) # Update font of applications
+		self.dock.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; border: none; font-size: {returnProperties()['font-size']}") # Update style of dock toolbar
 		self.clock.setUrl(QUrl(f"https://home.danielmiao1.repl.co/clock.html?background_color={returnBackgroundProperties()['background-color-2'][1:]}&text_color={returnBackgroundProperties()['text-color'][1:]}&font_size={returnProperties()['font-size']}px&font_family={returnProperties()['font-family']}")) # Update clock styles
 		self.options_menu.setStyleSheet(f"QMenu {{ background-color: {returnBackgroundProperties()['background-color-2']}; color: {returnBackgroundProperties()['text-color']}; border: none; }};")
 		
@@ -252,7 +255,8 @@ class Window(QMainWindow):
 				if returnItems()[x]["displayname"] == self.focused_file.text(): # If the application is the focused file
 					system(f"mv Home/Desktop/{x} Home/Trash/") # Move the file to the Trash directory
 					# Re-arrange desktop files
-					for y in self.files: y.deleteLater()
+					for y in self.files:
+						y.deleteLater()
 					self.focused_file = None
 					self.files, row, column = [], 0, 40
 					for y in returnItems().keys():
@@ -279,7 +283,8 @@ application = QApplication(argv) # Construct application
 window = Window() # Call main Window class
 
 # Application Imports
-for i in applications.keys(): exec(f"sys_path.insert(1, 'Applications/{i}'); " + "from " + applications[i]['file'][:-3] + " import " + applications[i]['run_class']) # Import application files
+for i in applications.keys():
+	exec(f"sys_path.insert(1, 'Applications/{i}'); " + "from " + applications[i]['file'][:-3] + " import " + applications[i]['run_class']) # Import application files
 
 window.show() # Show Main Window
 application.exec_() # Execute QApplication
