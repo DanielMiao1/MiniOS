@@ -1,17 +1,16 @@
+# -*- coding: utf-8 -*-
 """
 System/dialogs.py
 Dialogs used in main script
 Made by Daniel M using Python 3
 """
 
-# Library imports
 from json import load
 
-# Local file imports
+# from main import Window
 from config import returnProperties, returnBackgroundProperties, Themes
 import overrides
 
-# PyQt imports
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
