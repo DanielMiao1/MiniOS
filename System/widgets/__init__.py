@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import widgets.dock
+
 import sys
 sys.path.insert(0, "../")
 

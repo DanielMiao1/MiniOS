@@ -69,23 +69,38 @@ class Window(QMainWindow):
 		self.top_tool_bar.setFixedHeight(40) # Set fixed height
 		self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.top_tool_bar) # Add Tool Bar to the Window
 		# Applications dock
-		self.dock = QToolBar("Dock") # Create a dock
-		self.dock.setMovable(False) # Make the dock fixed
-		self.dock.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly) # Always display icons instead of text in the dock
-		self.dock.setIconSize(QSize(32, 32)) # Configure the dock icon size
-		self.addToolBar(Qt.ToolBarArea.BottomToolBarArea, self.dock) # Display the toolbar at the bottom of the screen
-		self.dock_items = [[QAction(QIcon("System/images/preferences.png"), "Preferences", self)]] # Create dock_items list
-		self.dock_items[0][0].triggered.connect(lambda: self.openPreferences()) # Call self.openPreferences function when the settings icon is pressed
-		for x in applications.keys(): # Iterate through the applications dictionary
-			if path.exists(f"Applications/{x}/images/logo_small.png"):
-				self.dock_items.append([QAction(QIcon(f"Applications/{x}/images/logo_small.png"), applications[x]["name"], self), x]) # Add values to dock_items list (with icon if icon path is valid)
-			else: self.dock_items.append([QAction(applications[x]["name"], self), x]) # Add values to dock_items list without icon (fallback)
-		for x in range(1, len(self.dock_items)):
-			exec(f"self.dock_items[{x}][0].triggered.connect(lambda _, self = self: self.openApplication('{applications[self.dock_items[x][1]]['run_class']}'))") # Connect dock item trigger signal
-			self.dock_items[x][0].setFont(QFont(returnProperties()["font-family"], int(returnProperties()["font-size"]))) # Set font size
-		for x in self.dock_items:
-			self.dock.addAction(x[0]) # Add applications to the dock
-		self.dock.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; border: none; font-size: {returnProperties()['font-size']}") # Set the dock's style properties
+		self.dock = dock.Dock(self)
+		self.dock.setStyles(background_color=returnBackgroundProperties()["background-color-2"], text_color=returnBackgroundProperties()["text-color"], font_size=returnProperties()["font-size"], font_family=returnProperties()["font-family"])
+		# self.dock = QToolBar("Dock") # Create a dock
+		# self.dock.setMovable(False) # Make the dock fixed
+		# self.dock.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly) # Always display icons instead of text in the dock
+		# self.dock.setIconSize(QSize(32, 32)) # Configure the dock icon size
+		# self.addToolBar(Qt.ToolBarArea.BottomToolBarArea, self.dock) # Display the toolbar at the bottom of the screen
+		# self.dock_items = [[QAction(QIcon("System/images/preferences.png"), "Preferences", self)]] # Create dock_items list
+		# self.dock_items[0][0].triggered.connect(lambda: self.openPreferences()) # Call self.openPreferences function when the settings icon is pressed
+		for x in applications.keys(): # Iterate through the applications
+			# Check if the application has an icon
+			if path.exists(f"Applications/{x}/images/logo.png"):
+				icon_path = f"Applications/{x}/images/logo.png"
+			elif path.exists(f"Applications/{x}/images/logo.jpg"):
+				icon_path = f"Applications/{x}/images/logo.jpg"
+			elif path.exists(f"Applications/{x}/images/logo.jpeg"):
+				icon_path = f"Applications/{x}/images/logo.jpeg"
+			elif path.exists(f"Applications/{x}/images/icon.png"):
+				icon_path = f"Applications/{x}/images/icon.png"
+			elif path.exists(f"Applications/{x}/images/icon.jpg"):
+				icon_path = f"Applications/{x}/images/icon.jpg"
+			elif path.exists(f"Applications/{x}/images/icon.jpeg"):
+				icon_path = f"Applications/{x}/images/icon.jpeg"
+			else:
+				continue
+			self.dock.addItem(applications[x]["name"], icon_path, applications[x]["run_class"])
+		# for x in range(1, len(self.dock_items)):
+		# 	exec(f"self.dock_items[{x}][0].triggered.connect(lambda _, self = self: self.openApplication('{applications[self.dock_items[x][1]]['run_class']}'))") # Connect dock item trigger signal
+		# 	self.dock_items[x][0].setFont(QFont(returnProperties()["font-family"], int(returnProperties()["font-size"]))) # Set font size
+		# for x in self.dock_items:
+		# 	self.dock.addAction(x[0]) # Add applications to the dock
+		# self.dock.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; border: none; font-size: {returnProperties()['font-size']}") # Set the dock's style properties
 		# Desktop
 		self.files, self.edit_file, self.focused_file = [], [None, None], None # Assign variables
 		row, column = 0, 40 # Set default row and column variable
@@ -246,6 +261,7 @@ class Window(QMainWindow):
 				column = 40
 			self.files[x].move(row * 70, column) # Move file to row/column
 			column += 100
+		self.dock.adjustGeometry()
 		super(Window, self).resizeEvent(event) # Call resizeEvent function from super class
 		
 	def keyPressEvent(self, event: QKeyEvent) -> None:
