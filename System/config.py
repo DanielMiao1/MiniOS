@@ -9,11 +9,11 @@ import json.decoder
 import os
 from json import dump, load
 
+
 class Config:
 	def __init__(self):
 		ThemeConfig.formatJSON()
 		FontConfig.formatJSON()
-		WindowConfig.formatJSON()
 
 	@staticmethod
 	def appendJSON(values: dict, file_name: str) -> None:
@@ -21,13 +21,14 @@ class Config:
 			data = load(file)
 			for i in values.keys(): data[i] = values[i]
 			file.seek(0)
-			dump(data, file, indent = 2)
+			dump(data, file, indent=2)
+
 
 class ThemeConfig:
 	"""
 	Theme Configuration
 	DO NOT MODIFY THIS FILE DIRECTLY. TO MODIFY THEME COLORS, EDIT System/config/themes/dark.json or System/config/themes/light.json
-	TO CREATE A NEW THEM, ADD A JSON FILE AT System/config/themes.
+	TO CREATE A NEW THEME, ADD A JSON FILE AT System/config/themes.
 	"""
 	@staticmethod
 	def formatJSON() -> None:
@@ -54,6 +55,7 @@ class ThemeConfig:
 	@staticmethod
 	def formatDefault() -> None:
 		if not os.path.exists("System/default_config/themes.json"): open("System/config/themes.json", "w").write("{\n  \"default\": \"light\"\n}\n")
+
 
 class FontConfig:
 	"""
@@ -87,37 +89,7 @@ class FontConfig:
 	@staticmethod
 	def formatDefault() -> None:
 		if not os.path.exists("System/default_config/font.json"): open("System/config/font.json", "w").write("{\n  \"default-font\": \"Helvetica\",\n  \"default-size\": 12\n}\n")
-	
-class WindowConfig:
-	"""
-	Window Configuration
-	DO NOT MODIFY THIS FILE DIRECTLY. TO MODIFY DEFAULT WINDOW CONFIGURATIONS, EDIT System/default_config/window.json
-	"""
-	@staticmethod
-	def formatJSON() -> None:
-		with open("System/config/window.json") as file:
-			try: load(file)
-			except json.decoder.JSONDecodeError: open("System/config/window.json", "w").write("{\n  \"size\": \"full\"\n}")
-			file = open("System/config/window.json")
-			loaded_file = load(file)
-			if open("System/config/window.json", "r+").read() == "": open("System/config/window.json", "w").write("{\n  \n}")
-			if "size" not in loaded_file: Config.appendJSON({"size": "full"}, "System/config/window.json")
-			if open("System/config/window.json", "r+").read().splitlines()[-1] != "": open("System/config/window.json", "a").write("\n")
-			
-	@staticmethod
-	def returnConfig() -> dict:
-		WindowConfig.formatDefault()
-		if not os.path.exists("System/config/window.json"): open("System/config/window.json", "w").write(f"{{\n  \"size\": \"{WindowConfig.returnDefault()['default-size']}\"\n}}")
-		return load(open("System/config/window.json"))
-	
-	@staticmethod
-	def returnDefault() -> dict:
-		WindowConfig.formatDefault()
-		return load(open("System/default_config/window.json"))
-	
-	@staticmethod
-	def formatDefault() -> None:
-		if not os.path.exists("System/default_config/window.json"): open("System/config/window.json", "w").write("{\n  \"default-size\": [1440, 720]\n}")
+
 
 class Themes:
 	@staticmethod
@@ -126,6 +98,10 @@ class Themes:
 		for i in os.listdir("System/config/themes"): themes[i[:-5]] = load(open(f"System/config/themes/{i}"))
 		return themes
 
-def returnProperties() -> dict: return {**ThemeConfig.returnConfig(), **FontConfig.returnConfig(), **WindowConfig.returnConfig()}
 
-def returnBackgroundProperties() -> dict: return Themes.getThemes()[ThemeConfig.returnConfig()["theme"]]
+def returnProperties() -> dict:
+	return {**ThemeConfig.returnConfig(), **FontConfig.returnConfig()}
+
+
+def returnBackgroundProperties() -> dict:
+	return Themes.getThemes()[ThemeConfig.returnConfig()["theme"]]
