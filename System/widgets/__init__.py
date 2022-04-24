@@ -4,10 +4,12 @@ import sys
 sys.path.insert(0, "../")
 
 from config import returnBackgroundProperties
+from datetime import datetime
 
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
+from PyQt5.QtWebEngineWidgets import *
 
 
 class SelectionRectangle(QWidget):
@@ -323,3 +325,28 @@ class FileEditLineEdit(QLineEdit):
 			self.cancel_function()
 		super(FileEditLineEdit, self).keyPressEvent(event)
 
+
+class Clock(QLabel):
+	def __init__(self, parent):
+		super(Clock, self).__init__(parent=parent)
+		self.color = "black"
+		self.background = "white"
+		self.font_size = "12"
+		self.font_family = "Arial"
+		self.time = datetime.now()
+		self.setText(self.time.strftime("%H:%M:%S"))
+		self.timer = QTimer(self)
+		self.timer.setInterval(1000)
+		self.timer.timeout.connect(self.updateTime)
+		self.timer.start()
+	
+	def updateTime(self):
+		self.time = datetime.now()
+		self.setText(self.time.strftime("%H:%M:%S"))
+	
+	def setStyles(self, **styles):
+		self.color = styles["text_color"] if "text_color" in styles else self.color
+		self.background = styles["background_color"] if "background_color" in styles else self.background
+		self.font_size = styles["font_size"] if "font_size" in styles else self.font_size
+		self.font_family = styles["font_family"] if "font_family" in styles else self.font_family
+		self.setStyleSheet(f"background-color: {self.background}; color: {self.color}; font-size: {self.font_size}px; font-family: {self.font_family};")
