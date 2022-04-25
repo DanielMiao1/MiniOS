@@ -14,6 +14,69 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtWebEngineWidgets import *
 
 
+class Menu(QWidget):
+	def __init__(self, parent, **actions):
+		super(Menu, self).__init__(parent=parent)
+		self.items = []
+		for x, y in actions.items():
+			self.items.append(MenuItem(self, x, y))
+			self.items[-1].move(QPoint(0, (len(self.items) - 1) * 20))
+		self.setStyleSheet("border: none; background-color: #ccc;")
+		maximum_width = max([i.width() for i in self.items])
+		for i in self.items:
+			i.setFixedSize(QSize(maximum_width, 20))
+		self.setFixedSize(QSize(maximum_width + 5, 20 * len(self.items)))
+		for i in QApplication.instance().topLevelWidgets():
+			if isinstance(i, QMainWindow):
+				i.context_menu = self
+
+
+class MenuItem(QPushButton):
+	def __init__(self, parent, text, action):
+		super(MenuItem, self).__init__(parent=parent)
+		self.setText(text)
+		self.pressed.connect(action)
+		self.setStyleSheet("MenuItem { border: none; background-color: #ccc; } MenuItem:hover { background-color: #888; }")
+
+
+class Widget(QPushButton):
+	pressed = pyqtSignal()
+	released = pyqtSignal()
+	context_pressed = pyqtSignal()
+	context_released = pyqtSignal()
+	
+	def __init__(self, parent, text="", context_menu=None):
+		super(Widget, self).__init__(parent=parent)
+		self.setText(text) if text else None
+		self.context_menu = context_menu
+		self.context_widget = None
+	
+	def mousePressEvent(self, event) -> None:
+		if event.buttons() == Qt.LeftButton:
+			self.pressed.emit()
+		if event.buttons() == Qt.RightButton:
+			self.context_pressed.emit()
+	
+	def mouseReleaseEvent(self, event) -> None:
+		if event.button() == Qt.LeftButton:
+			self.released.emit()
+		elif event.button() == Qt.RightButton:
+			self.context_released.emit()
+			self.context()
+	
+	def context(self) -> None:
+		if self.context_menu:
+			for i in QApplication.instance().topLevelWidgets():
+				if isinstance(i, QMainWindow):
+					self.context_widget = Menu(i, **self.context_menu)
+					self.context_widget.move(QCursor.pos())
+					self.context_widget.show()
+					break
+	
+	def contextMenuEvent(self, event) -> None:
+		return None
+	
+
 class SelectionRectangle(QWidget):
 	def __init__(self):
 		super().__init__()
@@ -328,9 +391,9 @@ class FileEditLineEdit(QLineEdit):
 		super(FileEditLineEdit, self).keyPressEvent(event)
 
 
-class Clock(QLabel):
+class Clock(Widget):
 	def __init__(self, parent):
-		super(Clock, self).__init__(parent=parent)
+		super(Clock, self).__init__(parent=parent, context_menu={})
 		self.color = "black"
 		self.background = "white"
 		self.font_size = "12"

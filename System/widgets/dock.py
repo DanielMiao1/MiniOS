@@ -17,7 +17,7 @@ class Dock(QGroupBox):
 		self.layout().addStretch()
 		self.layout().addStretch()
 	
-	def addItem(self, name, icon, run_class):
+	def addItem(self, name, icon, run_class=None):
 		self.layout().insertWidget(self.layout().count() - 1, DockItem(self, name, icon, run_class))
 	
 	def adjustGeometry(self):
@@ -55,6 +55,8 @@ class DockItem(QLabel):
 		super(DockItem, self).leaveEvent(event)
 	
 	def mousePressEvent(self, event):
-		# self.
-		self.parent().parent().openApplication(self.run_class)
+		if self.run_class is None:
+			self.parent().parent().openPreferences()
+		else:
+			self.parent().parent().openApplication(self.run_class)
 		super(DockItem, self).mousePressEvent(event)

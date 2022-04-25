@@ -33,6 +33,7 @@ class Window(QMainWindow):
 	def __init__(self, parent=None) -> None:
 		"""Main window __init__"""
 		super(Window, self).__init__(parent=parent) # Call super class __init__ function
+		self.context_menu = None
 		self.file_created_session = False # Set file_created_session variable to False
 		self.setWindowFlag(Qt.WindowType.FramelessWindowHint) # Remove window frame
 		self.setStyleSheet("background-color: " + returnBackgroundProperties()["background-color"]) # Set window style
@@ -95,6 +96,7 @@ class Window(QMainWindow):
 			else:
 				continue
 			self.dock.addItem(applications[x]["name"], icon_path, applications[x]["run_class"])
+		self.dock.addItem("Settings", "System/images/preferences.png")
 		# for x in range(1, len(self.dock_items)):
 		# 	exec(f"self.dock_items[{x}][0].triggered.connect(lambda _, self = self: self.openApplication('{applications[self.dock_items[x][1]]['run_class']}'))") # Connect dock item trigger signal
 		# 	self.dock_items[x][0].setFont(QFont(returnProperties()["font-family"], int(returnProperties()["font-size"]))) # Set font size
@@ -133,7 +135,7 @@ class Window(QMainWindow):
 		
 	def openApplication(self, app: str) -> None:
 		"""Opens the specified application"""
-		exec(f"self.windows.append(ApplicationWindow(self, QPoint(0, 0), {app}(), background_color = '{returnApplicationProperties()[app]['background-color'] if returnApplicationProperties()[app]['background-color'] != 'default' else returnBackgroundProperties()['background-color']}', window_name = '{app}', toolbar_background_color = '{returnBackgroundProperties()['background-color-3']}', window_size = {returnApplicationProperties()[app]['window-size']}))") # Create new window with child widget of application class
+		exec(f"self.windows.append(ApplicationWindow(self, QPoint(0, 0), app__{app}__(), background_color='{returnApplicationProperties()[app]['background-color'] if returnApplicationProperties()[app]['background-color'] != 'default' else returnBackgroundProperties()['background-color']}', window_name='{app}', toolbar_background_color='{returnBackgroundProperties()['background-color-3']}', window_size={returnApplicationProperties()[app]['window-size']}))") # Create new window with child widget of application class
 		
 	def openPreferences(self, position: QPoint = QPoint(0, 0)) -> None:
 		"""Opens the preferences window"""
@@ -246,11 +248,9 @@ class Window(QMainWindow):
 		for x in range(len(self.files)):
 			self.files[x].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none") # Set stylesheet
 			self.files[x].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"])) # Set font
-		for x in range(1, len(self.dock_items)):
-			self.dock_items[x][0].setFont(QFont(returnProperties()["font-family"], int(returnProperties()["font-size"]))) # Update font of applications
-		self.dock.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; border: none; font-size: {returnProperties()['font-size']}") # Update style of dock toolbar
-		self.clock.setUrl(QUrl(f"https://home.danielmiao1.repl.co/clock.html?background_color={returnBackgroundProperties()['background-color-2'][1:]}&text_color={returnBackgroundProperties()['text-color'][1:]}&font_size={returnProperties()['font-size']}px&font_family={returnProperties()['font-family']}")) # Update clock styles
 		self.options_menu.setStyleSheet(f"QMenu {{ background-color: {returnBackgroundProperties()['background-color-2']}; color: {returnBackgroundProperties()['text-color']}; border: none; }};")
+		self.clock.setStyles(background_color=returnBackgroundProperties()["background-color-2"], text_color=returnBackgroundProperties()["text-color"], font_size=returnProperties()["font-size"], font_family=returnProperties()["font-family"])
+		self.dock.setStyles(background_color=returnBackgroundProperties()["background-color-2"], text_color=returnBackgroundProperties()["text-color"], font_size=returnProperties()["font-size"], font_family=returnProperties()["font-family"])
 		
 	def resizeEvent(self, event: QResizeEvent) -> None:
 		"""Re-arranges desktop files on resize"""
@@ -293,15 +293,19 @@ class Window(QMainWindow):
 						self.files[-1].show()
 						column += 100
 					break # Exit from loop
+	
+	def mousePressEvent(self, event) -> None:
+		if self.context_menu is not None:
+			self.context_menu.deleteLater()
+			self.context_menu = None
 					
 					
 application = QApplication(argv) # Construct application
 
 window = Window() # Call main Window class
 
-# Application Imports
-for i in applications.keys():
-	exec(f"sys_path.insert(1, 'Applications/{i}'); " + "from " + applications[i]['file'][:-3] + " import " + applications[i]['run_class']) # Import application files
+for x, y in returnApplications().items():
+	exec(f"sys_path.insert(1, '{'/'.join(y['path'].split('/')[:-1])}'); " + "from " + y['file'][:-3] + " import " + y['run_class'] + " as app__" + y['run_class'] + "__")
 
 window.show() # Show Main Window
 application.exec_() # Execute QApplication

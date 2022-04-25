@@ -15,11 +15,13 @@ def getApplicationProperties(rel_path: str) -> dict:
 	"""Returns the application properties if the application at the given path is valid, otherwise return False"""
 	if not exists(f"{rel_path}/application.json"):
 		return {"valid": False}
-	if "name" not in load(open(f"{rel_path}/application.json")) or "run" not in load(open(f"{rel_path}/application.json")) or "run_class" not in load(open(f"{rel_path}/application.json")) or "background-color" not in load(open(f"{rel_path}/application.json")) or "window-size" not in load(open(f"{rel_path}/application.json")):
-		return {"valid": False}
-	if not exists(f"{rel_path}/" + load(open(f"{rel_path}/application.json"))["run"]):
-		return {"valid": False}
-	return {"valid": True, "name": load(open(f"{rel_path}/application.json"))["name"], "path": f"{rel_path}/" + load(open(f"{rel_path}/application.json"))["run"], "run_class": load(open(f"{rel_path}/application.json"))["run_class"], "background-color": load(open(f"{rel_path}/application.json"))["background-color"] if load(open(f"{rel_path}/application.json"))["background-color"].lower() != "default" else returnBackgroundProperties()["background-color"], "window-size": load(open(f"{rel_path}/application.json"))["window-size"]}
+	with open(f"{rel_path}/application.json") as file:
+		properties = load(file)
+		if "name" not in properties or "run" not in properties or "run_class" not in properties or "background-color" not in properties or "window-size" not in properties:
+			return {"valid": False}
+		if not exists(f"{rel_path}/" + properties["run"]):
+			return {"valid": False}
+		return {"valid": True, "name": properties["name"], "path": f"{rel_path}/" + properties["run"], "run_class": properties["run_class"], "background-color": properties["background-color"] if properties["background-color"].lower() != "default" else returnBackgroundProperties()["background-color"], "window-size": properties["window-size"]}
 
 
 def returnApplications() -> dict:
