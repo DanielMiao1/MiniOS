@@ -9,6 +9,7 @@ __import__("import_modules").checkModules()
 
 from os import path, system
 from sys import argv
+from sys import path as sys_path
 
 from config import *
 from dialogs import *
