@@ -20,43 +20,45 @@ class SelectionRectangle(QWidget):
 		self.setGeometry(30, 30, 600, 400)
 		self.begin = QPoint()
 		self.end = QPoint()
-		
+	
 	def paintEvent(self, _):
 		painter = QPainter(self)
 		brush = QBrush(QColor(100, 10, 10, 40))
 		painter.setBrush(brush)
 		painter.drawRect(QRect(self.begin, self.end))
-
+	
 	def mousePressEvent(self, event):
 		self.begin = event.pos()
 		self.end = event.pos()
 		self.update()
-
+	
 	def mouseMoveEvent(self, event):
 		self.end = event.pos()
 		self.update()
-
+	
 	def mouseReleaseEvent(self, event):
 		self.begin = event.pos()
 		self.end = event.pos()
 		self.update()
 
-	
+
 class ApplicationWindow(QWidget):
 	mode = None
 	position = None
 	focus_signal = pyqtSignal(bool)
 	out_focus_signal = pyqtSignal(bool)
 	new_geometry_signal = pyqtSignal(QRect)
-	window_closed = pyqtSignal()
 	
-	def __init__(self, parent, point, child_widget, background_color="default", window_name="Window", toolbar_background_color=returnBackgroundProperties()['background-color-3'], custom_stylesheet="", window_size=QSize(800, 350), restart_window_function=None, allow_resize=True):
+	def __init__(self, parent, point, child_widget, background_color="default", window_name="Window", toolbar_background_color=returnBackgroundProperties()['background-color-3'], custom_stylesheet="",
+			window_size=QSize(800, 350), restart_window_function=None, allow_resize=True):
 		super(ApplicationWindow, self).__init__(parent=parent)
 		if isinstance(window_size, list):
 			if len(window_size) == 2: window_size = QSize(window_size[0], window_size[1])
 		self.resize(window_size)
 		self.setStyleSheet(custom_stylesheet)
-		self.background_color, self.focus, self.is_editing, self.old_position, self.new_position, self.layout, self.shadow, self.restart_window_function, self.toolbar_background_color, self.allow_resize = background_color, True, True, None, None, QVBoxLayout(self), QGraphicsDropShadowEffect(), restart_window_function, toolbar_background_color, allow_resize
+		self.background_color, self.focus, self.is_editing, self.old_position, self.new_position, self.layout, self.shadow, self.restart_window_function, self.toolbar_background_color, \
+		self.allow_resize = background_color, True, True, None, None, QVBoxLayout(
+			self), QGraphicsDropShadowEffect(), restart_window_function, toolbar_background_color, allow_resize
 		self.setGraphicsEffect(self.shadow)
 		self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
 		self.setVisible(True)
@@ -71,9 +73,7 @@ class ApplicationWindow(QWidget):
 		self.setChildWidget(child_widget)
 		self.installEventFilter(parent)
 	
-	def closeWindow(self):
-		self.setParent(None)
-		self.window_closed.emit()
+	def closeWindow(self): self.setParent(None)
 	
 	def restartWindow(self):
 		self.closeWindow()
@@ -118,7 +118,8 @@ class ApplicationWindow(QWidget):
 	
 	def setCursorShape(self, position):
 		if not self.allow_resize: return
-		if ((position.y() > self.y() + self.height() - 3) and (position.x() < self.x() + 3)) or ((position.y() > self.y() + self.height() - 3) and (position.x() > self.x() + self.width() - 3)) or ((position.y() < self.y() + 3) and (position.x() < self.x() + 3)) or (position.y() < self.y() + 3) and (position.x() > self.x() + self.width() - 3):
+		if ((position.y() > self.y() + self.height() - 3) and (position.x() < self.x() + 3)) or ((position.y() > self.y() + self.height() - 3) and (position.x() > self.x() + self.width() - 3)) or (
+				(position.y() < self.y() + 3) and (position.x() < self.x() + 3)) or (position.y() < self.y() + 3) and (position.x() > self.x() + self.width() - 3):
 			if (position.y() > self.y() + self.height() - 3) and (position.x() < self.x() + 3):
 				self.mode = "resize-bottom-left"
 				self.setCursor(QCursor(Qt.SizeBDiagCursor))
@@ -190,7 +191,7 @@ class ApplicationWindow(QWidget):
 		elif self.mode == "resize-bottom-right": self.resize(event.x(), event.y())
 		self.parentWidget().repaint()
 		self.new_geometry_signal.emit(self.geometry())
-		
+	
 	def toolBarMouseMoveEvent(self, event=None):
 		if event is None: return
 		try: self.new_position = event.globalPos() - self.position

@@ -1,13 +1,11 @@
+# -*- coding: utf-8 -*-
 """
 System/overrides.py
 PyQt widget overrides
 Made by Daniel M using Python 3
 """
-
-# Local file imports
 import config
 
-# PyQt imports
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
@@ -42,7 +40,6 @@ class ApplicationWindowToolBar(QToolBar):
 class ToolButton(QToolButton):
 	def __init__(self, parent):
 		super(ToolButton, self).__init__(parent)
-
 
 class GroupBox(QGroupBox):
 	def __init__(self, parent):
@@ -128,7 +125,7 @@ class Buttons:
 			self.setStyleSheet(f"background-color: {config.returnBackgroundProperties()['background-color']}; color: {config.returnBackgroundProperties()['text-color']}; border: none;")
 			super().leaveEvent(event)
 
-
+      
 class PushButton(QPushButton):
 	"""Add QPushButton Animation"""
 	def __init__(self, text="", color="black") -> None:
@@ -188,9 +185,11 @@ class Slider(QWidget):
 		self.slider.valueChanged.connect(self.update_function)
 		self.layout.addWidget(self.slider)
 		
-	def value(self) -> int or float: return self.slider.value()
+	def value(self) -> int or float:
+		return self.slider.value()
 	
-	def setValue(self, value) -> None: self.slider.setValue(value)
+	def setValue(self, value) -> None:
+		self.slider.setValue(value)
 	
 	def paintEvent(self, event) -> None:
 		super(Slider, self).paintEvent(event)
@@ -206,8 +205,10 @@ class Slider(QWidget):
 			position = QStyle.sliderPositionFromValue(self.slider.minimum(), self.slider.maximum(), x, available) + length // 2
 			bottom = self.rect().bottom()
 			if x == self.slider.minimum():
-				if position-rect.width() // 2 + self.left_margin <= 0: self.left_margin = rect.width() // 2 - position
-				if self.bottom_margin <= rect.height(): self.bottom_margin = rect.height()
+				if position-rect.width() // 2 + self.left_margin <= 0:
+					self.left_margin = rect.width() // 2 - position
+				if self.bottom_margin <= rect.height():
+					self.bottom_margin = rect.height()
 				self.layout.setContentsMargins(self.left_margin, self.top_margin, self.right_margin, self.bottom_margin)
 			if x == self.slider.maximum() and rect.width() // 2 >= self.right_margin:
 				self.right_margin = rect.width() // 2
@@ -219,10 +220,11 @@ class WebEngineView(QWebEngineView):
 	def __init__(self, hide_context_menu=False) -> None:
 		super(WebEngineView, self).__init__()
 		self.hide_context_menu = hide_context_menu
-	
-	def contextMenuEvent(self, event) -> None:
-		if self.hide_context_menu: return
-		super(WebEngineView, self).contextMenuEvent(event)
+
+	def contextMenuEvent(self, _) -> None:
+		if self.hide_context_menu:
+			return
+		super(WebEngineView, self).contextMenuEvent()
 
 
 class FileEditLineEdit(QLineEdit):
@@ -231,7 +233,8 @@ class FileEditLineEdit(QLineEdit):
 		self.cancel_function = cancel_function
 	
 	def keyPressEvent(self, event):
-		if event.key() == Qt.Key.Key_Escape and self.cancel_function is not None: self.cancel_function()
+		if event.key() == Qt.Key.Key_Escape and self.cancel_function is not None:
+			self.cancel_function()
 		super(FileEditLineEdit, self).keyPressEvent(event)
 
 

@@ -7,10 +7,10 @@ Made by Daniel M using Python 3
 
 __import__("import_modules").checkModules()
 
-# Library Imports
 import sys
+from os import path, system
+from sys import argv
 
-# Local File Imports
 from config import *
 from dialogs import *
 from widgets import *
@@ -19,16 +19,13 @@ import applications as _applications
 import desktop_files
 import get_file_icon
 
-# PyQt imports
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 
-# Define global variables
 applications, config = _applications.returnApplications(), Config()
 
 print("Starting the Mini Operating System...")  # Print starting message
-
 
 class Window(QMainWindow):
 	"""Main Window"""
@@ -73,12 +70,14 @@ class Window(QMainWindow):
 		self.dock_items = [[QAction(QIcon("System/images/preferences.png"), "Preferences", self)]] # Create dock_items list
 		self.dock_items[0][0].triggered.connect(lambda: self.openPreferences()) # Call self.openPreferences function when the settings icon is pressed
 		for x in applications.keys(): # Iterate through the applications dictionary
-			if os.path.exists(f"Applications/{x}/images/logo_small.png"): self.dock_items.append([QAction(QIcon(f"Applications/{x}/images/logo_small.png"), applications[x]["name"], self), x]) # Add values to dock_items list (with icon if icon path is valid)
+			if path.exists(f"Applications/{x}/images/logo_small.png"):
+				self.dock_items.append([QAction(QIcon(f"Applications/{x}/images/logo_small.png"), applications[x]["name"], self), x]) # Add values to dock_items list (with icon if icon path is valid)
 			else: self.dock_items.append([QAction(applications[x]["name"], self), x]) # Add values to dock_items list without icon (fallback)
 		for x in range(1, len(self.dock_items)):
 			exec(f"self.dock_items[{x}][0].triggered.connect(lambda _, self = self: self.openApplication('{applications[self.dock_items[x][1]]['run_class']}'))") # Connect dock item trigger signal
 			self.dock_items[x][0].setFont(QFont(returnProperties()["font-family"], int(returnProperties()["font-size"]))) # Set font size
-		for x in self.dock_items: self.dock.addAction(x[0]) # Add applications to the dock
+		for x in self.dock_items:
+			self.dock.addAction(x[0]) # Add applications to the dock
 		self.dock.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; border: none; font-size: {returnProperties()['font-size']}") # Set the dock's style properties
 		# Desktop
 		self.files, self.edit_file, self.focused_file = [], [None, None], None # Assign variables
@@ -104,8 +103,10 @@ class Window(QMainWindow):
 	
 	def setFocusedFile(self, file: typing.Union[ToolButton, None] = None):
 		"""Sets the focused file"""
-		if file is None: return # Exit function if file is None
-		if self.focused_file is not None: self.focused_file.setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none;") # If there is already a focused file, reset its stylesheet properties
+		if file is None:
+			return # Exit function if file is None
+		if self.focused_file is not None:
+			self.focused_file.setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none;") # If there is already a focused file, reset its stylesheet properties
 		file.setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none; background-color: {returnBackgroundProperties()['background-color-2']};") # Set the new focused file's stylesheet properties
 		self.focused_file = file # Set focused file variable to file
 		
@@ -116,10 +117,10 @@ class Window(QMainWindow):
 	def openPreferences(self, position: QPoint = QPoint(0, 0)) -> None:
 		"""Opens the preferences window"""
 		self.windows.append(ApplicationWindow(self, position, Preferences(self.updateElements), background_color=returnBackgroundProperties()["background-color-2"], window_name="Preferences", custom_stylesheet="background-color: " + returnBackgroundProperties()["background-color-2"], restart_window_function=self.openPreferences)) # Create new window
-		
-	@staticmethod
+
+  @staticmethod
 	def openAbout() -> None:
-		"""Opens the 'about' dialog"""
+		"""Opens the 'About' dialog"""
 		dialog = AboutDialog() # Call the AboutDialog class
 		dialog.exec_() # Show class
 		
@@ -153,7 +154,8 @@ class Window(QMainWindow):
 			# Show ToolButton and line edit
 			self.edit_file[0].show()
 			self.edit_file[1].show()
-			if not self.file_created_session: self.file_created_session = True # Toggle self.file_created_session variable
+			if not self.file_created_session:
+				self.file_created_session = True # Toggle self.file_created_session variable
 		elif action == new_directory: # New directory
 			# Get row and column count
 			row, column = 0, 40  # Set default values
@@ -193,7 +195,8 @@ class Window(QMainWindow):
 		self.newFileDelete() # Remove tool button and line edit
 		self.edit_file = [None, None] # Clear self.edit_file list
 		# Display new file (by reloading all desktop files)
-		for x in self.files: x.deleteLater() # Remove all desktop widgets
+		for x in self.files:
+			x.deleteLater() # Remove all desktop widgets
 		row, column = 0, 40 # Set default row/column values
 		self.files = [ToolButton(self)] # Reset self.files
 		for x in desktop_files.returnItems().keys(): # Add to desktop
@@ -222,7 +225,8 @@ class Window(QMainWindow):
 		for x in range(len(self.files)):
 			self.files[x].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none") # Set stylesheet
 			self.files[x].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"])) # Set font
-		for x in range(1, len(self.dock_items)): self.dock_items[x][0].setFont(QFont(returnProperties()["font-family"], int(returnProperties()["font-size"]))) # Update font of applications
+		for x in range(1, len(self.dock_items)):
+			self.dock_items[x][0].setFont(QFont(returnProperties()["font-family"], int(returnProperties()["font-size"]))) # Update font of applications
 		self.dock.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; border: none; font-size: {returnProperties()['font-size']}") # Update style of dock toolbar
 		self.clock.setUrl(QUrl(f"https://home.danielmiao1.repl.co/clock.html?background_color={returnBackgroundProperties()['background-color-2'][1:]}&text_color={returnBackgroundProperties()['text-color'][1:]}&font_size={returnProperties()['font-size']}px&font_family={returnProperties()['font-family']}")) # Update clock styles
 		self.options.updateStyleSheets()
@@ -252,7 +256,8 @@ class Window(QMainWindow):
 				if desktop_files.returnItems()[x]["displayname"] == self.focused_file.text(): # If the application is the focused file
 					os.system(f"mv Home/Desktop/{x} Home/Trash/") # Move the file to the Trash directory
 					# Re-arrange desktop files
-					for y in self.files: y.deleteLater()
+					for y in self.files:
+						y.deleteLater()
 					self.focused_file = None
 					self.files, row, column = [], 0, 40
 					for y in desktop_files.returnItems().keys():
@@ -297,7 +302,8 @@ application = QApplication(sys.argv) # Construct application
 window = Window() # Call main Window class
 
 # Application Imports
-for i in applications.keys(): exec(f"sys.path.insert(1, 'Applications/{i}'); " + "from " + applications[i]['file'][:-3] + " import " + applications[i]['run_class']) # Import application files
+for i in applications.keys():
+  exec(f"sys.path.insert(1, 'Applications/{i}'); " + "from " + applications[i]['file'][:-3] + " import " + applications[i]['run_class']) # Import application files
 
 window.show() # Show Main Window
 sys.exit(application.exec_()) # Execute QApplication

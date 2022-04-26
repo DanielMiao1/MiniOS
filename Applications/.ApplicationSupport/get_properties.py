@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Applications/.ApplicationSupport/get_properties.py
 returnProperties function returns dictionary with values from System/config JSON files
@@ -9,7 +10,7 @@ import config
 
 
 def returnProperties() -> dict:
-	return {**config.ThemeConfig.returnConfig(), **config.FontConfig.returnConfig()}
+	return {**config.ThemeConfig.returnConfig(), **config.FontConfig.returnConfig(), **config.WindowConfig.returnConfig()}
 
 
 def returnBackgroundProperties() -> dict:

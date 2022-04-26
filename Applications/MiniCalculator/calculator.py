@@ -6,12 +6,12 @@ Calculator made by Daniel M using Python 3, HTML, CSS, and JavaScript for the Mi
 Main calculator code at calculator/index.html
 """
 
-# Imports
 import os
 
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtWebEngineWidgets import *
+
 
 class Calculator(QMainWindow):
 	"""Main Window"""

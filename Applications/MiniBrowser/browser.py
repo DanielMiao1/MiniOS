@@ -5,7 +5,6 @@ Mini Browser
 Web browser made by Daniel M using Python 3 for the MiniOS project: https://github.com/DanielMiao1/MiniOS
 """
 
-# Library imports
 import os
 import sys
 
@@ -36,7 +35,8 @@ class ToolBar(QToolBar): # PyQt5 widget overrides
 		if e.type() == QEvent.Leave: return True
 		return super(ToolBar, self).event(e)
 
-
+  
+# PyQt5 widget overrides
 class PushButton(QPushButton):
 	"""Add QPushButton Animation"""
 	def __init__(self) -> None:
@@ -46,6 +46,7 @@ class PushButton(QPushButton):
 		self._animation.setEndValue(QColor("black"))
 		self._animation.setDuration(200)
 		self._animation.valueChanged.connect(self.valueChanged)
+		self._animation = QVariantAnimation(startValue=QColor("white"), endValue=QColor("#18082C"), valueChanged=self.valueChanged, duration=200)
 		self.updateStylesheet(QColor("#18082C"), QColor("white"))
 		self.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
@@ -120,6 +121,7 @@ class TabWidget(QTabWidget):
 	def dropEvent(self, event) -> None:
 		print(event)
 
+
 # Dialogs
 
 
@@ -143,8 +145,9 @@ class AboutDialog(QDialog):
 		template.addWidget(title, 1, 2)
 		template.addWidget(QLabel("The Mini Browser is made using Python 3 and the\nPyQt Library by Daniel M"), 2, 2)
 		template.addWidget(image_label, 2, 1)
-		for i in range(template.count()): template.itemAt(i).setAlignment(Qt.AlignmentFlag.AlignHCenter) # Align all widgets to center
-		self.setStyleSheet(f"color: {get_properties.returnBackgroundProperties()['text-color']}; background-color: #18082C;") # Set background color of dialog to #18082C and color of text to white
+		for i in range(template.count()):
+			template.itemAt(i).setAlignment(Qt.AlignmentFlag.AlignHCenter) # Align all widgets to center
+		self.setStyleSheet("color: white; background-color: #18082C;") # Set background color of dialog to #18082C and color of text to white
 		self.setLayout(template) # Display the widgets
 
 
@@ -172,7 +175,8 @@ class ConfigDialog(QDialog):
 		self.template.addWidget(title, 1, 1)
 		self.template.addWidget(self.history_size, 2, 1)
 		self.template.addWidget(self.history, 2, 2)
-		for i in range(self.template.count()): self.template.itemAt(i).setAlignment(Qt.AlignmentFlag.AlignHCenter) # Align all widgets to center
+		for i in range(self.template.count()):
+			self.template.itemAt(i).setAlignment(Qt.AlignmentFlag.AlignHCenter) # Align all widgets to center
 		self.setStyleSheet("color: white; background-color: #18082C;") # Set background color of dialog to #18082C and color of text to white
 		self.setLayout(self.template) # Display the widgets
 
@@ -255,7 +259,8 @@ class Browser(QMainWindow):
 		self.bookmarks_actions[1].triggered.connect(lambda: self.newTab(url=QUrl("https://www.youtube.com"), label="YouTube"))
 		self.bookmarks_actions[2].triggered.connect(lambda: self.newTab(url=QUrl("https://mail.google.com"), label="Gmail"))
 		self.bookmarks_actions[3].triggered.connect(lambda: self.newTab(url=QUrl("https://docs.google.com"), label="Google Docs"))
-		for i in range(4): self.bookmarks.addAction(self.bookmarks_actions[i])
+		for i in range(4):
+      self.bookmarks.addAction(self.bookmarks_actions[i])
 		self.bookmarks.setStyleSheet(f"border-top: 1px solid {get_properties.returnBackgroundProperties()['text-color']}; border: 2px solid {get_properties.returnBackgroundProperties()['background-color-2']}; background-color: {get_properties.returnBackgroundProperties()['background-color-2']}; font-size: {get_properties.returnProperties()['font-size']}; font-family: {get_properties.returnProperties()['font-family']}")
 		self.navigation.setMovable(False) # Pin the 'navigation' toolbar
 		self.url_bar.setFixedWidth(1275)
@@ -302,7 +307,8 @@ class Browser(QMainWindow):
 
 	def closeTab(self, url: QUrl) -> None:
 		"""Close tab"""
-		if self.tabs.count() < 2: return
+		if self.tabs.count() < 2:
+			return
 		self.tabs.removeTab(url)
 
 	def toHome(self) -> None:
@@ -313,15 +319,19 @@ class Browser(QMainWindow):
 	def toURL(self) -> None:
 		"""Go to the url given in the URL box or search google"""
 		url = QUrl(self.url_bar.text())
-		if url in ["browser://home", "browser:home"]: self.tabs.currentWidget().setUrl("https://home.danielmiao1.repl.co/")
+		if url in ["browser://home", "browser:home"]:
+			self.tabs.currentWidget().setUrl("https://home.danielmiao1.repl.co/")
 		else:
-			if list(url.toString()).count(".") == 0: url = QUrl(f"https://www.google.com/search?q={url.toString()}")
-			elif url.scheme() == "": url = QUrl("http://" + url.toString())
+			if list(url.toString()).count(".") == 0:
+				url = QUrl(f"https://www.google.com/search?q={url.toString()}")
+			elif url.scheme() == "":
+				url = QUrl("http://" + url.toString())
 			self.tabs.currentWidget().setUrl(url)
 
 	def updateURLBox(self, url, engine=None) -> None:
 		"""Update URL box text to the relative URL when URL changed"""
-		if engine != self.tabs.currentWidget(): return
+		if engine != self.tabs.currentWidget():
+			return
 		if not url.toString == "":
 			open("Applications/MiniBrowser/config/history.txt", "a+").write(f"{url.toString()}\n")
 			self.url_bar.setText(url.toString())
@@ -331,10 +341,14 @@ class Browser(QMainWindow):
 		"""Set context menu for central widget"""
 		menu = QMenu(self)
 		(back, forward, reload, home, action) = (menu.addAction("Back                "), menu.addAction("Forward             "), menu.addAction("Reload              "), menu.addAction("Home                "), menu.exec_(self.mapToGlobal(event.pos())))
-		if action == back: self.tabs.currentWidget().back()
-		elif action == forward: self.tabs.currentWidget().forward()
-		elif action == reload: self.tabs.currentWidget().reload()
-		elif action == home: self.toHome()
+		if action == back:
+			self.tabs.currentWidget().back()
+		elif action == forward:
+			self.tabs.currentWidget().forward()
+		elif action == reload:
+			self.tabs.currentWidget().reload()
+		elif action == home:
+			self.toHome()
 
 	@staticmethod # Set function openAbout static
 	def openAbout() -> None:
