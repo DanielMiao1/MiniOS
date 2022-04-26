@@ -35,6 +35,7 @@ class Window(QMainWindow):
 	def __init__(self, parent=None) -> None:
 		"""Main window __init__"""
 		super(Window, self).__init__(parent=parent) # Call super class __init__ function
+		self.showing_keyboard_viewer = False
 		self.file_created_session = False # Set file_created_session variable to False
 		self.setWindowFlag(Qt.WindowType.FramelessWindowHint) # Remove window frame
 		self.setStyleSheet("background-color: " + returnBackgroundProperties()["background-color"]) # Set window style
@@ -271,9 +272,21 @@ class Window(QMainWindow):
 						self.files[-1].show()
 						column += 100
 					break # Exit loop
+		
+		if self.showing_keyboard_viewer:
+			self.showing_keyboard_viewer.child_widget.highlightKey(event)
+	
+	def keyReleaseEvent(self, event) -> None:
+		if self.showing_keyboard_viewer:
+			self.showing_keyboard_viewer.child_widget.stopHighlightKey(event)
 	
 	def showKeyboardViewer(self):
-		self.windows.append(ApplicationWindow(self, QPoint(0, 0), KeyboardViewer(), background_color=returnBackgroundProperties()["background-color"], window_name="Keyboard Viewer", custom_stylesheet="background-color: " + returnBackgroundProperties()["background-color"], window_size=QSize(400, 500), allow_resize=False))
+		def closeKeyboardViewer():
+			self.showing_keyboard_viewer = False
+
+		self.windows.append(ApplicationWindow(self, QPoint(0, 0), KeyboardViewer(), background_color=returnBackgroundProperties()["background-color"], window_name="Keyboard Viewer", custom_stylesheet="background-color: " + returnBackgroundProperties()["background-color"], window_size=QSize(600, 250), allow_resize=False))
+		self.showing_keyboard_viewer = self.windows[-1]
+		self.windows[-1].window_closed.connect(closeKeyboardViewer)
 	
 	def shutDownWindow(self):
 		self.windows.append(ApplicationWindow(self, QPoint(0, 0), ShutDownWindow(QApplication.quit), background_color=returnBackgroundProperties()["background-color-3"], window_name="Shut Down", custom_stylesheet="background-color: " + returnBackgroundProperties()["background-color-3"], window_size=QSize(250, 100)))

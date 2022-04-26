@@ -143,61 +143,57 @@ class ShutDownWindow(QWidget):
 
 class KeyboardViewer(QWidget):
 	"""Keyboard Viewer Window"""
+	class KeyGroup(QGroupBox):
+		def __init__(self, parent):
+			super(KeyboardViewer.KeyGroup, self).__init__(parent)
+			self.setStyleSheet("border: none;")
+			self.setLayout(QHBoxLayout())
+			self.layout().setSpacing(0)
+			self.layout().setContentsMargins(0, 0, 0, 0)
+	
 	def __init__(self):
 		super(KeyboardViewer, self).__init__()
 		self.setCursor(Qt.ArrowCursor)
 		self.setStyleSheet("background-color: #FFFFFF")
 		self.layout = QVBoxLayout()
-		self.layout.setSpacing(5)
-		self.groups, self.group_layouts = {
-			"functions": overrides.GroupBox(self),
-			"numbers": overrides.GroupBox(self),
-			"r1": overrides.GroupBox(self),
-			"r2": overrides.GroupBox(self),
-			"r3": overrides.GroupBox(self),
-			"modifiers": overrides.GroupBox(self)
-		}, {
-			"functions": QHBoxLayout(),
-			"numbers": QHBoxLayout(),
-			"r1": QHBoxLayout(),
-			"r2": QHBoxLayout(),
-			"r3": QHBoxLayout(),
-			"modifiers": QHBoxLayout()
+		self.layout.setSpacing(0)
+		self.groups = {
+			"functions": KeyboardViewer.KeyGroup(self),
+			"numbers": KeyboardViewer.KeyGroup(self),
+			"r1": KeyboardViewer.KeyGroup(self),
+			"r2": KeyboardViewer.KeyGroup(self),
+			"r3": KeyboardViewer.KeyGroup(self),
+			"modifiers": KeyboardViewer.KeyGroup(self)
 		}
+		self.groups["functions"].move(QPoint(0, 0))
+		self.groups["numbers"].move(QPoint(0, 35))
+		self.groups["r1"].move(QPoint(0, 70))
+		self.groups["r2"].move(QPoint(0, 105))
+		self.groups["r3"].move(QPoint(0, 140))
+		self.groups["modifiers"].move(QPoint(0, 175))
 		self.buttons = []
 		for i in ["`", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "⌫"]:
-			self.buttons.append(overrides.Buttons.KeyboardButton(self.groups["numbers"], text=i, size=QSize(40, 20) if i == "⌫" else QSize(20, 20)))
-			self.buttons[-1].move(((len(self.buttons) - 1) * 20) + (len(self.buttons) * 5), 0)
-			self.group_layouts["numbers"].addWidget(self.buttons[-1])
-		self.buttons.append(overrides.Buttons.KeyboardButton(self.groups["r1"], icon=QIcon("System/images/characters/tab.png"), size=QSize(40, 20)))
-		self.buttons[-1].move(5, 0)
-		self.group_layouts["r1"].addWidget(self.buttons[-1])
+			self.buttons.append(overrides.Buttons.KeyboardButton(self.groups["numbers"], text=i, size=QSize(50, 35) if i == "⌫" else QSize(35, 35)))
+			self.groups["numbers"].layout().addWidget(self.buttons[-1])
+		self.buttons.append(overrides.Buttons.KeyboardButton(self.groups["r1"], icon=QIcon("System/images/characters/tab.png"), size=QSize(45, 35)))
+		self.groups["r1"].layout().addWidget(self.buttons[-1])
 		for i in ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]", "\\"]:
-			self.buttons.append(overrides.Buttons.KeyboardButton(self.groups["r1"], text=i))
-			self.buttons[-1].move(((len(self.buttons) - 14) * 20) + ((len(self.buttons) - 14) * 5), 0)
-			self.group_layouts["r1"].addWidget(self.buttons[-1])
-		self.buttons.append(overrides.Buttons.KeyboardButton(self.groups["r2"], text="Caps Lock", size=QSize(45, 20)))
-		self.buttons[-1].move(5, 0)
-		self.buttons[-1].setFont(QFont(returnProperties()["font-family"], 8))
-		self.group_layouts["r2"].addWidget(self.buttons[-1])
+			self.buttons.append(overrides.Buttons.KeyboardButton(self.groups["r1"], text=i, size=QSize(35, 35)))
+			self.groups["r1"].layout().addWidget(self.buttons[-1])
+		self.buttons.append(overrides.Buttons.KeyboardButton(self.groups["r2"], text="Caps Lock", size=QSize(60, 35)))
+		self.groups["r2"].layout().addWidget(self.buttons[-1])
 		for i in ["a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "'"]:
-			self.buttons.append(overrides.Buttons.KeyboardButton(self.groups["r2"], text=i, size=QSize(20, 20)))
-			self.buttons[-1].move(((len(self.buttons) - 28) * 20) + ((len(self.buttons) - 27) * 5), 0)
-			self.group_layouts["r2"].addWidget(self.buttons[-1])
-		self.buttons.append(overrides.Buttons.KeyboardButton(self.groups["r2"], text="Return", size=QSize(35, 20)))
-		self.buttons[-1].move(330, 0)
-		self.buttons[-1].setFont(QFont(returnProperties()["font-family"], 8))
-		self.group_layouts["r2"].addWidget(self.buttons[-1])
-		self.buttons.append(overrides.Buttons.KeyboardButton(self.groups["r3"], text="Shift", size=QSize(55, 20)))
-		self.buttons[-1].move(5, 0)
-		self.group_layouts["r3"].addWidget(self.buttons[-1])
+			self.buttons.append(overrides.Buttons.KeyboardButton(self.groups["r2"], text=i, size=QSize(35, 35)))
+			self.groups["r2"].layout().addWidget(self.buttons[-1])
+		self.buttons.append(overrides.Buttons.KeyboardButton(self.groups["r2"], text="Return", size=QSize(50, 35)))
+		self.groups["r2"].layout().addWidget(self.buttons[-1])
+		self.buttons.append(overrides.Buttons.KeyboardButton(self.groups["r3"], text="Shift", size=QSize(65, 35)))
+		self.groups["r3"].layout().addWidget(self.buttons[-1])
 		for i in ["z", "x", "c", "v", "b", "n", "m", ",", ".", "/"]:
-			self.buttons.append(overrides.Buttons.KeyboardButton(self.groups["r3"], text=i, size=QSize(20, 20)))
-			self.buttons[-1].move(((len(self.buttons) - 41) * 20) + ((len(self.buttons) - 38) * 5), 0)
-			self.group_layouts["r3"].addWidget(self.buttons[-1])
-		self.buttons.append(overrides.Buttons.KeyboardButton(self.groups["r3"], text="Shift", size=QSize(55, 20)))
-		self.buttons[-1].move(315, 0)
-		self.group_layouts["r3"].addWidget(self.buttons[-1])
+			self.buttons.append(overrides.Buttons.KeyboardButton(self.groups["r3"], text=i, size=QSize(35, 35)))
+			self.groups["r3"].layout().addWidget(self.buttons[-1])
+		self.buttons.append(overrides.Buttons.KeyboardButton(self.groups["r3"], text="Shift", size=QSize(65, 35)))
+		self.groups["r3"].layout().addWidget(self.buttons[-1])
 		self.layout.addWidget(self.groups["functions"])
 		self.layout.addWidget(self.groups["numbers"])
 		self.layout.addWidget(self.groups["r1"])
@@ -206,6 +202,46 @@ class KeyboardViewer(QWidget):
 		self.layout.addWidget(self.groups["modifiers"])
 		self.layout.addStretch()
 		self.setLayout(self.layout)
+	
+	def getKey(self, event):
+		if event.text() in ["`", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "="]:
+			return self.buttons[["`", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "="].index(event.text())]
+		elif event.key() in [Qt.Key.Key_Backspace, Qt.Key.Key_Delete]:
+			return self.buttons[13]
+		elif event.key() == Qt.Key.Key_Tab:
+			return self.buttons[14]
+		elif event.text() in ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]", "\\"]:
+			return self.buttons[["q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]", "\\"].index(event.text()) + 15]
+		elif event.key() == Qt.Key.Key_CapsLock:
+			return self.buttons[28]
+		elif event.text() in ["a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "'"]:
+			return self.buttons[["a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "'"].index(event.text()) + 29]
+		elif event.key() in [Qt.Key.Key_Return, Qt.Key.Key_Enter]:
+			return self.buttons[40]
+		elif event.key() == Qt.Key.Key_Shift:
+			return [self.buttons[41], self.buttons[52]]
+		elif event.text() in ["z", "x", "c", "v", "b", "n", "m", ",", ".", "/"]:
+			return self.buttons[["z", "x", "c", "v", "b", "n", "m", ",", ".", "/"].index(event.text()) + 42]
+	
+	def highlightKey(self, event):
+		key = self.getKey(event)
+		if key is None:
+			return
+		if isinstance(key, list):
+			for i in key:
+				i.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; color: {returnBackgroundProperties()['text-color']}; border: none;")
+		else:
+			key.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; color: {returnBackgroundProperties()['text-color']}; border: none;")
+	
+	def stopHighlightKey(self, event):
+		key = self.getKey(event)
+		if key is None:
+			return
+		if isinstance(key, list):
+			for i in key:
+				i.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color']}; color: {returnBackgroundProperties()['text-color']}; border: none;")
+		else:
+			key.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color']}; color: {returnBackgroundProperties()['text-color']}; border: none;")
 
 
 class AboutDialog(QDialog):

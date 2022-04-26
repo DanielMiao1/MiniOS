@@ -48,6 +48,7 @@ class ApplicationWindow(QWidget):
 	focus_signal = pyqtSignal(bool)
 	out_focus_signal = pyqtSignal(bool)
 	new_geometry_signal = pyqtSignal(QRect)
+	window_closed = pyqtSignal()
 	
 	def __init__(self, parent, point, child_widget, background_color="default", window_name="Window", toolbar_background_color=returnBackgroundProperties()['background-color-3'], custom_stylesheet="", window_size=QSize(800, 350), restart_window_function=None, allow_resize=True):
 		super(ApplicationWindow, self).__init__(parent=parent)
@@ -70,7 +71,9 @@ class ApplicationWindow(QWidget):
 		self.setChildWidget(child_widget)
 		self.installEventFilter(parent)
 	
-	def closeWindow(self): self.setParent(None)
+	def closeWindow(self):
+		self.setParent(None)
+		self.window_closed.emit()
 	
 	def restartWindow(self):
 		self.closeWindow()
