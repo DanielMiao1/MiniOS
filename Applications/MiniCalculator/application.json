@@ -3,5 +3,5 @@
 	"run": "calculator.py",
 	"run_class": "Calculator",
 	"background-color": "default",
-	"window-size": [500, 500]
+	"window-size": [300, 470]
 }
