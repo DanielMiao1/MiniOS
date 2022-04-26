@@ -10,8 +10,7 @@ from json import load
 # from main import Window
 from config import returnProperties, returnBackgroundProperties, Themes
 from widgets import Slider
-from widgets.buttons import PushButton
-import overrides
+from widgets.buttons import *
 
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
@@ -31,8 +30,8 @@ class Preferences(QWidget):
 			"theme-label": [QLabel("Theme"), [3, 1]],
 			"theme-group-box": [QGroupBox(self), [3, 2]],
 			"font-size-label": [QLabel("Font Size"), [5, 1]],
-			"font-size": [overrides.Slider(5, 20, int(returnProperties()["font-size"]), self.changeFontSize), [5, 2]],
-			"reset-font-size": [overrides.PushButton("Reset"), [5, 3]],
+			"font-size": [Slider(5, 20, int(returnProperties()["font-size"]), self.changeFontSize), [5, 2]],
+			"reset-font-size": [PushButton("Reset"), [5, 3]],
 			"font-family-label": [QLabel("Font Family"), [6, 1]],
 			"font-family": [QComboBox(self), [6, 2]]
 		}, {}, {}
@@ -131,7 +130,7 @@ class ShutDownWindow(QWidget):
 	def __init__(self, shut_down_function) -> None:
 		super(ShutDownWindow, self).__init__()
 		self.setCursor(Qt.ArrowCursor)
-		self.layout, self.cancel, self.confirm = QHBoxLayout(), overrides.Buttons.CancelButton(self, text="Cancel"), overrides.Buttons.ContinueButton(self, text="Shut Down")
+		self.layout, self.cancel, self.confirm = QHBoxLayout(), Buttons.CancelButton(self, text="Cancel"), Buttons.ContinueButton(self, text="Shut Down")
 		self.cancel.pressed.connect(self.closeWindow)
 		self.confirm.pressed.connect(shut_down_function)
 		self.layout.addWidget(self.cancel)
@@ -174,26 +173,26 @@ class KeyboardViewer(QWidget):
 		self.groups["modifiers"].move(QPoint(0, 175))
 		self.buttons = []
 		for i in ["`", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "⌫"]:
-			self.buttons.append(overrides.Buttons.KeyboardButton(self.groups["numbers"], text=i, size=QSize(50, 35) if i == "⌫" else QSize(35, 35)))
+			self.buttons.append(Buttons.KeyboardButton(self.groups["numbers"], text=i, size=QSize(50, 35) if i == "⌫" else QSize(35, 35)))
 			self.groups["numbers"].layout().addWidget(self.buttons[-1])
-		self.buttons.append(overrides.Buttons.KeyboardButton(self.groups["r1"], icon=QIcon("System/images/characters/tab.png"), size=QSize(45, 35)))
+		self.buttons.append(Buttons.KeyboardButton(self.groups["r1"], icon=QIcon("System/images/characters/tab.png"), size=QSize(45, 35)))
 		self.groups["r1"].layout().addWidget(self.buttons[-1])
 		for i in ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]", "\\"]:
-			self.buttons.append(overrides.Buttons.KeyboardButton(self.groups["r1"], text=i, size=QSize(35, 35)))
+			self.buttons.append(Buttons.KeyboardButton(self.groups["r1"], text=i, size=QSize(35, 35)))
 			self.groups["r1"].layout().addWidget(self.buttons[-1])
-		self.buttons.append(overrides.Buttons.KeyboardButton(self.groups["r2"], text="Caps Lock", size=QSize(60, 35)))
+		self.buttons.append(Buttons.KeyboardButton(self.groups["r2"], text="Caps Lock", size=QSize(60, 35)))
 		self.groups["r2"].layout().addWidget(self.buttons[-1])
 		for i in ["a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "'"]:
-			self.buttons.append(overrides.Buttons.KeyboardButton(self.groups["r2"], text=i, size=QSize(35, 35)))
+			self.buttons.append(Buttons.KeyboardButton(self.groups["r2"], text=i, size=QSize(35, 35)))
 			self.groups["r2"].layout().addWidget(self.buttons[-1])
-		self.buttons.append(overrides.Buttons.KeyboardButton(self.groups["r2"], text="Return", size=QSize(50, 35)))
+		self.buttons.append(Buttons.KeyboardButton(self.groups["r2"], text="Return", size=QSize(50, 35)))
 		self.groups["r2"].layout().addWidget(self.buttons[-1])
-		self.buttons.append(overrides.Buttons.KeyboardButton(self.groups["r3"], text="Shift", size=QSize(65, 35)))
+		self.buttons.append(Buttons.KeyboardButton(self.groups["r3"], text="Shift", size=QSize(65, 35)))
 		self.groups["r3"].layout().addWidget(self.buttons[-1])
 		for i in ["z", "x", "c", "v", "b", "n", "m", ",", ".", "/"]:
-			self.buttons.append(overrides.Buttons.KeyboardButton(self.groups["r3"], text=i, size=QSize(35, 35)))
+			self.buttons.append(Buttons.KeyboardButton(self.groups["r3"], text=i, size=QSize(35, 35)))
 			self.groups["r3"].layout().addWidget(self.buttons[-1])
-		self.buttons.append(overrides.Buttons.KeyboardButton(self.groups["r3"], text="Shift", size=QSize(65, 35)))
+		self.buttons.append(Buttons.KeyboardButton(self.groups["r3"], text="Shift", size=QSize(65, 35)))
 		self.groups["r3"].layout().addWidget(self.buttons[-1])
 		self.layout.addWidget(self.groups["functions"])
 		self.layout.addWidget(self.groups["numbers"])

@@ -12,8 +12,8 @@ sys.path.insert(0, "../")
 
 
 from config import returnBackgroundProperties
+import config
 from datetime import datetime
-from overrides import ApplicationWindowToolBar
 
 # PyQt imports
 from PyQt5.QtGui import *
@@ -111,6 +111,36 @@ class SelectionRectangle(QWidget):
 		self.begin = event.pos()
 		self.end = event.pos()
 		self.update()
+
+
+class GroupBox(QGroupBox):
+	def __init__(self, parent):
+		super(GroupBox, self).__init__(parent=parent)
+		self.setFixedHeight(20)
+		# self.setStyleSheet("background-color: white; border: none;")
+
+
+class ApplicationWindowToolBar(QToolBar):
+	def __init__(self, background_color, mouse_move_event=None, window_name="Window", close_application_window_function=None):
+		super(ApplicationWindowToolBar, self).__init__()
+		self.setStyleSheet(f"background-color: {background_color}; border: 4px solid {background_color}; color: {config.returnBackgroundProperties()['text-color']};")
+		self.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+		self.setCursor(Qt.ArrowCursor)
+		self.mouse_move_event = mouse_move_event
+		self.close = QAction("×", self)
+		if close_application_window_function is not None: self.close.triggered.connect(close_application_window_function)
+		self.spacer = QWidget()
+		self.spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+		self.window_name = QAction(window_name, self)
+		self.addAction(self.close)
+		self.addWidget(self.spacer)
+		self.addAction(self.window_name)
+	
+	def mouseMoveEvent(self, event):
+		if self.mouse_move_event is not None: self.mouse_move_event(event)
+		super(ApplicationWindowToolBar, self).mouseMoveEvent(event)
+	
+	def contextMenuEvent(self, _: QContextMenuEvent) -> None: pass
 
 
 class ApplicationWindow(QWidget):
@@ -395,3 +425,116 @@ class Clock(Widget):
 		self.font_size = styles["font_size"] if "font_size" in styles else self.font_size
 		self.font_family = styles["font_family"] if "font_family" in styles else self.font_family
 		self.setStyleSheet(f"background-color: {self.background}; color: {self.color}; font-size: {self.font_size}px; font-family: {self.font_family};")
+
+
+class WebEngineView(QWebEngineView):
+	def __init__(self, hide_context_menu=False) -> None:
+		super(WebEngineView, self).__init__()
+		self.hide_context_menu = hide_context_menu
+
+	def contextMenuEvent(self, _) -> None:
+		if self.hide_context_menu:
+			return
+		super(WebEngineView, self).contextMenuEvent()
+
+
+class FileEditLineEdit(QLineEdit):
+	def __init__(self, parent, cancel_function=None) -> None:
+		super(FileEditLineEdit, self).__init__(parent)
+		self.cancel_function = cancel_function
+	
+	def keyPressEvent(self, event):
+		if event.key() == Qt.Key.Key_Escape and self.cancel_function is not None:
+			self.cancel_function()
+		super(FileEditLineEdit, self).keyPressEvent(event)
+
+
+class MenuLabel(QLabel):
+	def __init__(self, parent, text: str = "", mouse_pressed_event=None):
+		"""Initialization"""
+		super(MenuLabel, self).__init__(text, parent)
+		self.setCursor(Qt.CursorShape.PointingHandCursor)
+		self.mouse_pressed_event = mouse_pressed_event
+		self.setStyleSheet(f"color: {config.returnBackgroundProperties()['text-color']}; background-color: {config.returnBackgroundProperties()['background-color-2']};")
+		self.setFont(QFont(config.returnProperties()["font-family"], config.returnProperties()["font-size"]))
+		self.resize(100, 25)
+		self.hide()
+		
+	def updateStyleSheets(self):
+		self.setFont(QFont(config.returnProperties()["font-family"], config.returnProperties()["font-size"]))
+		self.setStyleSheet(f"color: {config.returnBackgroundProperties()['text-color']}; background-color: {config.returnBackgroundProperties()['background-color-2']};")
+	
+	def mousePressEvent(self, _: QMouseEvent) -> None:
+		"""Call mouse press event function"""
+		self.setStyleSheet(f"color: {config.returnBackgroundProperties()['text-color']}; background-color: {config.returnBackgroundProperties()['background-color']};")
+		if self.mouse_pressed_event is not None: self.mouse_pressed_event()
+	
+	def mouseReleaseEvent(self, _: QMouseEvent) -> None:
+		self.setStyleSheet(f"color: {config.returnBackgroundProperties()['text-color']}; background-color: {config.returnBackgroundProperties()['background-color-3']};")
+	
+	def enterEvent(self, _: QEvent) -> None:
+		self.setStyleSheet(f"color: {config.returnBackgroundProperties()['text-color']}; background-color: {config.returnBackgroundProperties()['background-color-3']};")
+	
+	def leaveEvent(self, _: QEvent) -> None:
+		self.setStyleSheet(f"color: {config.returnBackgroundProperties()['text-color']}; background-color: {config.returnBackgroundProperties()['background-color-2']};")
+
+
+class OptionsMenu(QPushButton):
+	def __init__(self, parent, close_event=None, keyboard_viewer_event=None):
+		super(OptionsMenu, self).__init__(parent=parent)
+		self.setFixedSize(QSize(100, 25))
+		self.setStyleSheet(f"background-color: {config.returnBackgroundProperties()['background-color-2']}; color: {config.returnBackgroundProperties()['text-color']}; border: none;")
+		self.group_box, self.parent_widget, self.activated, self.group_box_layout, self.close_event = QGroupBox(parent), parent, False, QVBoxLayout(), close_event
+		self.buttons = {
+			"shut-down": MenuLabel(self.group_box, text=" Shut Down", mouse_pressed_event=lambda: self.closeMenu(self.close_event)),
+			"keyboard-viewer": MenuLabel(self.group_box, text=" Show Keyboard", mouse_pressed_event=lambda: self.closeMenu(keyboard_viewer_event))
+		}
+		self.buttons["shut-down"].move(0, 25)
+		self.group_box_layout.addWidget(self.buttons["shut-down"])
+		self.group_box_layout.addWidget(self.buttons["keyboard-viewer"])
+		self.setCursor(Qt.CursorShape.PointingHandCursor)
+		self.setText("Options")
+		self.pressed.connect(self.mousePressed)
+		self.group_box.resize(100, 50)
+		self.group_box.setStyleSheet(f"QGroupBox {{ background-color: {config.returnBackgroundProperties()['background-color-2']}; border: none; }};")
+		self.setFont(QFont(config.returnProperties()["font-family"], config.returnProperties()["font-size"]))
+		self.group_box.hide()
+	
+	def updateStyleSheets(self):
+		self.group_box.setStyleSheet(f"QGroupBox {{ background-color: {config.returnBackgroundProperties()['background-color-2']}; border: none; }};")
+		self.setFont(QFont(config.returnProperties()["font-family"], config.returnProperties()["font-size"]))
+		self.buttons["shut-down"].updateStyleSheets()
+		self.buttons["keyboard-viewer"].updateStyleSheets()
+	
+	def updateMenuPosition(self, x: int or None = None, y: int or str or None = None):
+		if x is None: x = self.group_box.pos().x()
+		if y is None: y = self.group_box.pos().y()
+		if y == "default": y = self.pos().y() + self.height() + 8
+		self.group_box.move(QPoint(x, y))
+	
+	def closeMenu(self, run_event=None):
+		self.setStyleSheet(f"background-color: {config.returnBackgroundProperties()['background-color-3']}; color: {config.returnBackgroundProperties()['text-color']}; border: none;")
+		self.group_box.hide()
+		self.buttons["shut-down"].hide()
+		self.buttons["keyboard-viewer"].hide()
+		self.activated = False
+		if run_event is not None: run_event()
+	
+	def mousePressed(self):
+		self.setStyleSheet(f"background-color: {config.returnBackgroundProperties()['background-color']}; color: {config.returnBackgroundProperties()['text-color']}; border: none;")
+		if self.activated: self.closeMenu()
+		else:
+			self.group_box.show()
+			self.buttons["shut-down"].show()
+			self.buttons["keyboard-viewer"].show()
+			self.activated = True
+	
+	# def mouseReleaseEvent(self, _: QMouseEvent) -> None:
+	# 	self.setStyleSheet(f"background-color: {config.returnBackgroundProperties()['background-color-3']}; color: {config.returnBackgroundProperties()['text-color']}; border: none;")
+	
+	def enterEvent(self, _: QEvent) -> None:
+		self.setStyleSheet(f"background-color: {config.returnBackgroundProperties()['background-color-3']}; color: {config.returnBackgroundProperties()['text-color']}; border: none;")
+	
+	def leaveEvent(self, _: QEvent) -> None:
+		self.setStyleSheet(f"background-color: {config.returnBackgroundProperties()['background-color' + ('' if self.activated else '-2')]}; color: {config.returnBackgroundProperties()['text-color']}; border: none;")
+

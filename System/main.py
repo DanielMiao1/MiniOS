@@ -19,7 +19,6 @@ from widgets.buttons import *
 from applications import *
 from desktop_files import returnItems
 from get_file_icon import getFileIcon
-from overrides import *
 import applications as _applications
 import desktop_files
 import get_file_icon
