@@ -8,11 +8,9 @@ Web browser made by Daniel M using Python 3 for the MiniOS project: https://gith
 import os
 import sys
 
-# Local file imports
 sys.path.insert(1, "Applications/.ApplicationSupport")
 import get_properties
 
-# PyQt imports
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *

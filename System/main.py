@@ -8,20 +8,17 @@ Made by Daniel M using Python 3
 __import__("import_modules").checkModules()
 
 import sys
-from os import path, system
-from sys import argv
+from os import path
 from sys import path as sys_path
 
 from config import *
 from dialogs import *
 from widgets import *
 from widgets.buttons import *
+from widgets import dock
 from applications import *
-from desktop_files import returnItems
-from get_file_icon import getFileIcon
 import applications as _applications
-import desktop_files
-import get_file_icon
+import desktop
 
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
@@ -104,14 +101,14 @@ class Window(QMainWindow):
 		# Desktop
 		self.files, self.edit_file, self.focused_file = [], [None, None], None # Assign variables
 		row, column = 0, 40 # Set default row and column variable
-		for x in desktop_files.returnItems().keys():
+		for x in desktop.returnItems().keys():
 			if column + 137.5 > self.window_size[1]:
 				row += 1
 				column = 40
 			self.files.append(ToolButton(self)) # Append new ToolButton
 			self.files[-1].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none;") # Set style
-			self.files[-1].setText(desktop_files.returnItems()[x]["displayname"]) # Set text
-			self.files[-1].setIcon(get_file_icon.getFileIcon(desktop_files.returnItems()[x]["extension"], desktop_files.returnItems()[x]["type"])) # Set icon
+			self.files[-1].setText(desktop.returnItems()[x]["displayname"]) # Set text
+			self.files[-1].setIcon(desktop.getFileIcon(desktop.returnItems()[x]["extension"], desktop.returnItems()[x]["type"])) # Set icon
 			self.files[-1].setIconSize(QSize(75, 75)) # Set icon size
 			self.files[-1].resize(68, 100) # Resize
 			self.files[-1].setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon) # Set text/icon position
@@ -162,7 +159,7 @@ class Window(QMainWindow):
 			# ToolButton properties
 			self.edit_file[0].resize(68, 100) # Resize
 			self.edit_file[0].move(row * 70, column - (100 if self.file_created_session else 0) - (8 if column - 8 != 32 else 0 if not self.file_created_session else -100)) # Move
-			self.edit_file[0].setIcon(get_file_icon.getFileIcon("", "")) # Set default icon
+			self.edit_file[0].setIcon(desktop.getFileIcon("", "")) # Set default icon
 			self.edit_file[0].setIconSize(QSize(75, 75)) # Set icon size
 			self.edit_file[0].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none") # Set styles
 			# Line edit properties
@@ -190,7 +187,7 @@ class Window(QMainWindow):
 			# ToolButton properties
 			self.edit_file[0].resize(68, 100) # Resize
 			self.edit_file[0].move(row * 70, column - (100 if self.file_created_session else 0) - (8 if column - 8 != 32 else 0 if not self.file_created_session else -100)) # Move
-			self.edit_file[0].setIcon(get_file_icon.getFileIcon("", "directory")) # Set default icon
+			self.edit_file[0].setIcon(desktop.getFileIcon("", "directory")) # Set default icon
 			self.edit_file[0].setIconSize(QSize(75, 75)) # Set icon size
 			self.edit_file[0].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none") # Set styles
 			# Line edit properties
@@ -221,14 +218,14 @@ class Window(QMainWindow):
 			x.deleteLater() # Remove all desktop widgets
 		row, column = 0, 40 # Set default row/column values
 		self.files = [ToolButton(self)] # Reset self.files
-		for x in desktop_files.returnItems().keys(): # Add to desktop
+		for x in desktop.returnItems().keys(): # Add to desktop
 			if column + 137.5 > self.window_size[1]:
 				row += 1 # Increase row count
 				column = 40 # Reset column count
 			self.files.append(ToolButton(self)) # Append ToolButton
 			self.files[-1].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none;") # Set style
-			self.files[-1].setText(desktop_files.returnItems()[x]["displayname"]) # Set text
-			self.files[-1].setIcon(get_file_icon.getFileIcon(desktop_files.returnItems()[x]["extension"], desktop_files.returnItems()[x]["type"])) # Set icon
+			self.files[-1].setText(desktop.returnItems()[x]["displayname"]) # Set text
+			self.files[-1].setIcon(desktop.getFileIcon(desktop.returnItems()[x]["extension"], desktop.returnItems()[x]["type"])) # Set icon
 			self.files[-1].setIconSize(QSize(75, 75)) # Set icon size
 			self.files[-1].resize(68, 100) # Resize
 			self.files[-1].setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon) # Set tool button text/icon position
@@ -273,22 +270,22 @@ class Window(QMainWindow):
 		"""Processes key press events"""
 		if event.key() in [Qt.Key.Key_Delete, Qt.Key.Key_Backspace] and QApplication.keyboardModifiers() == Qt.KeyboardModifier.ControlModifier and self.focused_file is not None: # If the Delete/Backspace key and the Control(Windows)/Command(Mac) modifier key is pressed at the same time, and there is a focused file
 			self.focused_file.deleteLater() # Delete the focused file
-			for x in desktop_files.returnItems().keys(): # Iterate through applications
-				if desktop_files.returnItems()[x]["displayname"] == self.focused_file.text(): # If the application is the focused file
+			for x in desktop.returnItems().keys(): # Iterate through applications
+				if desktop.returnItems()[x]["displayname"] == self.focused_file.text(): # If the application is the focused file
 					os.system(f"mv Home/Desktop/{x} Home/Trash/") # Move the file to the Trash directory
 					# Re-arrange desktop files
 					for y in self.files:
 						y.deleteLater()
 					self.focused_file = None
 					self.files, row, column = [], 0, 40
-					for y in desktop_files.returnItems().keys():
+					for y in desktop.returnItems().keys():
 						if column + 137.5 > self.window_size[1]:
 							row += 1
 							column = 40
 						self.files.append(ToolButton(self))
 						self.files[-1].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none;")
-						self.files[-1].setText(desktop_files.returnItems()[y]["displayname"])
-						self.files[-1].setIcon(get_file_icon.getFileIcon(desktop_files.returnItems()[y]["extension"], desktop_files.returnItems()[y]["type"]))
+						self.files[-1].setText(desktop.returnItems()[y]["displayname"])
+						self.files[-1].setIcon(desktop.getFileIcon(desktop.returnItems()[y]["extension"], desktop.returnItems()[y]["type"]))
 						self.files[-1].setIconSize(QSize(75, 75))
 						self.files[-1].resize(68, 100)
 						self.files[-1].setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
@@ -329,7 +326,7 @@ window = Window() # Call main Window class
 
 # Application Imports
 for i in applications.keys():
-	exec(f"sys.path.insert(1, 'Applications/{i}'); " + "from " + applications[i]['file'][:-3] + " import " + applications[i]['run_class']) # Import application files
+	exec(f"sys.path.insert(1, 'Applications/{i}'); " + "from " + applications[i]['file'][:-3] + " import " + applications[i]['run_class'] + " as app__" + applications[i]['run_class'] + "__") # Import application files
 
 window.show() # Show Main Window
 sys.exit(application.exec_()) # Execute QApplication

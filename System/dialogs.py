@@ -7,7 +7,6 @@ Made by Daniel M using Python 3
 
 from json import load
 
-# from main import Window
 from config import returnProperties, returnBackgroundProperties, Themes
 from widgets import Slider
 from widgets.buttons import *

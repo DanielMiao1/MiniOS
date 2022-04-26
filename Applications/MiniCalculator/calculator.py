@@ -5,9 +5,7 @@ Mini Calculator
 Application made by Daniel M using Python 3 for the MiniOS project: https://github.com/DanielMiao1/MiniOS
 """
 
-import os
-
-from PyQt5.QtGui import *
+# from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 
