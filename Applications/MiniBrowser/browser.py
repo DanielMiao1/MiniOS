@@ -260,7 +260,7 @@ class Browser(QMainWindow):
 		self.bookmarks_actions[2].triggered.connect(lambda: self.newTab(url=QUrl("https://mail.google.com"), label="Gmail"))
 		self.bookmarks_actions[3].triggered.connect(lambda: self.newTab(url=QUrl("https://docs.google.com"), label="Google Docs"))
 		for i in range(4):
-      self.bookmarks.addAction(self.bookmarks_actions[i])
+			self.bookmarks.addAction(self.bookmarks_actions[i])
 		self.bookmarks.setStyleSheet(f"border-top: 1px solid {get_properties.returnBackgroundProperties()['text-color']}; border: 2px solid {get_properties.returnBackgroundProperties()['background-color-2']}; background-color: {get_properties.returnBackgroundProperties()['background-color-2']}; font-size: {get_properties.returnProperties()['font-size']}; font-family: {get_properties.returnProperties()['font-family']}")
 		self.navigation.setMovable(False) # Pin the 'navigation' toolbar
 		self.url_bar.setFixedWidth(1275)

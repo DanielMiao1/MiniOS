@@ -10,10 +10,15 @@ __import__("import_modules").checkModules()
 import sys
 from os import path, system
 from sys import argv
+from sys import path as sys_path
 
 from config import *
 from dialogs import *
 from widgets import *
+from widgets.buttons import *
+from applications import *
+from desktop_files import returnItems
+from get_file_icon import getFileIcon
 from overrides import *
 import applications as _applications
 import desktop_files
@@ -27,11 +32,13 @@ applications, config = _applications.returnApplications(), Config()
 
 print("Starting the Mini Operating System...")  # Print starting message
 
+
 class Window(QMainWindow):
 	"""Main Window"""
 	def __init__(self, parent=None) -> None:
 		"""Main window __init__"""
 		super(Window, self).__init__(parent=parent) # Call super class __init__ function
+		self.context_menu = None
 		self.showing_keyboard_viewer = False
 		self.file_created_session = False # Set file_created_session variable to False
 		self.setWindowFlag(Qt.WindowType.FramelessWindowHint) # Remove window frame
@@ -48,8 +55,8 @@ class Window(QMainWindow):
 		self.top_tool_bar.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; border: 4px solid {returnBackgroundProperties()['background-color-2']}; color: {returnBackgroundProperties()['text-color']}") # Set stylesheet properties for the top menu bar
 		# Define actions
 		# # Clock
-		self.clock = WebEngineView(hide_context_menu=True) # Create new WebEngineView
-		self.clock.setUrl(QUrl(f"https://home.danielmiao1.repl.co/clock.html?background_color={returnBackgroundProperties()['background-color-2'][1:]}&text_color={returnBackgroundProperties()['text-color'][1:]}&font_size={returnProperties()['font-size']}px&font_family={returnProperties()['font-family']}")) # Set URL for web engine view
+		self.clock = Clock(self)
+		self.clock.setStyles(background_color=returnBackgroundProperties()["background-color-2"], text_color=returnBackgroundProperties()["text-color"], font_size=returnProperties()["font-size"], font_family=returnProperties()["font-family"])
 		# # Separator
 		self.top_tool_bar_separator = QWidget()
 		self.top_tool_bar_separator.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
@@ -62,23 +69,39 @@ class Window(QMainWindow):
 		self.top_tool_bar.setFixedHeight(40) # Set fixed height
 		self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.top_tool_bar) # Add Tool Bar to the Window
 		# Applications dock
-		self.dock = QToolBar("Dock") # Create a dock
-		self.dock.setMovable(False) # Make the dock fixed
-		self.dock.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly) # Always display icons instead of text in the dock
-		self.dock.setIconSize(QSize(32, 32)) # Configure the dock icon size
-		self.addToolBar(Qt.ToolBarArea.BottomToolBarArea, self.dock) # Display the toolbar at the bottom of the screen
-		self.dock_items = [[QAction(QIcon("System/images/preferences.png"), "Preferences", self)]] # Create dock_items list
-		self.dock_items[0][0].triggered.connect(lambda: self.openPreferences()) # Call self.openPreferences function when the settings icon is pressed
-		for x in applications.keys(): # Iterate through the applications dictionary
-			if path.exists(f"Applications/{x}/images/logo_small.png"):
-				self.dock_items.append([QAction(QIcon(f"Applications/{x}/images/logo_small.png"), applications[x]["name"], self), x]) # Add values to dock_items list (with icon if icon path is valid)
-			else: self.dock_items.append([QAction(applications[x]["name"], self), x]) # Add values to dock_items list without icon (fallback)
-		for x in range(1, len(self.dock_items)):
-			exec(f"self.dock_items[{x}][0].triggered.connect(lambda _, self = self: self.openApplication('{applications[self.dock_items[x][1]]['run_class']}'))") # Connect dock item trigger signal
-			self.dock_items[x][0].setFont(QFont(returnProperties()["font-family"], int(returnProperties()["font-size"]))) # Set font size
-		for x in self.dock_items:
-			self.dock.addAction(x[0]) # Add applications to the dock
-		self.dock.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; border: none; font-size: {returnProperties()['font-size']}") # Set the dock's style properties
+		self.dock = dock.Dock(self)
+		self.dock.setStyles(background_color=returnBackgroundProperties()["background-color-2"], text_color=returnBackgroundProperties()["text-color"], font_size=returnProperties()["font-size"], font_family=returnProperties()["font-family"])
+		# self.dock = QToolBar("Dock") # Create a dock
+		# self.dock.setMovable(False) # Make the dock fixed
+		# self.dock.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly) # Always display icons instead of text in the dock
+		# self.dock.setIconSize(QSize(32, 32)) # Configure the dock icon size
+		# self.addToolBar(Qt.ToolBarArea.BottomToolBarArea, self.dock) # Display the toolbar at the bottom of the screen
+		# self.dock_items = [[QAction(QIcon("System/images/preferences.png"), "Preferences", self)]] # Create dock_items list
+		# self.dock_items[0][0].triggered.connect(lambda: self.openPreferences()) # Call self.openPreferences function when the settings icon is pressed
+		for x in applications.keys(): # Iterate through the applications
+			# Check if the application has an icon
+			if path.exists(f"Applications/{x}/images/logo.png"):
+				icon_path = f"Applications/{x}/images/logo.png"
+			elif path.exists(f"Applications/{x}/images/logo.jpg"):
+				icon_path = f"Applications/{x}/images/logo.jpg"
+			elif path.exists(f"Applications/{x}/images/logo.jpeg"):
+				icon_path = f"Applications/{x}/images/logo.jpeg"
+			elif path.exists(f"Applications/{x}/images/icon.png"):
+				icon_path = f"Applications/{x}/images/icon.png"
+			elif path.exists(f"Applications/{x}/images/icon.jpg"):
+				icon_path = f"Applications/{x}/images/icon.jpg"
+			elif path.exists(f"Applications/{x}/images/icon.jpeg"):
+				icon_path = f"Applications/{x}/images/icon.jpeg"
+			else:
+				continue
+			self.dock.addItem(applications[x]["name"], icon_path, applications[x]["run_class"])
+		self.dock.addItem("Settings", "System/images/preferences.png")
+		# for x in range(1, len(self.dock_items)):
+		# 	exec(f"self.dock_items[{x}][0].triggered.connect(lambda _, self = self: self.openApplication('{applications[self.dock_items[x][1]]['run_class']}'))") # Connect dock item trigger signal
+		# 	self.dock_items[x][0].setFont(QFont(returnProperties()["font-family"], int(returnProperties()["font-size"]))) # Set font size
+		# for x in self.dock_items:
+		# 	self.dock.addAction(x[0]) # Add applications to the dock
+		# self.dock.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; border: none; font-size: {returnProperties()['font-size']}") # Set the dock's style properties
 		# Desktop
 		self.files, self.edit_file, self.focused_file = [], [None, None], None # Assign variables
 		row, column = 0, 40 # Set default row and column variable
@@ -112,13 +135,13 @@ class Window(QMainWindow):
 		
 	def openApplication(self, app: str) -> None:
 		"""Opens the specified application"""
-		exec(f"self.windows.append(ApplicationWindow(self, QPoint(0, 0), {app}(), background_color = '{_applications.returnApplicationProperties()[app]['background-color'] if _applications.returnApplicationProperties()[app]['background-color'] != 'default' else returnBackgroundProperties()['background-color']}', window_name = '{app}', toolbar_background_color = '{returnBackgroundProperties()['background-color-3']}', window_size = {_applications.returnApplicationProperties()[app]['window-size']}))") # Create new window with child widget of application class
+		exec(f"self.windows.append(ApplicationWindow(self, QPoint(0, 0), app__{app}__(), background_color='{returnApplicationProperties()[app]['background-color'] if returnApplicationProperties()[app]['background-color'] != 'default' else returnBackgroundProperties()['background-color']}', window_name='{app}', toolbar_background_color='{returnBackgroundProperties()['background-color-3']}', window_size={returnApplicationProperties()[app]['window-size']}))") # Create new window with child widget of application class
 		
 	def openPreferences(self, position: QPoint = QPoint(0, 0)) -> None:
 		"""Opens the preferences window"""
 		self.windows.append(ApplicationWindow(self, position, Preferences(self.updateElements), background_color=returnBackgroundProperties()["background-color-2"], window_name="Preferences", custom_stylesheet="background-color: " + returnBackgroundProperties()["background-color-2"], restart_window_function=self.openPreferences)) # Create new window
 
-  @staticmethod
+	@staticmethod
 	def openAbout() -> None:
 		"""Opens the 'About' dialog"""
 		dialog = AboutDialog() # Call the AboutDialog class
@@ -225,10 +248,8 @@ class Window(QMainWindow):
 		for x in range(len(self.files)):
 			self.files[x].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none") # Set stylesheet
 			self.files[x].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"])) # Set font
-		for x in range(1, len(self.dock_items)):
-			self.dock_items[x][0].setFont(QFont(returnProperties()["font-family"], int(returnProperties()["font-size"]))) # Update font of applications
-		self.dock.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; border: none; font-size: {returnProperties()['font-size']}") # Update style of dock toolbar
-		self.clock.setUrl(QUrl(f"https://home.danielmiao1.repl.co/clock.html?background_color={returnBackgroundProperties()['background-color-2'][1:]}&text_color={returnBackgroundProperties()['text-color'][1:]}&font_size={returnProperties()['font-size']}px&font_family={returnProperties()['font-family']}")) # Update clock styles
+		self.clock.setStyles(background_color=returnBackgroundProperties()["background-color-2"], text_color=returnBackgroundProperties()["text-color"], font_size=returnProperties()["font-size"], font_family=returnProperties()["font-family"])
+		self.dock.setStyles(background_color=returnBackgroundProperties()["background-color-2"], text_color=returnBackgroundProperties()["text-color"], font_size=returnProperties()["font-size"], font_family=returnProperties()["font-family"])
 		self.options.updateStyleSheets()
 		
 	def resizeEvent(self, event: QResizeEvent) -> None:
@@ -246,6 +267,7 @@ class Window(QMainWindow):
 				column = 40
 			self.files[x].move(row * 70, column) # Move file to row/column
 			column += 100
+		self.dock.adjustGeometry()
 		super(Window, self).resizeEvent(event) # Call resizeEvent function from super class
 		
 	def keyPressEvent(self, event: QKeyEvent) -> None:
@@ -276,11 +298,16 @@ class Window(QMainWindow):
 						exec(f"self.files[-1].pressed.connect(lambda self = self: self.setFocusedFile(self.files[{len(self.files) - 1}]))")
 						self.files[-1].show()
 						column += 100
-					break # Exit loop
+					break  # Exit loop
 		
 		if self.showing_keyboard_viewer:
 			self.showing_keyboard_viewer.child_widget.highlightKey(event)
 	
+	def mousePressEvent(self, event) -> None:
+		if self.context_menu is not None:
+			self.context_menu.deleteLater()
+			self.context_menu = None
+			
 	def keyReleaseEvent(self, event) -> None:
 		if self.showing_keyboard_viewer:
 			self.showing_keyboard_viewer.child_widget.stopHighlightKey(event)
@@ -303,7 +330,7 @@ window = Window() # Call main Window class
 
 # Application Imports
 for i in applications.keys():
-  exec(f"sys.path.insert(1, 'Applications/{i}'); " + "from " + applications[i]['file'][:-3] + " import " + applications[i]['run_class']) # Import application files
+	exec(f"sys.path.insert(1, 'Applications/{i}'); " + "from " + applications[i]['file'][:-3] + " import " + applications[i]['run_class']) # Import application files
 
 window.show() # Show Main Window
 sys.exit(application.exec_()) # Execute QApplication

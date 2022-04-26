@@ -41,6 +41,7 @@ class ToolButton(QToolButton):
 	def __init__(self, parent):
 		super(ToolButton, self).__init__(parent)
 
+
 class GroupBox(QGroupBox):
 	def __init__(self, parent):
 		super(GroupBox, self).__init__(parent=parent)
