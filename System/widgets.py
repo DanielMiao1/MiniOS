@@ -1,12 +1,14 @@
-# -*- coding: utf-8 -*-
 """
 System/widgets.py
 Widgets
 Made by Daniel M using Python 3
 """
 
+# Local imports
 from config import returnBackgroundProperties
+from overrides import ApplicationWindowToolBar
 
+# PyQt imports
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
@@ -18,51 +20,28 @@ class SelectionRectangle(QWidget):
 		self.setGeometry(30, 30, 600, 400)
 		self.begin = QPoint()
 		self.end = QPoint()
-		
+	
 	def paintEvent(self, _):
 		painter = QPainter(self)
 		brush = QBrush(QColor(100, 10, 10, 40))
 		painter.setBrush(brush)
 		painter.drawRect(QRect(self.begin, self.end))
-
+	
 	def mousePressEvent(self, event):
 		self.begin = event.pos()
 		self.end = event.pos()
 		self.update()
-
+	
 	def mouseMoveEvent(self, event):
 		self.end = event.pos()
 		self.update()
-
+	
 	def mouseReleaseEvent(self, event):
 		self.begin = event.pos()
 		self.end = event.pos()
 		self.update()
 
 
-class ApplicationWindowToolBar(QToolBar):
-	def __init__(self, background_color, mouse_move_event=None, window_name="Window", close_application_window_function=None):
-		super(ApplicationWindowToolBar, self).__init__()
-		self.setStyleSheet(f"background-color: {background_color}; border: 4px solid {background_color};")
-		self.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
-		self.setCursor(Qt.ArrowCursor)
-		self.mouse_move_event = mouse_move_event
-		self.close = QAction("×", self)
-		if close_application_window_function is not None:
-			self.close.triggered.connect(close_application_window_function)
-		self.spacer = QWidget()
-		self.spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-		self.window_name = QAction(window_name, self)
-		self.addAction(self.close)
-		self.addWidget(self.spacer)
-		self.addAction(self.window_name)
-	
-	def mouseMoveEvent(self, event):
-		if self.mouse_move_event is not None:
-			self.mouse_move_event(event)
-		super(ApplicationWindowToolBar, self).mouseMoveEvent(event)
-	
-	
 class ApplicationWindow(QWidget):
 	mode = None
 	position = None
@@ -70,14 +49,16 @@ class ApplicationWindow(QWidget):
 	out_focus_signal = pyqtSignal(bool)
 	new_geometry_signal = pyqtSignal(QRect)
 	
-	def __init__(self, parent, point, child_widget, background_color="default", window_name="Window", toolbar_background_color=returnBackgroundProperties()['background-color-3'], custom_stylesheet="", window_size=QSize(800, 350), restart_window_function=None, allow_resize=True):
+	def __init__(self, parent, point, child_widget, background_color="default", window_name="Window", toolbar_background_color=returnBackgroundProperties()['background-color-3'], custom_stylesheet="",
+			window_size=QSize(800, 350), restart_window_function=None, allow_resize=True):
 		super(ApplicationWindow, self).__init__(parent=parent)
 		if isinstance(window_size, list):
-			if len(window_size) == 2:
-				window_size = QSize(window_size[0], window_size[1])
+			if len(window_size) == 2: window_size = QSize(window_size[0], window_size[1])
 		self.resize(window_size)
 		self.setStyleSheet(custom_stylesheet)
-		self.background_color, self.focus, self.is_editing, self.old_position, self.new_position, self.layout, self.shadow, self.restart_window_function, self.toolbar_background_color, self.allow_resize = background_color, True, True, None, None, QVBoxLayout(self), QGraphicsDropShadowEffect(), restart_window_function, toolbar_background_color, allow_resize
+		self.background_color, self.focus, self.is_editing, self.old_position, self.new_position, self.layout, self.shadow, self.restart_window_function, self.toolbar_background_color, \
+		self.allow_resize = background_color, True, True, None, None, QVBoxLayout(
+			self), QGraphicsDropShadowEffect(), restart_window_function, toolbar_background_color, allow_resize
 		self.setGraphicsEffect(self.shadow)
 		self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
 		self.setVisible(True)
@@ -92,54 +73,53 @@ class ApplicationWindow(QWidget):
 		self.setChildWidget(child_widget)
 		self.installEventFilter(parent)
 	
-	def closeWindow(self):
-		self.setParent(None)
+	def closeWindow(self): self.setParent(None)
 	
 	def restartWindow(self):
 		self.closeWindow()
-		if self.restart_window_function is not None:
-			self.restart_window_function(self.pos())
+		if self.restart_window_function is not None: self.restart_window_function(self.pos())
 	
 	def setChildWidget(self, child_widget):
 		if child_widget:
 			child_widget.setParent(self)
+			child_widget.setCursor(Qt.CursorShape.ArrowCursor)
 			child_widget.releaseMouse()
 			self.layout.addWidget(child_widget)
 			self.layout.setContentsMargins(1, 1, 1, 1)
 	
-	def focusInEvent(self, _):
+	def focusInEvent(self, event: QFocusEvent):
 		self.focus = True
+		self.mode = None
 		parent = self.parentWidget()
 		parent.installEventFilter(self)
 		parent.repaint()
 		self.focus_signal.emit(True)
+		super(ApplicationWindow, self).focusInEvent(event)
 	
-	def focusOutEvent(self, _):
-		if not self.is_editing:
-			return
+	def focusOutEvent(self, event: QFocusEvent):
+		if not self.is_editing: return
 		self.mode = None
 		self.out_focus_signal.emit(False)
 		self.focus = False
+		super(ApplicationWindow, self).focusOutEvent(event)
 	
-	def paintEvent(self, event):
+	def paintEvent(self, event: QPaintEvent):
 		painter = QPainter(self)
 		painter.fillRect(event.rect(), QColor(self.background_color if self.background_color.lower() != "default" else returnBackgroundProperties()["background-color"]))
 		rect = event.rect()
 		rect.adjust(0, 0, -1, -1)
 		painter.setPen(QColor(self.toolbar_background_color))
 		painter.drawRect(rect)
+		super(ApplicationWindow, self).paintEvent(event)
 	
-	def mousePressEvent(self, event):
+	def mousePressEvent(self, event: QMouseEvent):
 		self.position = QPoint(event.globalX() - self.geometry().x(), event.globalY() - self.geometry().y())
-		if not event.buttons():
-			self.setCursorShape(event.pos())
-			return
 		super(ApplicationWindow, self).mousePressEvent(event)
 	
 	def setCursorShape(self, position):
-		if not self.allow_resize:
-			return
-		if ((position.y() > self.y() + self.height() - 3) and (position.x() < self.x() + 3)) or ((position.y() > self.y() + self.height() - 3) and (position.x() > self.x() + self.width() - 3)) or ((position.y() < self.y() + 3) and (position.x() < self.x() + 3)) or (position.y() < self.y() + 3) and (position.x() > self.x() + self.width() - 3):
+		if not self.allow_resize: return
+		if ((position.y() > self.y() + self.height() - 3) and (position.x() < self.x() + 3)) or ((position.y() > self.y() + self.height() - 3) and (position.x() > self.x() + self.width() - 3)) or (
+				(position.y() < self.y() + 3) and (position.x() < self.x() + 3)) or (position.y() < self.y() + 3) and (position.x() > self.x() + self.width() - 3):
 			if (position.y() > self.y() + self.height() - 3) and (position.x() < self.x() + 3):
 				self.mode = "resize-bottom-left"
 				self.setCursor(QCursor(Qt.SizeBDiagCursor))
@@ -170,16 +150,15 @@ class ApplicationWindow(QWidget):
 			self.setCursor(QCursor(Qt.ArrowCursor))
 			self.mode = None
 	
-	def mouseReleaseEvent(self, event):
-		QWidget.mouseReleaseEvent(self, event)
+	def mouseReleaseEvent(self, event: QMouseEvent) -> None:
+		self.mode = None
+		super(ApplicationWindow, self).mouseReleaseEvent(event)
 	
 	def mouseMoveEvent(self, event):
-		QWidget.mouseMoveEvent(self, event)
-		if not self.is_editing or not self.focus or not self.allow_resize:
-			return
-		if not event.buttons() and Qt.LeftButton:
-			p = QPoint(event.x() + self.geometry().x(), event.y() + self.geometry().y())
-			self.setCursorShape(p)
+		super(ApplicationWindow, self).mouseMoveEvent(event)
+		if not self.is_editing or not self.focus or not self.allow_resize: return
+		if not event.buttons():
+			self.setCursorShape(QPoint(event.x() + self.geometry().x(), event.y() + self.geometry().y()))
 			return
 		if self.mode == "resize-top-left":
 			new_width = event.globalX() - self.position.x() - self.geometry().x()
@@ -197,8 +176,7 @@ class ApplicationWindow(QWidget):
 			new_position = event.globalPos() - self.position
 			self.resize(self.geometry().width() - new_width, event.y())
 			self.move(new_position.x(), self.y())
-		elif self.mode == "resize-bottom":
-			self.resize(self.width(), event.y())
+		elif self.mode == "resize-bottom": self.resize(self.width(), event.y())
 		elif self.mode == "resize-left":
 			new_width = event.globalX() - self.position.x() - self.geometry().x()
 			new_position = event.globalPos() - self.position
@@ -209,21 +187,17 @@ class ApplicationWindow(QWidget):
 			new_position = event.globalPos() - self.position
 			self.resize(self.width(), self.geometry().height() - new_height)
 			self.move(self.x(), new_position.y())
-		elif self.mode == "resize-right":
-			self.resize(event.x(), self.height())
-		elif self.mode == "resize-bottom-right":
-			self.resize(event.x(), event.y())
+		elif self.mode == "resize-right": self.resize(event.x(), self.height())
+		elif self.mode == "resize-bottom-right": self.resize(event.x(), event.y())
 		self.parentWidget().repaint()
 		self.new_geometry_signal.emit(self.geometry())
-		
+	
 	def toolBarMouseMoveEvent(self, event=None):
-		if event is None:
-			return
+		if event is None: return
 		try: self.new_position = event.globalPos() - self.position
 		except TypeError: pass
 		else:
-			if self.new_position.x() < 0 or self.new_position.y() < 0 or self.new_position.x() > self.parentWidget().width() - self.width():
-				return
+			if self.new_position.x() < 0 or self.new_position.y() < 0 or self.new_position.x() > self.parentWidget().width() - self.width(): return
 			self.move(self.new_position)
 			self.parentWidget().repaint()
 			self.new_geometry_signal.emit(self.geometry())
@@ -231,20 +205,22 @@ class ApplicationWindow(QWidget):
 	def resizeEvent(self, event: QResizeEvent) -> None:
 		"""
 		Try to call resize function (if available) from child widget
-		Supported child widget function names:
-			parentResizeEvent(event: QResizeEvent, *args)
-			resizeEvent(event: QResizeEvent, *args)
-			parent_resize_event(event: QResizeEvent, *args)
-			parentWidgetResizeEvent(event: QResizeEvent, *args)
-			parent_widget_resize_event(event: QResizeEvent, *args)
+		Supported child widget functions names:
+			parentResizeEvent
+			parent_resize_event
+			parentWidgetResizeEvent
+			parent_widget_resize_event
+		With argument:
+			event[: (QtGui.)QResizeEvent]
 		"""
 		try: self.child_widget.parentResizeEvent(event)
 		except AttributeError:
-			try: self.child_widget.resizeEvent(event)
+			try: self.child_widget.parent_resize_event(event)
 			except AttributeError:
-				try: self.child_widget.parent_resize_event(event)
+				try: self.child_widget.parentWidgetResizeEvent(event)
 				except AttributeError:
-					try: self.child_widget.parentWidgetResizeEvent(event)
-					except AttributeError:
-						try: self.child_widget.parent_widget_resize_event(event)
-						except AttributeError: pass
+					try: self.child_widget.parent_widget_resize_event(event)
+					except AttributeError: pass
+		super(ApplicationWindow, self).resizeEvent(event)
+	
+	def contextMenuEvent(self, event: QContextMenuEvent) -> None: self.child_widget.contextMenuEvent(event)

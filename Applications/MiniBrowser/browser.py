@@ -6,18 +6,46 @@ Web browser made by Daniel M using Python 3 for the MiniOS project: https://gith
 """
 
 import os
+import sys
 
+# Local file imports
+sys.path.insert(1, "Applications/.ApplicationSupport")
+import get_properties
+
+# PyQt imports
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtWebEngineWidgets import *
 
 
+class ToolBar(QToolBar): # PyQt5 widget overrides
+	def __init__(self, parent=None):
+		super().__init__(parent)
+		layout = self.findChild(QLayout)
+		if layout is not None: layout.setExpanded(True)
+		QTimer.singleShot(0, self.onTimeout)
+
+	@pyqtSlot()
+	def onTimeout(self):
+		button = self.findChild(QToolButton, "qt_toolbar_ext_button")
+		if button is not None: button.setFixedSize(0, 0)
+
+	def event(self, e):
+		if e.type() == QEvent.Leave: return True
+		return super(ToolBar, self).event(e)
+
+  
 # PyQt5 widget overrides
 class PushButton(QPushButton):
 	"""Add QPushButton Animation"""
 	def __init__(self) -> None:
 		super().__init__()
+		self._animation = QVariantAnimation()
+		self._animation.setStartValue(QColor("white"))
+		self._animation.setEndValue(QColor("black"))
+		self._animation.setDuration(200)
+		self._animation.valueChanged.connect(self.valueChanged)
 		self._animation = QVariantAnimation(startValue=QColor("white"), endValue=QColor("#18082C"), valueChanged=self.valueChanged, duration=200)
 		self.updateStylesheet(QColor("#18082C"), QColor("white"))
 		self.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -95,6 +123,8 @@ class TabWidget(QTabWidget):
 
 
 # Dialogs
+
+
 class AboutDialog(QDialog):
 	"""About Mini Browser dialog"""
 	def __init__(self, parent=None) -> None:
@@ -201,8 +231,8 @@ class Browser(QMainWindow):
 		super(Browser, self).__init__()
 		self.setMinimumWidth(QDesktopWidget().screenGeometry(-1).width() - 1000)
 		self.setMinimumHeight(QDesktopWidget().screenGeometry(-1).height() - 500)
-		self.tabs, self.bookmarks, self.url_bar, self.navigation, self.back, self.forward, self.reload, self.home, about_menu, about, self.config = TabWidget(), QToolBar("Bookmarks"), LineEdit(), QToolBar("Navigation"), QAction("←", self), QAction("→", self), QAction("↺", self), QAction("🏠", self), self.menuBar().addMenu("About"), QAction("About", self), QAction("⚙", self) # Define action variables
-		self.navigation.setStyleSheet("font-size: 15px;") # Set font size of all items in the QToolBar named 'navigation' to 15px
+		self.tabs, self.bookmarks, self.url_bar, self.navigation, self.back, self.forward, self.reload, self.home, about_menu, about, self.config = TabWidget(), QToolBar("Bookmarks"), LineEdit(), ToolBar(self), QAction("←", self), QAction("→", self), QAction("↺", self), QAction("🏠", self), self.menuBar().addMenu("About"), QAction("About", self), QAction("⚙", self) # Define action variables
+		self.navigation.setStyleSheet(f"background-color: {get_properties.returnBackgroundProperties()['background-color-2']}; font-size: 15px; font-family: {get_properties.returnProperties()['font-family']}; border: {get_properties.returnBackgroundProperties()['background-color-2']};") # Set font size of all items in the QToolBar named 'navigation' to 15px
 		self.tabs.setDocumentMode(True) # Set document mode for the QTabWidget named 'tabs' to True
 		self.tabs.tabBarDoubleClicked.connect(lambda: self.newTab(url=QUrl("https://home.danielmiao1.repl.co/")))
 		self.tabs.currentChanged.connect(self.tabChanged) # Call the function tabChanged when tab is changed
@@ -230,9 +260,11 @@ class Browser(QMainWindow):
 		self.bookmarks_actions[2].triggered.connect(lambda: self.newTab(url=QUrl("https://mail.google.com"), label="Gmail"))
 		self.bookmarks_actions[3].triggered.connect(lambda: self.newTab(url=QUrl("https://docs.google.com"), label="Google Docs"))
 		for i in range(4):
-			self.bookmarks.addAction(self.bookmarks_actions[i])
+      self.bookmarks.addAction(self.bookmarks_actions[i])
+		self.bookmarks.setStyleSheet(f"border-top: 1px solid {get_properties.returnBackgroundProperties()['text-color']}; border: 2px solid {get_properties.returnBackgroundProperties()['background-color-2']}; background-color: {get_properties.returnBackgroundProperties()['background-color-2']}; font-size: {get_properties.returnProperties()['font-size']}; font-family: {get_properties.returnProperties()['font-family']}")
 		self.navigation.setMovable(False) # Pin the 'navigation' toolbar
-		self.url_bar.setFixedWidth(self.width())
+		self.url_bar.setFixedWidth(1275)
+		self.url_bar.setStyleSheet(f"border: 2px solid {get_properties.returnBackgroundProperties()['background-color']}; font-size: {get_properties.returnProperties()['font-size']}; font-family: {get_properties.returnProperties()['font-family']}")
 		self.url_bar.returnPressed.connect(self.toURL) # Call function toURL when 'enter' key is pressed in the 'url_bar'
 		self.navigation.addWidget(self.url_bar) # Add 'url_bar' to the 'navigation' toolbar
 		self.config.triggered.connect(self.openConfig) # Call function openConfig when 'config' QAction is pressed
@@ -330,6 +362,5 @@ class Browser(QMainWindow):
 		dialog = ConfigDialog()
 		dialog.exec_()
 	
-	def resizeEvent(self, event: QResizeEvent) -> None:
-		# print(event)
-		pass
+	def parentResizeEvent(self, event: QResizeEvent) -> None:
+		self.url_bar.setFixedWidth(event.size().width() - 225)

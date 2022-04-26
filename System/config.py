@@ -14,7 +14,6 @@ class Config:
 	def __init__(self):
 		ThemeConfig.formatJSON()
 		FontConfig.formatJSON()
-		WindowConfig.formatJSON()
 
 	@staticmethod
 	def appendJSON(values: dict, file_name: str) -> None:
@@ -30,7 +29,7 @@ class ThemeConfig:
 	"""
 	Theme Configuration
 	DO NOT MODIFY THIS FILE DIRECTLY. TO MODIFY THEME COLORS, EDIT System/config/themes/dark.json or System/config/themes/light.json
-	TO CREATE A NEW THEM, ADD A JSON FILE AT System/config/themes.
+	TO CREATE A NEW THEME, ADD A JSON FILE AT System/config/themes.
 	"""
 	@staticmethod
 	def formatJSON() -> None:
@@ -62,6 +61,7 @@ class ThemeConfig:
 	def formatDefault() -> None:
 		if not os.path.exists("System/default_config/themes.json"):
 			open("System/config/themes.json", "w").write("{\n  \"default\": \"light\"\n}\n")
+
 
 
 class FontConfig:
