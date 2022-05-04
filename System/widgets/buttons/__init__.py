@@ -90,16 +90,20 @@ class Buttons:
 
 class PushButton(QPushButton):
 	"""Add QPushButton Animation"""
-	def __init__(self, text="", color="black") -> None:
-		super().__init__()
+	def __init__(self, text="", parent=None, color="black", padding="15px", background="#EFEFEF", hover="#E6E6E6") -> None:
+		if parent is None:
+			super(PushButton, self).__init__()
+		else:
+			super(PushButton, self).__init__(parent)
 		self.color = color
+		self.padding = padding
 		self.setText(text)
 		self._animation = QVariantAnimation()
-		self._animation.setStartValue(QColor("black"))
-		self._animation.setEndValue(QColor("white"))
+		self._animation.setStartValue(QColor(hover))
+		self._animation.setEndValue(QColor(background))
 		self._animation.valueChanged.connect(self.valueChanged)
 		self._animation.setDuration(200)
-		self.updateStylesheet(QColor("white"))
+		self.updateStylesheet(QColor(background))
 		self.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 	
 	def valueChanged(self, color: QColor) -> None:
@@ -108,9 +112,7 @@ class PushButton(QPushButton):
 	
 	def updateStylesheet(self, background: QColor) -> None:
 		"""Update style sheet"""
-		self.setStyleSheet(
-			f"QPushButton {{background-color: {background.name()}; color: #888888; padding: 16px 32px; text-align: center; text-decoration: none; font-size: 16px; margin: 4px 2px; border: 2px solid "
-			f"white;}}")
+		self.setStyleSheet(f"background-color: {background.name()}; color: {self.color}; border: none; padding: {self.padding};")
 	
 	def enterEvent(self, event: QEvent) -> None:
 		"""Display backward color animation on mouse hover"""
@@ -132,3 +134,13 @@ class PushButton(QPushButton):
 class ToolButton(QToolButton):
 	def __init__(self, parent):
 		super(ToolButton, self).__init__(parent)
+
+
+class TabButton(PushButton):
+	def __init__(self, parent, action, text=""):
+		super(TabButton, self).__init__(text, parent, padding="5px")
+		self.action = action
+	
+	def mousePressEvent(self, event):
+		self.action()
+		super(TabButton, self).mousePressEvent(event)

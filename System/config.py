@@ -63,7 +63,6 @@ class ThemeConfig:
 			open("System/config/themes.json", "w").write("{\n  \"default\": \"light\"\n}\n")
 
 
-
 class FontConfig:
 	"""
 	Font Configuration
