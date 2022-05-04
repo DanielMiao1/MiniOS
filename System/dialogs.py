@@ -14,18 +14,29 @@ from widgets.buttons import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
-from PyQt5.QtNetwork import *
 
 
 class Preferences(QWidget):
 	"""System Preferences Application"""
 	class Appearance(QWidget):
+		class ThemeLabel(QLabel):
+			def __init__(self, parent):
+				super(Preferences.Appearance.ThemeLabel, self).__init__(parent)
+				self.setCursor(Qt.PointingHandCursor)
+				self.index = None
+				self.setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
+				self.setAlignment(Qt.AlignCenter)
+			
+			def mousePressEvent(self, event):
+				self.parent().parent().changeTheme(self.index)
+				super(Preferences.Appearance.ThemeLabel, self).mousePressEvent(event)
+			
 		def __init__(self, parent, update_function):
 			super(Preferences.Appearance, self).__init__(parent=parent)
 			self.update_function = update_function
 			self.layout = QGridLayout()
 			self.theme, self.font_size, self.font_family = returnProperties()["theme"], returnProperties()["font-size"], returnProperties()["font-family"]
-			self.widgets, self.group_box_widgets, self.theme_icons = {
+			self.widgets, self.group_box_widgets = {
 				"theme-label": [QLabel("Theme"), [3, 1]],
 				"theme-group-box": [QGroupBox(self), [3, 2]],
 				"font-size-label": [QLabel("Font Size"), [5, 1]],
@@ -33,10 +44,10 @@ class Preferences(QWidget):
 				"reset-font-size": [PushButton("Reset"), [5, 3]],
 				"font-family-label": [QLabel("Font Family"), [6, 1]],
 				"font-family": [QComboBox(self), [6, 2]]
-			}, {}, {}
+			}, {}
 			# Append to self.group_box_widgets
 			for x, y in zip(Themes.getThemes(), range(1, len(Themes.getThemes().keys()) + 1)):
-				self.group_box_widgets[x] = [QToolButton(self), [1, y]]
+				self.group_box_widgets[x] = [Preferences.Appearance.ThemeLabel(self), [1, y]]
 			# Specific widget properties
 			# # Font family properties
 			self.widgets["font-family"][0].addItems(returnProperties()["fonts"])
@@ -52,30 +63,22 @@ class Preferences(QWidget):
 			# # Theme group box properties
 			self.widgets["theme-group-box"][0].setStyleSheet("QGroupBox { border: none; }")
 			self.group_box_layout = QHBoxLayout()
-			for i in self.group_box_widgets: self.group_box_layout.addWidget(self.group_box_widgets[i][0])
+			for i in self.group_box_widgets:
+				self.group_box_layout.addWidget(self.group_box_widgets[i][0])
 			self.widgets["theme-group-box"][0].setLayout(self.group_box_layout)
 			self.widgets["theme-group-box"][0].setFixedSize(540, 100)
+			self.widgets["theme-group-box"][0].layout().setContentsMargins(30, 30, 30, 30)
 			# # Theme button properties
 			for i in self.group_box_widgets.keys():
-				self.theme_icons[i] = QNetworkAccessManager(self)
-				exec(f"self.theme_icons[i].finished.connect(lambda reply, self=self: self.setIcon(reply, '{i}'))", globals(), locals())
-				self.theme_icons[i].get(QNetworkRequest(QUrl(f"https://htmlcolors.com/color-image/{str(Themes.getThemes()[i]['background-color'])[1:].lower()}.png")))
 				self.group_box_widgets[i][0].setText(i.title())
-				self.group_box_widgets[i][0].setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
-				self.group_box_widgets[i][0].setCursor(Qt.CursorShape.PointingHandCursor)
-				self.group_box_widgets[i][0].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none")
-				self.group_box_widgets[i][0].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
-				self.group_box_widgets[i][0].setIconSize(QSize(25, 25))
-				exec(f"self.group_box_widgets[i][0].pressed.connect(lambda self=self: self.changeTheme('{i}'))", globals(), locals())
+				self.group_box_widgets[i][0].setStyleSheet(f"color: #{str(Themes.getThemes()[i]['text-color'])[1:].lower()}; border: none; background: #{str(Themes.getThemes()[i]['background-color'])[1:].lower()};")
+				self.group_box_widgets[i][0].index = i
+				# exec(f"self.group_box_widgets[i][0].pressed.connect(lambda self=self: self.changeTheme('{i}'))", globals(), locals())
 			# Add to layout
-			for i in self.widgets.keys(): self.layout.addWidget(self.widgets[i][0], self.widgets[i][1][0], self.widgets[i][1][1])
+			for i in self.widgets.keys():
+				self.layout.addWidget(self.widgets[i][0], self.widgets[i][1][0], self.widgets[i][1][1])
 			self.setLayout(self.layout) # Set layout
 		
-		def setIcon(self, reply, icon):
-			image = QImage()
-			image.loadFromData(reply.readAll())
-			self.group_box_widgets[icon][0].setIcon(QIcon(QPixmap.fromImage(image)))
-			
 		def _update(self):
 			self.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}")
 			for i in ["theme-label", "font-size-label", "font-family-label"]:
@@ -85,8 +88,10 @@ class Preferences(QWidget):
 				self.group_box_widgets[i][0].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none")
 				self.group_box_widgets[i][0].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
 			# self.widgets["font-family"][0].setStyleSheet("QComboBox QAbstractItemView {selection-color: #AAAAAA}")
-			if returnProperties()["theme"] == "light": self.widgets["font-family"][0].setStyleSheet("QComboBox QAbstractItemView { selection-color: #AAAAAA; color: #000000; };")
-			else: self.widgets["font-family"][0].setStyleSheet("QComboBox QAbstractItemView { selection-color: #555555; color: #FFFFFF; };")
+			if returnProperties()["theme"] == "light":
+				self.widgets["font-family"][0].setStyleSheet("QComboBox QAbstractItemView { selection-color: #AAAAAA; color: #000000; };")
+			else:
+				self.widgets["font-family"][0].setStyleSheet("QComboBox QAbstractItemView { selection-color: #555555; color: #FFFFFF; };")
 			self.update_function()
 			
 		def resetFontSize(self) -> None:
