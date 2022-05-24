@@ -90,7 +90,7 @@ class Buttons:
 
 class PushButton(QPushButton):
 	"""Add QPushButton Animation"""
-	def __init__(self, text="", parent=None, color="black", padding="15px", background="#EFEFEF", hover="#E6E6E6") -> None:
+	def __init__(self, text="", parent=None, color="black", padding="15px", background="#F5F5F5", hover="#E6E6E6") -> None:
 		if parent is None:
 			super(PushButton, self).__init__()
 		else:
@@ -144,3 +144,12 @@ class TabButton(PushButton):
 	def mousePressEvent(self, event):
 		self.action()
 		super(TabButton, self).mousePressEvent(event)
+
+
+class ActionPushButton(PushButton):
+	def __init__(self, parent, text="", action=None):
+		super(ActionPushButton, self).__init__(text, parent, padding="0px")
+		self.action = action
+		self.pressed.connect(lambda self=self: self.action() if self.action is not None else None)
+		self.setFixedSize(QSize(75, 75))
+	

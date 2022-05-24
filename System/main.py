@@ -26,7 +26,7 @@ from PyQt5.QtWidgets import *
 
 applications, config = _applications.returnApplications(), Config()
 
-print("Starting the Mini Operating System...")  # Print starting message
+print("Starting the Mini Operating System...")  # Print starting message (maybe remove?)
 
 
 class Window(QMainWindow):

@@ -31,103 +31,149 @@ class Preferences(QWidget):
 				self.parent().parent().changeTheme(self.index)
 				super(Preferences.Appearance.ThemeLabel, self).mousePressEvent(event)
 			
-		def __init__(self, parent, update_function):
-			super(Preferences.Appearance, self).__init__(parent=parent)
-			self.update_function = update_function
-			self.layout = QGridLayout()
-			self.theme, self.font_size, self.font_family = returnProperties()["theme"], returnProperties()["font-size"], returnProperties()["font-family"]
-			self.widgets, self.group_box_widgets = {
-				"theme-label": [QLabel("Theme"), [3, 1]],
-				"theme-group-box": [QGroupBox(self), [3, 2]],
-				"font-size-label": [QLabel("Font Size"), [5, 1]],
-				"font-size": [Slider(5, 20, int(returnProperties()["font-size"]), self.changeFontSize), [5, 2]],
-				"reset-font-size": [PushButton("Reset"), [5, 3]],
-				"font-family-label": [QLabel("Font Family"), [6, 1]],
-				"font-family": [QComboBox(self), [6, 2]]
-			}, {}
-			# Append to self.group_box_widgets
-			for x, y in zip(Themes.getThemes(), range(1, len(Themes.getThemes().keys()) + 1)):
-				self.group_box_widgets[x] = [Preferences.Appearance.ThemeLabel(self), [1, y]]
-			# Specific widget properties
-			# # Font family properties
-			self.widgets["font-family"][0].addItems(returnProperties()["fonts"])
-			self.widgets["font-family"][0].setStyleSheet(f"QComboBox QAbstractItemView {{ selection-color: {'#AAAAAA' if returnProperties()['theme'] == 'light' else '#555555'}; color: {returnBackgroundProperties()['text-color']}; }};")
-			self.widgets["font-family"][0].setCurrentIndex(returnProperties()["fonts"].index(self.font_family))
-			self.widgets["font-family"][0].currentIndexChanged.connect(self.changeFontFamily)
-			# # Reset font size properties
-			self.widgets["reset-font-size"][0].clicked.connect(self.resetFontSize)
-			# # Label properties
-			for i in ["theme-label", "font-size-label", "font-family-label"]:
-				self.widgets[i][0].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']};")
-				self.widgets[i][0].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
-			# # Theme group box properties
-			self.widgets["theme-group-box"][0].setStyleSheet("QGroupBox { border: none; }")
-			self.group_box_layout = QHBoxLayout()
-			for i in self.group_box_widgets:
-				self.group_box_layout.addWidget(self.group_box_widgets[i][0])
-			self.widgets["theme-group-box"][0].setLayout(self.group_box_layout)
-			self.widgets["theme-group-box"][0].setFixedSize(540, 100)
-			self.widgets["theme-group-box"][0].layout().setContentsMargins(30, 30, 30, 30)
-			# # Theme button properties
-			for i in self.group_box_widgets.keys():
-				self.group_box_widgets[i][0].setText(i.title())
-				self.group_box_widgets[i][0].setStyleSheet(f"color: #{str(Themes.getThemes()[i]['text-color'])[1:].lower()}; border: none; background: #{str(Themes.getThemes()[i]['background-color'])[1:].lower()};")
-				self.group_box_widgets[i][0].index = i
-				# exec(f"self.group_box_widgets[i][0].pressed.connect(lambda self=self: self.changeTheme('{i}'))", globals(), locals())
-			# Add to layout
-			for i in self.widgets.keys():
-				self.layout.addWidget(self.widgets[i][0], self.widgets[i][1][0], self.widgets[i][1][1])
-			self.setLayout(self.layout) # Set layout
+		class Theme(QWidget):
+			def __init__(self, parent, update_function):
+				super(Preferences.Appearance.Theme, self).__init__(parent=parent)
+				self.update_function = update_function
+				self.layout = QGridLayout()
+				self.theme, self.font_size, self.font_family = returnProperties()["theme"], returnProperties()["font-size"], returnProperties()["font-family"]
+				self.top_bar = QGroupBox(self)
+				self.top_bar.setLayout(QHBoxLayout())
+				self.back_button = QPushButton("Back", self.top_bar)
+				self.back_button.pressed.connect(lambda self=self: self.parent().setCurrentIndex(0))
+				self.top_bar.layout().addWidget(self.back_button)
+				# self.layout.addWidget(self.top_bar, 0, 0)
+				self.widgets, self.group_box_widgets = {
+					"top-bar": [self.top_bar, [0, 0]],
+					"theme-label": [QLabel("Theme"), [3, 0]],
+					"theme-group-box": [QGroupBox(self), [3, 1]],
+					"font-size-label": [QLabel("Font Size"), [5, 0]],
+					"font-size": [Slider(5, 20, int(returnProperties()["font-size"]), self.changeFontSize), [5, 1]],
+					"reset-font-size": [PushButton("Reset"), [5, 2]],
+					"font-family-label": [QLabel("Font Family"), [6, 0]],
+					"font-family": [QComboBox(self), [6, 1]]
+				}, {}
+				# Append to self.group_box_widgets
+				for x, y in zip(Themes.getThemes(), range(1, len(Themes.getThemes().keys()) + 1)):
+					self.group_box_widgets[x] = [Preferences.Appearance.ThemeLabel(self), [1, y]]
+				# Specific widget properties
+				# # Font family properties
+				self.widgets["font-family"][0].addItems(returnProperties()["fonts"])
+				self.widgets["font-family"][0].setStyleSheet(f"QComboBox QAbstractItemView {{ selection-color: {'#AAAAAA' if returnProperties()['theme'] == 'light' else '#555555'}; color: {returnBackgroundProperties()['text-color']}; }};")
+				self.widgets["font-family"][0].setCurrentIndex(returnProperties()["fonts"].index(self.font_family))
+				self.widgets["font-family"][0].currentIndexChanged.connect(self.changeFontFamily)
+				# # Reset font size properties
+				self.widgets["reset-font-size"][0].clicked.connect(self.resetFontSize)
+				# # Label properties
+				for i in ["theme-label", "font-size-label", "font-family-label"]:
+					self.widgets[i][0].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']};")
+					self.widgets[i][0].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
+				# # Theme group box properties
+				self.widgets["theme-group-box"][0].setStyleSheet("QGroupBox { border: none; }")
+				self.group_box_layout = QHBoxLayout()
+				for i in self.group_box_widgets:
+					self.group_box_layout.addWidget(self.group_box_widgets[i][0])
+				self.widgets["theme-group-box"][0].setLayout(self.group_box_layout)
+				self.widgets["theme-group-box"][0].setFixedSize(540, 100)
+				self.widgets["theme-group-box"][0].layout().setContentsMargins(30, 30, 30, 30)
+				# # Theme button properties
+				for i in self.group_box_widgets.keys():
+					self.group_box_widgets[i][0].setText(i.title())
+					self.group_box_widgets[i][0].setStyleSheet(f"color: #{str(Themes.getThemes()[i]['text-color'])[1:].lower()}; border: none; background: #{str(Themes.getThemes()[i]['background-color'])[1:].lower()};")
+					self.group_box_widgets[i][0].index = i
+					# exec(f"self.group_box_widgets[i][0].pressed.connect(lambda self=self: self.changeTheme('{i}'))", globals(), locals())
+				# Add to layout
+				for i in self.widgets.keys():
+					self.layout.addWidget(self.widgets[i][0], self.widgets[i][1][0], self.widgets[i][1][1])
+				self.setLayout(self.layout) # Set layout
+			
+			def _update(self):
+				self.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}")
+				for i in ["theme-label", "font-size-label", "font-family-label"]:
+					self.widgets[i][0].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; font-size: {returnProperties()['font-size']}")
+					self.widgets[i][0].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
+				for i in self.group_box_widgets.keys():
+					self.group_box_widgets[i][0].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none")
+					self.group_box_widgets[i][0].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
+				# self.widgets["font-family"][0].setStyleSheet("QComboBox QAbstractItemView {selection-color: #AAAAAA}")
+				if returnProperties()["theme"] == "light":
+					self.widgets["font-family"][0].setStyleSheet("QComboBox QAbstractItemView { selection-color: #AAAAAA; color: #000000; };")
+				else:
+					self.widgets["font-family"][0].setStyleSheet("QComboBox QAbstractItemView { selection-color: #555555; color: #FFFFFF; };")
+				self.update_function()
+				
+			def resetFontSize(self) -> None:
+				self.font_size = 12
+				self.widgets["font-size"][0].setValue(12)
+				with open("System/config/font.json") as file:
+					data = load(file)
+					data["font-size"] = self.font_size
+					open("System/config/font.json", "w").write(str(data).replace("'", "\""))
+				self._update()
+				
+			def changeFontFamily(self) -> None:
+				self.font_family = self.widgets["font-family"][0].currentText()
+				with open("System/config/font.json", "r+") as file:
+					data = load(file)
+					data["font-family"] = self.font_family
+					open("System/config/font.json", "w").write(str(data).replace("'", "\""))
+				self._update()
+				
+			def changeFontSize(self) -> None:
+				self.font_size = self.widgets["font-size"][0].value()
+				with open("System/config/font.json", "r+") as file:
+					data = load(file)
+					data["font-size"] = self.font_size
+					open("System/config/font.json", "w").write(str(data).replace("'", "\""))
+				self._update()
+				
+			def changeTheme(self, theme):
+				self.theme = theme
+				with open("System/config/theme.json", "r+") as file:
+					data = load(file)
+					data["theme"] = self.theme
+					open("System/config/theme.json", "w").write(str(data).replace("'", "\""))
+				self._update()
+				self.parent().parent().parent().parent().parent().restartWindow()
+			
+			def resizeEvent(self, event) -> None:
+				self.top_bar.resize(QSize(event.size().width(), self.top_bar.size().height()))
+				super(Preferences.Appearance.Theme, self).resizeEvent(event)
 		
-		def _update(self):
-			self.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}")
-			for i in ["theme-label", "font-size-label", "font-family-label"]:
-				self.widgets[i][0].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; font-size: {returnProperties()['font-size']}")
-				self.widgets[i][0].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
-			for i in self.group_box_widgets.keys():
-				self.group_box_widgets[i][0].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none")
-				self.group_box_widgets[i][0].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
-			# self.widgets["font-family"][0].setStyleSheet("QComboBox QAbstractItemView {selection-color: #AAAAAA}")
-			if returnProperties()["theme"] == "light":
-				self.widgets["font-family"][0].setStyleSheet("QComboBox QAbstractItemView { selection-color: #AAAAAA; color: #000000; };")
-			else:
-				self.widgets["font-family"][0].setStyleSheet("QComboBox QAbstractItemView { selection-color: #555555; color: #FFFFFF; };")
-			self.update_function()
+		class AppearanceWidget(QWidget):
+			def __init__(self, parent, update_function):
+				super(Preferences.Appearance.AppearanceWidget, self).__init__(parent)
+				self.update_function = update_function
+				self.buttons = []
+				self.buttons.append(ActionPushButton(self, "General", lambda: self.parent().setCurrentIndex(1)))
+				self.buttons.append(ActionPushButton(self, "Windows", lambda: self.parent().setCurrentIndex(1)))
+				self.buttons.append(ActionPushButton(self, "Dock", lambda: self.parent().setCurrentIndex(1)))
+				width = self.buttons[0].width()
+				for i in range(len(self.buttons)):
+					self.buttons[i].move(QPoint(i * (width + 5), 0))
 			
-		def resetFontSize(self) -> None:
-			self.font_size = 12
-			self.widgets["font-size"][0].setValue(12)
-			with open("System/config/font.json") as file:
-				data = load(file)
-				data["font-size"] = self.font_size
-				open("System/config/font.json", "w").write(str(data).replace("'", "\""))
-			self._update()
+			def resizeEvent(self, event) -> None:
+				single_width, width, y = self.buttons[0].width(), 0, 0
+				for i in range(len(self.buttons)):
+					if (width + 5) >= self.width():
+						y += self.buttons[i].height() + 5
+						width = 0
+					self.buttons[i].move(QPoint(width, y))
+					width += single_width + 5
+				super(Preferences.Appearance.AppearanceWidget, self).resizeEvent(event)
+		
+		def __init__(self, parent, update_function):
+			super(Preferences.Appearance, self).__init__(parent)
+			self.update_function = update_function
+			self.stacked_widgets, self.pages = QStackedWidget(self), {"main": Preferences.Appearance.AppearanceWidget(self, update_function), "theme": Preferences.Appearance.Theme(self, update_function)}
+			for i in self.pages.values():
+				self.stacked_widgets.addWidget(i)
+		
+		def resizeEvent(self, event) -> None:
+			for i in self.pages.values():
+				i.resize(event.size())
+			super(Preferences.Appearance, self).resizeEvent(event)
 			
-		def changeFontFamily(self) -> None:
-			self.font_family = self.widgets["font-family"][0].currentText()
-			with open("System/config/font.json", "r+") as file:
-				data = load(file)
-				data["font-family"] = self.font_family
-				open("System/config/font.json", "w").write(str(data).replace("'", "\""))
-			self._update()
-			
-		def changeFontSize(self) -> None:
-			self.font_size = self.widgets["font-size"][0].value()
-			with open("System/config/font.json", "r+") as file:
-				data = load(file)
-				data["font-size"] = self.font_size
-				open("System/config/font.json", "w").write(str(data).replace("'", "\""))
-			self._update()
-			
-		def changeTheme(self, theme):
-			self.theme = theme
-			with open("System/config/theme.json", "r+") as file:
-				data = load(file)
-				data["theme"] = self.theme
-				open("System/config/theme.json", "w").write(str(data).replace("'", "\""))
-			self._update()
-			self.parent().parent().parent().restartWindow()
-
 	def __init__(self, update_function) -> None:
 		super(Preferences, self).__init__()
 		self.setCursor(Qt.ArrowCursor)
@@ -141,7 +187,7 @@ class Preferences(QWidget):
 		self.tab_layout.addWidget(TabButton(self.tab_widget, lambda: self.stacked_widgets.setCurrentIndex(0), "Appearance"))
 		self.tab_layout.addItem(QSpacerItem(100, 20, QSizePolicy.Expanding, QSizePolicy.Expanding))
 		
-		self.tabs.setStyleSheet("border: none;")
+		self.tabs.setStyleSheet("border: none; background: #F0F0F0")
 		
 		self.stacked_widgets, self.pages = QStackedWidget(self), {"appearance": Preferences.Appearance(self, update_function)}
 		for i in self.pages.values():
