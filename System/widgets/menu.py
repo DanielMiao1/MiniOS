@@ -5,7 +5,7 @@ Menu widgets
 Made by Daniel M using Python 3
 """
 
-from .. import config
+import config
 
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *

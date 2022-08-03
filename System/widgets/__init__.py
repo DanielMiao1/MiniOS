@@ -18,8 +18,9 @@ class Widget(QWidget):
 
 	def __init__(self, parent=None):
 		super(Widget, self).__init__(parent)
-		self.context_menu = Menu(self)
-	
+		self.label = None
+		# self.context_menu = Menu(self)
+
 	def contextMenu(self):
 		pass
 	
@@ -28,6 +29,21 @@ class Widget(QWidget):
 	
 	def mouseReleaseEvent(self, event) -> None:
 		self.released.emit(event.button())
+
+	def setText(self, text):
+		if self.label is None:
+			self.label = QLabel(self)
+
+		self.label.setText(text)
+		self.resizeLabel(self.size())
+
+	def resizeLabel(self, size):
+		self.label.resize(size)
+
+	def resizeEvent(self, event):
+		if self.label is not None:
+			self.resizeLabel(event.size())
+		super(Widget, self).resizeEvent(event)
 
 # class Widget(QPushButton):
 # 	pressed = pyqtSignal()
@@ -151,7 +167,8 @@ class FileEditLineEdit(QLineEdit):
 
 class Clock(Widget):
 	def __init__(self, parent):
-		super(Clock, self).__init__(parent=parent, context_menu={})
+		# super(Clock, self).__init__(parent=parent, context_menu={})
+		super(Clock, self).__init__(parent=parent)
 		self.color = "black"
 		self.background = "white"
 		self.font_size = "12"
