@@ -16,14 +16,14 @@ class Dock(QGroupBox):
 		self.layout().setSpacing(0)
 		self.layout().addStretch()
 		self.layout().addStretch()
-	
+
 	def addItem(self, name, icon, run_class=None):
 		self.layout().insertWidget(self.layout().count() - 1, DockItem(self, name, icon, run_class))
-	
+
 	def adjustGeometry(self):
 		self.move(0, self.parent().height() - self.height())
 		self.resize(self.parent().width(), 50)
-	
+
 	def setStyles(self, **styles):
 		self.background = styles["background_color"] if "background_color" in styles else None
 		self.color = styles["text_color"] if "text_color" in styles else None
@@ -44,16 +44,16 @@ class DockItem(QLabel):
 		self.label.setStyleSheet(f"background-color: {self.parent().background}; color: {self.parent().color}; font-family: {self.parent().font_family}; font-size: {self.parent().font_size}; padding: 5px;")
 		self.label.adjustSize()
 		self.label.hide()
-	
+
 	def enterEvent(self, event):
 		self.label.move(QPoint(event.globalPos().x() - event.pos().x() + (self.width() // 2) - (self.label.width() // 2), self.parent().parent().height() - self.parent().height() - self.label.height() - 10))
 		self.label.show()
 		super(DockItem, self).enterEvent(event)
-	
+
 	def leaveEvent(self, event):
 		self.label.hide()
 		super(DockItem, self).leaveEvent(event)
-	
+
 	def mousePressEvent(self, event):
 		if self.run_class is None:
 			self.parent().parent().openPreferences()

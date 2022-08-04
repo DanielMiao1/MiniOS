@@ -15,8 +15,8 @@ from config import *
 from dialogs import *
 from widgets import *
 from widgets.buttons import *
-from widgets import dock
 from applications import *
+from core import *
 import applications as _applications
 import desktop
 
@@ -33,22 +33,22 @@ class Window(QMainWindow):
 	"""Main Window"""
 	def __init__(self, parent=None) -> None:
 		"""Main window __init__"""
-		super(Window, self).__init__(parent=parent) # Call super class __init__ function
+		super(Window, self).__init__(parent=parent)  # Call super class __init__ function
 		self.context_menu = None
 		self.showing_keyboard_viewer = False
-		self.file_created_session = False # Set file_created_session variable to False
-		self.setWindowFlag(Qt.WindowType.FramelessWindowHint) # Remove window frame
-		self.setStyleSheet("background-color: " + returnBackgroundProperties()["background-color"]) # Set window style
-		self.window_size = application.primaryScreen().availableGeometry().width(), application.primaryScreen().availableGeometry().height() # Get window size property
-		self.windows = [] # Create windows list
-		self.about = self.menuBar().addMenu("About") # Add about menu
-		self.about.triggered.connect(self.openAbout) # Connect about menu trigger signal
-		self.about.addAction(QAction("About", self)) # Add action "about" to about menu
-		self.setMinimumSize(1280, 720) # Set window minimum size
+		self.file_created_session = False  # Set file_created_session variable to False
+		self.setWindowFlag(Qt.WindowType.FramelessWindowHint)  # Remove window frame
+		self.setStyleSheet("background-color: " + returnBackgroundProperties()["background-color"])  # Set window style
+		self.window_size = application.primaryScreen().availableGeometry().width(), application.primaryScreen().availableGeometry().height()  # Get window size property
+		self.windows = []  # Create windows list
+		self.about = self.menuBar().addMenu("About")  # Add about menu
+		self.about.triggered.connect(self.openAbout)  # Connect about menu trigger signal
+		self.about.addAction(QAction("About", self))  # Add action "about" to about menu
+		self.setMinimumSize(1280, 720)  # Set window minimum size
 		# Top toolbar
-		self.top_tool_bar = QToolBar("Top menu bar") # Create the top menu bar
-		self.top_tool_bar.setMovable(False) # Make the top menu bar fixed
-		self.top_tool_bar.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; border: 4px solid {returnBackgroundProperties()['background-color-2']}; color: {returnBackgroundProperties()['text-color']}") # Set stylesheet properties for the top menu bar
+		self.top_tool_bar = QToolBar("Top menu bar")  # Create the top menu bar
+		self.top_tool_bar.setMovable(False)  # Make the top menu bar fixed
+		self.top_tool_bar.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; border: 4px solid {returnBackgroundProperties()['background-color-2']}; color: {returnBackgroundProperties()['text-color']}")  # Set stylesheet properties for the top menu bar
 		# Define actions
 		# # Clock
 		self.clock = Clock(self)
@@ -59,11 +59,11 @@ class Window(QMainWindow):
 		# # Options
 		self.options = OptionsMenu(self, close_event=self.shutDownWindow, keyboard_viewer_event=self.showKeyboardViewer)
 		# Add actions to the Tool Bar
-		self.top_tool_bar.addWidget(self.clock) # Add clock widget
-		self.top_tool_bar.addWidget(self.top_tool_bar_separator) # Add separator
-		self.top_tool_bar.addWidget(self.options) # Add options menu button
-		self.top_tool_bar.setFixedHeight(40) # Set fixed height
-		self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.top_tool_bar) # Add Tool Bar to the Window
+		self.top_tool_bar.addWidget(self.clock)  # Add clock widget
+		self.top_tool_bar.addWidget(self.top_tool_bar_separator)  # Add separator
+		self.top_tool_bar.addWidget(self.options)  # Add options menu button
+		self.top_tool_bar.setFixedHeight(40)  # Set fixed height
+		self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.top_tool_bar)  # Add Tool Bar to the Window
 		# Applications dock
 		self.dock = dock.Dock(self)
 		self.dock.setStyles(background_color=returnBackgroundProperties()["background-color-2"], text_color=returnBackgroundProperties()["text-color"], font_size=returnProperties()["font-size"], font_family=returnProperties()["font-family"])
