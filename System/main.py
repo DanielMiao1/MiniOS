@@ -105,49 +105,49 @@ class Window(QMainWindow):
 			if column + 137.5 > self.window_size[1]:
 				row += 1
 				column = 40
-			self.files.append(ToolButton(self)) # Append new ToolButton
+			self.files.append(ToolButton(self))  # Append new ToolButton
 			self.files[-1].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none;") # Set style
-			self.files[-1].setText(desktop.returnItems()[x]["displayname"]) # Set text
-			self.files[-1].setIcon(desktop.getFileIcon(desktop.returnItems()[x]["extension"], desktop.returnItems()[x]["type"])) # Set icon
+			self.files[-1].setText(desktop.returnItems()[x]["displayname"])  # Set text
+			self.files[-1].setIcon(desktop.getFileIcon(desktop.returnItems()[x]["extension"], desktop.returnItems()[x]["type"]))  # Set icon
 			self.files[-1].setIconSize(QSize(75, 75)) # Set icon size
-			self.files[-1].resize(68, 100) # Resize
-			self.files[-1].setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon) # Set text/icon position
-			self.files[-1].move(row * 70, column) # Move
-			self.files[-1].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"])) # Set font
-			exec(f"self.files[-1].pressed.connect(lambda self = self: self.setFocusedFile(self.files[{len(self.files) - 1}]))") # Connect pressed signal
-			column += 100 # Increase column count
-		self.showFullScreen() # Show window in full screen
-		self.options.updateMenuPosition(self.width() - 100, "default") # Update the Options Menu position after full-screening
-		self.show() # Show the main window
+			self.files[-1].resize(68, 100)  # Resize
+			self.files[-1].setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)  # Set text/icon position
+			self.files[-1].move(row * 70, column)  # Move
+			self.files[-1].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))  # Set font
+			exec(f"self.files[-1].pressed.connect(lambda self = self: self.setFocusedFile(self.files[{len(self.files) - 1}]))")  # Connect pressed signal
+			column += 100  # Increase column count
+		self.showFullScreen()  # Show window in full screen
+		self.options.updateMenuPosition(self.width() - 100, "default")  # Update the Options Menu position after full-screening
+		self.show()  # Show the main window
 	
 	def setFocusedFile(self, file: typing.Union[ToolButton, None] = None):
 		"""Sets the focused file"""
 		if file is None:
-			return # Exit function if file is None
+			return  # Exit function if file is None
 		if self.focused_file is not None:
-			self.focused_file.setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none;") # If there is already a focused file, reset its stylesheet properties
-		file.setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none; background-color: {returnBackgroundProperties()['background-color-2']};") # Set the new focused file's stylesheet properties
-		self.focused_file = file # Set focused file variable to file
+			self.focused_file.setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none;")  # If there is already a focused file, reset its stylesheet properties
+		file.setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none; background-color: {returnBackgroundProperties()['background-color-2']};")  # Set the new focused file's stylesheet properties
+		self.focused_file = file  # Set focused file variable to file
 		
 	def openApplication(self, app: str) -> None:
 		"""Opens the specified application"""
-		exec(f"self.windows.append(ApplicationWindow(self, QPoint(0, 0), app__{app}__(), background_color='{returnApplicationProperties()[app]['background-color'] if returnApplicationProperties()[app]['background-color'] != 'default' else returnBackgroundProperties()['background-color']}', window_name='{app}', toolbar_background_color='{returnBackgroundProperties()['background-color-3']}', window_size={returnApplicationProperties()[app]['window-size']}))") # Create new window with child widget of application class
+		exec(f"self.windows.append(ApplicationWindow(self, QPoint(0, 0), app__{app}__(), background_color='{returnApplicationProperties()[app]['background-color'] if returnApplicationProperties()[app]['background-color'] != 'default' else returnBackgroundProperties()['background-color']}', window_name='{app}', toolbar_background_color='{returnBackgroundProperties()['background-color-3']}', window_size={returnApplicationProperties()[app]['window-size']}))")  # Create new window with child widget of application class
 		
 	def openPreferences(self, position: QPoint = QPoint(0, 0)) -> None:
 		"""Opens the preferences window"""
-		self.windows.append(ApplicationWindow(self, position, Preferences(self.updateElements), background_color=returnBackgroundProperties()["background-color-2"], window_name="Preferences", custom_stylesheet="background-color: " + returnBackgroundProperties()["background-color-2"], restart_window_function=self.openPreferences)) # Create new window
+		self.windows.append(ApplicationWindow(self, position, Preferences(self.updateElements), background_color=returnBackgroundProperties()["background-color-2"], window_name="Preferences", custom_stylesheet="background-color: " + returnBackgroundProperties()["background-color-2"], restart_window_function=self.openPreferences))  # Create new window
 
 	@staticmethod
 	def openAbout() -> None:
 		"""Opens the 'About' dialog"""
-		dialog = AboutDialog() # Call the AboutDialog class
-		dialog.exec_() # Show class
+		dialog = AboutDialog()  # Call the AboutDialog class
+		dialog.exec_()  # Show class
 		
 	def contextMenuEvent(self, event: QContextMenuEvent) -> None:
 		"""Set context menu for desktop"""
-		menu = QMenu(self) # Create menu
-		new_file, new_directory, action = menu.addAction("New file"), menu.addAction("New directory"), menu.exec_(self.mapToGlobal(event.pos())) # Add actions
-		if action == new_file: # New file action
+		menu = QMenu(self)  # Create menu
+		new_file, new_directory, action = menu.addAction("New file"), menu.addAction("New directory"), menu.exec_(self.mapToGlobal(event.pos()))  # Add actions
+		if action == new_file:  # New file action
 			# Get row and column count
 			row, column = 0, 40
 			for _ in range(len(self.files)):
@@ -254,23 +254,23 @@ class Window(QMainWindow):
 		Rearrange desktop files
 		Update Options Menu position
 		"""
-		self.options.updateMenuPosition(self.width() - 100, "default") # Update the Options Menu position
+		self.options.updateMenuPosition(self.width() - 100, "default")  # Update the Options Menu position
 		# Rearrange desktop files
-		row, column = 0, 40 # Set default row and column variables
+		row, column = 0, 40  # Set default row and column variables
 		for x in range(len(self.files)):
 			if column + 137.5 > event.size().height():
 				row += 1
 				column = 40
-			self.files[x].move(row * 70, column) # Move file to row/column
+			self.files[x].move(row * 70, column)  # Move file to row/column
 			column += 100
 		self.dock.adjustGeometry()
-		super(Window, self).resizeEvent(event) # Call resizeEvent function from super class
+		super(Window, self).resizeEvent(event)  # Call resizeEvent function from super class
 		
 	def keyPressEvent(self, event: QKeyEvent) -> None:
 		"""Processes key press events"""
 		if event.key() in [Qt.Key.Key_Delete, Qt.Key.Key_Backspace] and QApplication.keyboardModifiers() == Qt.KeyboardModifier.ControlModifier and self.focused_file is not None: # If the Delete/Backspace key and the Control(Windows)/Command(Mac) modifier key is pressed at the same time, and there is a focused file
-			self.focused_file.deleteLater() # Delete the focused file
-			for x in desktop.returnItems().keys(): # Iterate through applications
+			self.focused_file.deleteLater()  # Delete the focused file
+			for x in desktop.returnItems().keys():  # Iterate through applications
 				if desktop.returnItems()[x]["displayname"] == self.focused_file.text(): # If the application is the focused file
 					os.system(f"mv Home/Desktop/{x} Home/Trash/") # Move the file to the Trash directory
 					# Re-arrange desktop files
