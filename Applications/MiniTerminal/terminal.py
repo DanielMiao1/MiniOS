@@ -8,6 +8,7 @@ Shell Emulator made by Daniel M using Python 3 for the MiniOS project: https://g
 # Imports
 import os
 import sys
+import platform
 import subprocess
 
 # Local file imports
@@ -59,19 +60,21 @@ class Terminal(QWidget):
 	"""Main Window"""
 	def __init__(self) -> None:
 		super(Terminal, self).__init__()
+		self.monospace_font = QFont("Monospace")
+		self.monospace_font.setStyleHint(QFont.TypeWriter if platform.system() == "Windows" else QFont.Monospace)
 		self.setFixedSize(497, 455)
 		self.setStyleSheet(f"background-color: {get_properties.returnBackgroundProperties()['background-color']}; color: {get_properties.returnBackgroundProperties()['text-color']}")
-		self.path, self.commands, self.PS1, self.PS2 = os.path.abspath(os.getcwd()), ["ls", "echo", "pwd", "history"], "$ ", ">" # Get current path
-		self.text_edit = TextEdit(self, return_pressed_event=lambda: self.evalCommand(self.text_edit.toPlainText().splitlines()[-1][len(self.PS1):])) # Create the text box
+		self.path, self.commands, self.PS1, self.PS2 = os.path.abspath(os.getcwd()), ["ls", "echo", "pwd", "history"], "$ ", ">"  # Get current path
+		self.text_edit = TextEdit(self, return_pressed_event=lambda: self.evalCommand(self.text_edit.toPlainText().splitlines()[-1][len(self.PS1):]))  # Create the text box
 		self.text_edit.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		self.text_edit.setFixedSize(QSize(492, 455))
-		self.text_edit.setFont(QFont("Consolas", 15)) # Set font and font size of command input box
+		self.text_edit.setFont(self.monospace_font)  # Set font and font size of command input box
 		self.text_edit.move(0, 0)
 		self.text_edit.resize(self.geometry().size())
-		self.text_edit.setText(f"Terminal for MiniOS version dev-0.1\n{self.PS1}") # Set text
+		self.text_edit.setText(f"Terminal for MiniOS version dev-0.1\n{self.PS1}")  # Set text
 		self.text_edit.setAttribute(Qt.WidgetAttribute.WA_MacShowFocusRect, False)
 		self.text_edit.setFrameStyle(QFrame.NoFrame)
-		self.show() # Show widgets
+		self.show()  # Show widgets
 
 	def parentResizeEvent(self, event: QResizeEvent) -> None:
 		self.setFixedSize(event.size().width(), event.size().height() - 45)
