@@ -5,7 +5,7 @@ Menu widgets
 Made by Daniel M using Python 3
 """
 
-import config
+from ..config import *
 
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
@@ -49,28 +49,28 @@ class MenuLabel(QLabel):
 		super(MenuLabel, self).__init__(text, parent)
 		self.setCursor(Qt.CursorShape.PointingHandCursor)
 		self.mouse_pressed_event = mouse_pressed_event
-		self.setStyleSheet(f"color: {config.returnBackgroundProperties()['text-color']}; background-color: {config.returnBackgroundProperties()['background-color-2']};")
-		self.setFont(QFont(config.returnProperties()["font-family"], config.returnProperties()["font-size"]))
+		self.setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; background-color: {returnBackgroundProperties()['background-color-2']};")
+		self.setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
 		self.resize(100, 25)
 		self.hide()
 		
 	def updateStyleSheets(self):
-		self.setFont(QFont(config.returnProperties()["font-family"], config.returnProperties()["font-size"]))
-		self.setStyleSheet(f"color: {config.returnBackgroundProperties()['text-color']}; background-color: {config.returnBackgroundProperties()['background-color-2']};")
+		self.setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
+		self.setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; background-color: {returnBackgroundProperties()['background-color-2']};")
 	
 	def mousePressEvent(self, _: QMouseEvent) -> None:
 		"""Call mouse press event function"""
-		self.setStyleSheet(f"color: {config.returnBackgroundProperties()['text-color']}; background-color: {config.returnBackgroundProperties()['background-color']};")
+		self.setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; background-color: {returnBackgroundProperties()['background-color']};")
 		if self.mouse_pressed_event is not None: self.mouse_pressed_event()
 	
 	def mouseReleaseEvent(self, _: QMouseEvent) -> None:
-		self.setStyleSheet(f"color: {config.returnBackgroundProperties()['text-color']}; background-color: {config.returnBackgroundProperties()['background-color-3']};")
+		self.setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; background-color: {returnBackgroundProperties()['background-color-3']};")
 	
 	def enterEvent(self, _: QEvent) -> None:
-		self.setStyleSheet(f"color: {config.returnBackgroundProperties()['text-color']}; background-color: {config.returnBackgroundProperties()['background-color-3']};")
+		self.setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; background-color: {returnBackgroundProperties()['background-color-3']};")
 	
 	def leaveEvent(self, _: QEvent) -> None:
-		self.setStyleSheet(f"color: {config.returnBackgroundProperties()['text-color']}; background-color: {config.returnBackgroundProperties()['background-color-2']};")
+		self.setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; background-color: {returnBackgroundProperties()['background-color-2']};")
 	
 	def contextMenuEvent(self, event) -> None:
 		pass
@@ -80,7 +80,7 @@ class OptionsMenu(QPushButton):
 	def __init__(self, parent, close_event=None, keyboard_viewer_event=None):
 		super(OptionsMenu, self).__init__(parent=parent)
 		self.setFixedSize(QSize(100, 25))
-		self.setStyleSheet(f"background-color: {config.returnBackgroundProperties()['background-color-2']}; color: {config.returnBackgroundProperties()['text-color']}; border: none;")
+		self.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-2']}; color: {returnBackgroundProperties()['text-color']}; border: none;")
 		self.group_box, self.parent_widget, self.activated, self.group_box_layout, self.close_event = QGroupBox(parent), parent, False, QVBoxLayout(), close_event
 		self.buttons = {
 			"shut-down": MenuLabel(self.group_box, text=" Shut Down", mouse_pressed_event=lambda: self.closeMenu(self.close_event)),
@@ -93,13 +93,13 @@ class OptionsMenu(QPushButton):
 		self.setText("Options")
 		self.pressed.connect(self.mousePressed)
 		self.group_box.resize(100, 50)
-		self.group_box.setStyleSheet(f"QGroupBox {{ background-color: {config.returnBackgroundProperties()['background-color-2']}; border: none; }};")
-		self.setFont(QFont(config.returnProperties()["font-family"], config.returnProperties()["font-size"]))
+		self.group_box.setStyleSheet(f"QGroupBox {{ background-color: {returnBackgroundProperties()['background-color-2']}; border: none; }};")
+		self.setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
 		self.group_box.hide()
 	
 	def updateStyleSheets(self):
-		self.group_box.setStyleSheet(f"QGroupBox {{ background-color: {config.returnBackgroundProperties()['background-color-2']}; border: none; }};")
-		self.setFont(QFont(config.returnProperties()["font-family"], config.returnProperties()["font-size"]))
+		self.group_box.setStyleSheet(f"QGroupBox {{ background-color: {returnBackgroundProperties()['background-color-2']}; border: none; }};")
+		self.setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
 		self.buttons["shut-down"].updateStyleSheets()
 		self.buttons["keyboard-viewer"].updateStyleSheets()
 	
@@ -110,7 +110,7 @@ class OptionsMenu(QPushButton):
 		self.group_box.move(QPoint(x, y))
 	
 	def closeMenu(self, run_event=None):
-		self.setStyleSheet(f"background-color: {config.returnBackgroundProperties()['background-color-3']}; color: {config.returnBackgroundProperties()['text-color']}; border: none;")
+		self.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-3']}; color: {returnBackgroundProperties()['text-color']}; border: none;")
 		self.group_box.hide()
 		self.buttons["shut-down"].hide()
 		self.buttons["keyboard-viewer"].hide()
@@ -118,7 +118,7 @@ class OptionsMenu(QPushButton):
 		if run_event is not None: run_event()
 	
 	def mousePressed(self):
-		self.setStyleSheet(f"background-color: {config.returnBackgroundProperties()['background-color']}; color: {config.returnBackgroundProperties()['text-color']}; border: none;")
+		self.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color']}; color: {returnBackgroundProperties()['text-color']}; border: none;")
 		if self.activated: self.closeMenu()
 		else:
 			self.group_box.show()
@@ -127,13 +127,13 @@ class OptionsMenu(QPushButton):
 			self.activated = True
 	
 	# def mouseReleaseEvent(self, _: QMouseEvent) -> None:
-	# 	self.setStyleSheet(f"background-color: {config.returnBackgroundProperties()['background-color-3']}; color: {config.returnBackgroundProperties()['text-color']}; border: none;")
+	# 	self.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-3']}; color: {returnBackgroundProperties()['text-color']}; border: none;")
 	
 	def enterEvent(self, _: QEvent) -> None:
-		self.setStyleSheet(f"background-color: {config.returnBackgroundProperties()['background-color-3']}; color: {config.returnBackgroundProperties()['text-color']}; border: none;")
+		self.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color-3']}; color: {returnBackgroundProperties()['text-color']}; border: none;")
 	
 	def leaveEvent(self, _: QEvent) -> None:
-		self.setStyleSheet(f"background-color: {config.returnBackgroundProperties()['background-color' + ('' if self.activated else '-2')]}; color: {config.returnBackgroundProperties()['text-color']}; border: none;")
+		self.setStyleSheet(f"background-color: {returnBackgroundProperties()['background-color' + ('' if self.activated else '-2')]}; color: {returnBackgroundProperties()['text-color']}; border: none;")
 
 	def contextMenuEvent(self, event) -> None:
 		pass

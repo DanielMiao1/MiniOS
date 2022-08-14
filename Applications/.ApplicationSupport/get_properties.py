@@ -5,13 +5,12 @@ returnProperties function returns dictionary with values from System/config JSON
 Made by Daniel M using Python 3 for Application Support in the MiniOS project: https://github.com/DanielMiao1/MiniOS
 """
 
-__import__("sys").path.insert(1, "System/")
-import config
+from System.core.config import *
 
 
 def returnProperties() -> dict:
-	return {**config.ThemeConfig.returnConfig(), **config.FontConfig.returnConfig(), **config.WindowConfig.returnConfig()}
+	return {**ThemeConfig.returnConfig(), **FontConfig.returnConfig(), **WindowConfig.returnConfig()}
 
 
 def returnBackgroundProperties() -> dict:
-	return config.Themes.getThemes()[config.ThemeConfig.returnConfig()["theme"]]
+	return Themes.getThemes()[ThemeConfig.returnConfig()["theme"]]

@@ -11,8 +11,6 @@ from os import path
 
 from config import *
 from dialogs import *
-from widgets import *
-from widgets.buttons import *
 from applications import *
 from core import *
 import applications as _applications

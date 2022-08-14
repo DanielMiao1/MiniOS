@@ -7,9 +7,9 @@ Made by Daniel M using Python 3
 
 from json import load
 
-from config import returnProperties, returnBackgroundProperties, Themes
-from widgets import Slider
-from widgets.buttons import *
+from core.config import returnProperties, returnBackgroundProperties, Themes
+from core.widgets import Slider
+from core.widgets.buttons import *
 
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *

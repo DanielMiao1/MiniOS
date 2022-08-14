@@ -34,8 +34,10 @@ class ThemeConfig:
 	@staticmethod
 	def formatJSON() -> None:
 		with open("System/config/theme.json") as file:
-			try: load(file)
-			except json.decoder.JSONDecodeError: open("System/config/theme.json", "w").write("{\"theme\": \"light\"}\n")
+			try:
+				load(file)
+			except json.decoder.JSONDecodeError:
+				open("System/config/theme.json", "w").write("{\"theme\": \"light\"}\n")
 			file = open("System/config/theme.json")
 			loaded_file = load(file)
 			if open("System/config/theme.json", "r+").read() == "":
@@ -63,7 +65,6 @@ class ThemeConfig:
 			open("System/config/themes.json", "w").write("{\n  \"default\": \"light\"\n}\n")
 
 
-
 class FontConfig:
 	"""
 	Font Configuration
@@ -72,8 +73,10 @@ class FontConfig:
 	@staticmethod
 	def formatJSON() -> None:
 		with open("System/config/font.json") as file:
-			try: load(file)
-			except json.decoder.JSONDecodeError: open("System/config/font.json", "w").write("{\n  \"fonts\": [\n    \"Arial\",\n    \"Gill Sans\",\n    \"Times\",\n    \"Courier\",\n    \"Symbol\",\n    \"Calibri\",\n    \"Cambria\",\n    \"Candara\",\n    \"Comic Sans MS\",\n    \"Consolas\",\n    \"Constantia\",\n    \"Corbel\",\n    \"Courier New\",\n    \"Gabriola\",\n    \"Georgia\",\n    \"Helvetica\",\n    \"Impact\",\n    \"MS Gothic\",\n    \"Rockwell\",\n    \"SimSun\",\n    \"SimSun-ExtB\",\n    \"Tahoma\",\n    \"Times New Roman\",\n    \"Trebuchet MS\",\n    \"Verdana\",\n    \"Webdings\",\n    \"Wingdings\"\n  ],\n  \"font-family\": \"Helvetica\",\n  \"font-size\": \"12\"\n}")
+			try:
+				load(file)
+			except json.decoder.JSONDecodeError:
+				open("System/config/font.json", "w").write("{\n  \"fonts\": [\n    \"Arial\",\n    \"Gill Sans\",\n    \"Times\",\n    \"Courier\",\n    \"Symbol\",\n    \"Calibri\",\n    \"Cambria\",\n    \"Candara\",\n    \"Comic Sans MS\",\n    \"Consolas\",\n    \"Constantia\",\n    \"Corbel\",\n    \"Courier New\",\n    \"Gabriola\",\n    \"Georgia\",\n    \"Helvetica\",\n    \"Impact\",\n    \"MS Gothic\",\n    \"Rockwell\",\n    \"SimSun\",\n    \"SimSun-ExtB\",\n    \"Tahoma\",\n    \"Times New Roman\",\n    \"Trebuchet MS\",\n    \"Verdana\",\n    \"Webdings\",\n    \"Wingdings\"\n  ],\n  \"font-family\": \"Helvetica\",\n  \"font-size\": \"12\"\n}")
 			file = open("System/config/font.json")
 			loaded_file = load(file)
 			if open("System/config/font.json", "r+").read() == "":
@@ -113,8 +116,10 @@ class WindowConfig:
 	@staticmethod
 	def formatJSON() -> None:
 		with open("System/config/window.json") as file:
-			try: load(file)
-			except json.decoder.JSONDecodeError: open("System/config/window.json", "w").write("{\n  \"size\": \"full\"\n}")
+			try:
+				load(file)
+			except json.decoder.JSONDecodeError:
+				open("System/config/window.json", "w").write("{\n  \"size\": \"full\"\n}")
 			file = open("System/config/window.json")
 			loaded_file = load(file)
 			if open("System/config/window.json", "r+").read() == "":
