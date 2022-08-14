@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
+from PyQt6.QtWidgets import *
 
 import typing
 import sys
@@ -28,7 +28,7 @@ class Buttons:
 			self.setStyleSheet("background-color: #FF4800; color: white; border: none;")
 			super().mouseReleaseEvent(event)
 		
-		def enterEvent(self, event: QEvent) -> None:
+		def enterEvent(self, event: QEnterEvent) -> None:
 			self.setStyleSheet("background-color: #FF4800; color: white; border: none;")
 			super().enterEvent(event)
 		
@@ -53,7 +53,7 @@ class Buttons:
 			self.setStyleSheet("background-color: #41DB24; color: black; border: none;")
 			super().mouseReleaseEvent(event)
 		
-		def enterEvent(self, event: QEvent) -> None:
+		def enterEvent(self, event: QEnterEvent) -> None:
 			self.setStyleSheet("background-color: #41DB24; color: black; border: none;")
 			super().enterEvent(event)
 		
@@ -66,8 +66,10 @@ class Buttons:
 			super().__init__(parent=parent)
 			self.setFixedSize(size)
 			self.setCursor(Qt.CursorShape.PointingHandCursor)
-			if icon is None: self.setText(text)
-			else: self.setIcon(icon)
+			if icon is None:
+				self.setText(text)
+			else:
+				self.setIcon(icon)
 			self.setStyleSheet(f"background-color: {config.returnBackgroundProperties()['background-color']}; color: {config.returnBackgroundProperties()['text-color']}; border: none;")
 			self.setFont(QFont(config.returnProperties()["font-family"], config.returnProperties()["font-size"]))
 		
@@ -79,7 +81,7 @@ class Buttons:
 			self.setStyleSheet(f"background-color: {config.returnBackgroundProperties()['background-color-2']}; color: {config.returnBackgroundProperties()['text-color']}; border: none;")
 			super().mouseReleaseEvent(event)
 		
-		def enterEvent(self, event: QEvent) -> None:
+		def enterEvent(self, event: QEnterEvent) -> None:
 			self.setStyleSheet(f"background-color: {config.returnBackgroundProperties()['background-color-2']}; color: {config.returnBackgroundProperties()['text-color']}; border: none;")
 			super().enterEvent(event)
 		
@@ -114,13 +116,13 @@ class PushButton(QPushButton):
 	
 	def enterEvent(self, event: QEvent) -> None:
 		"""Display backward color animation on mouse hover"""
-		self._animation.setDirection(QAbstractAnimation.Backward)
+		self._animation.setDirection(QAbstractAnimation.Direction.Backward)
 		self._animation.start()
 		super().enterEvent(event)
 	
 	def leaveEvent(self, event: QEvent) -> None:
 		"""Display forward color animation on mouse leave"""
-		self._animation.setDirection(QAbstractAnimation.Forward)
+		self._animation.setDirection(QAbstractAnimation.Direction.Forward)
 		self._animation.start()
 		super().leaveEvent(event)
 	

@@ -7,7 +7,7 @@ Made by Daniel M using Python 3
 
 from datetime import datetime
 
-from PyQt5.QtWebEngineWidgets import *
+from PyQt6.QtWebEngineWidgets import *
 
 from .menu import *
 
@@ -105,7 +105,7 @@ class Slider(QWidget):
 		self.slider.setMinimum(minimum)
 		self.slider.setMaximum(maximum)
 		self.slider.setValue(value)
-		self.slider.setTickPosition(QSlider.TicksBelow)
+		self.slider.setTickPosition(QSlider.TickPosition.TicksBelow)
 		self.slider.setMinimumWidth(300)
 		self.slider.setTickInterval(interval)
 		self.slider.setSingleStep(1)
@@ -125,8 +125,8 @@ class Slider(QWidget):
 		style_slider = QStyleOptionSlider()
 		style_slider.initFrom(self.slider)
 		style_slider.orientation = self.slider.orientation()
-		length = style.pixelMetric(QStyle.PM_SliderLength, style_slider, self.slider)
-		available = style.pixelMetric(QStyle.PM_SliderSpaceAvailable, style_slider, self.slider)
+		length = style.pixelMetric(QStyle.PixelMetric.PM_SliderLength, style_slider, self.slider)
+		available = style.pixelMetric(QStyle.PixelMetric.PM_SliderSpaceAvailable, style_slider, self.slider)
 		for x, y in self.levels:
 			rect = painter.drawText(QRect(), Qt.TextFlag.TextDontPrint, y)
 			position = QStyle.sliderPositionFromValue(self.slider.minimum(), self.slider.maximum(), x, available) + length // 2

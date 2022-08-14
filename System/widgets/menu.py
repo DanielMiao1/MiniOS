@@ -7,9 +7,9 @@ Made by Daniel M using Python 3
 
 import config
 
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
+from PyQt6.QtWidgets import *
 
 
 class Menu(QWidget):
