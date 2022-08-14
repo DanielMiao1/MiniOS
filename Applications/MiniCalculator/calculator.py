@@ -6,14 +6,14 @@ Application made by Daniel M using Python 3 for the MiniOS project: https://gith
 """
 
 # from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt6.QtCore import *
+from PyQt6.QtWidgets import *
 
 
 class Button(QPushButton):
 	def __init__(self, text, parent):
 		super().__init__(text, parent=parent)
-		self.setCursor(Qt.PointingHandCursor)
+		self.setCursor(Qt.CursorShape.PointingHandCursor)
 		self.setStyleSheet("Button { border: none; background-color: #eee; } Button:hover { background-color: #ddd; }")
 
 
@@ -76,4 +76,4 @@ if __name__ == "__main__":
 	app = QApplication([])
 	calc = Calculator()
 	calc.show()
-	app.exec_()
+	app.exec()

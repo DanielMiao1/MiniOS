@@ -5,9 +5,9 @@ Gets all Desktop files/directories
 Made by Daniel M using Python 3
 """
 
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
+from PyQt6.QtWidgets import *
 
 
 def getFileIcon(file_extension: str, file_type: str) -> QIcon:

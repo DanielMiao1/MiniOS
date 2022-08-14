@@ -11,9 +11,9 @@ from config import returnProperties, returnBackgroundProperties, Themes
 from widgets import Slider
 from widgets.buttons import *
 
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
+from PyQt6.QtWidgets import *
 
 
 class Preferences(QWidget):
@@ -22,10 +22,10 @@ class Preferences(QWidget):
 		class ThemeLabel(QLabel):
 			def __init__(self, parent):
 				super(Preferences.Appearance.ThemeLabel, self).__init__(parent)
-				self.setCursor(Qt.PointingHandCursor)
+				self.setCursor(Qt.CursorShape.PointingHandCursor)
 				self.index = None
 				self.setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
-				self.setAlignment(Qt.AlignCenter)
+				self.setAlignment(Qt.AlignmentFlag.AlignCenter)
 			
 			def mousePressEvent(self, event):
 				self.parent().parent().changeTheme(self.index)
@@ -176,16 +176,16 @@ class Preferences(QWidget):
 			
 	def __init__(self, update_function) -> None:
 		super(Preferences, self).__init__()
-		self.setCursor(Qt.ArrowCursor)
+		self.setCursor(Qt.CursorShape.ArrowCursor)
 		self.tabs = QScrollArea(self)
 		self.tabs.setWidgetResizable(True)
 		
 		self.tab_widget = QWidget()
 		self.tabs.setWidget(self.tab_widget)
-		
+
 		self.tab_layout = QVBoxLayout(self.tab_widget)
 		self.tab_layout.addWidget(TabButton(self.tab_widget, lambda: self.stacked_widgets.setCurrentIndex(0), "Appearance"))
-		self.tab_layout.addItem(QSpacerItem(100, 20, QSizePolicy.Expanding, QSizePolicy.Expanding))
+		self.tab_layout.addItem(QSpacerItem(100, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding))
 		
 		self.tabs.setStyleSheet("border: none; background: #F0F0F0")
 		
@@ -204,7 +204,7 @@ class ShutDownWindow(QWidget):
 	"""Shut Down Confirmation Window"""
 	def __init__(self, shut_down_function) -> None:
 		super(ShutDownWindow, self).__init__()
-		self.setCursor(Qt.ArrowCursor)
+		self.setCursor(Qt.CursorShape.ArrowCursor)
 		self.layout, self.cancel, self.confirm = QHBoxLayout(), Buttons.CancelButton(self, text="Cancel"), Buttons.ContinueButton(self, text="Shut Down")
 		self.cancel.pressed.connect(self.closeWindow)
 		self.confirm.pressed.connect(shut_down_function)
@@ -228,7 +228,7 @@ class KeyboardViewer(QWidget):
 	
 	def __init__(self):
 		super(KeyboardViewer, self).__init__()
-		self.setCursor(Qt.ArrowCursor)
+		self.setCursor(Qt.CursorShape.ArrowCursor)
 		self.setStyleSheet("background-color: #FFFFFF")
 		self.layout = QVBoxLayout()
 		self.layout.setSpacing(0)
@@ -323,18 +323,19 @@ class AboutDialog(QDialog):
 	"""About Dialog"""
 	def __init__(self, parent=None) -> None:
 		super(AboutDialog, self).__init__(parent=parent)
-		template = QGridLayout() # Set layout to grid
+		template = QGridLayout()  # Set layout to grid
 		# Set fixed width and height
 		self.setFixedHeight(self.height() - 175)
 		self.setFixedWidth(self.width() + 100)
-		title = QLabel("MiniOS") # Add title
-		title_font = title.font() # Add new font
-		title_font.setPointSize(50) # Set point size for font
-		title_font.setBold(True) # Make font bold
-		title.setFont(title_font) # Set font for title widget
+		title = QLabel("MiniOS")  # Add title
+		title_font = title.font()  # Add new font
+		title_font.setPointSize(50)  # Set point size for font
+		title_font.setBold(True)  # Make font bold
+		title.setFont(title_font)  # Set font for title widget
 		# Add widgets to layout
 		template.addWidget(title, 1, 2)
-		template.addWidget(QLabel("Made by Daniel M using Python 3 and the PyQt5 Graphics Library"), 2, 2)
-		for x in range(template.count()): template.itemAt(x).setAlignment(Qt.AlignmentFlag.AlignHCenter) # Align all widgets to center
-		self.setStyleSheet("color: white; background-color: #18082C;") # Set background color of dialog to #18082C and color of text to white
-		self.setLayout(template) # Display the widgets
+		template.addWidget(QLabel("Made by Daniel M using Python 3 and the PyQt6 Graphics Library"), 2, 2)
+		for x in range(template.count()):
+			template.itemAt(x).setAlignment(Qt.AlignmentFlag.AlignHCenter)  # Align all widgets to center
+		self.setStyleSheet("color: white; background-color: #18082C;")  # Set background color of dialog to #18082C and color of text to white
+		self.setLayout(template)  # Display the widgets
