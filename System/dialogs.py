@@ -11,17 +11,17 @@ from config import returnProperties, returnBackgroundProperties, Themes
 from widgets import Slider
 from widgets.buttons import *
 
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtNetwork import *
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
+from PyQt6.QtWidgets import *
+from PyQt6.QtNetwork import *
 
 
 class Preferences(QWidget):
 	"""System Preferences Application"""
 	def __init__(self, update_function) -> None:
 		super(Preferences, self).__init__()
-		self.setCursor(Qt.ArrowCursor)
+		self.setCursor(Qt.CursorShape.ArrowCursor)
 		self.update_function = update_function
 		self.layout = QGridLayout()
 		self.theme, self.font_size, self.font_family = returnProperties()["theme"], returnProperties()["font-size"], returnProperties()["font-family"]
@@ -68,8 +68,9 @@ class Preferences(QWidget):
 			self.group_box_widgets[i][0].setIconSize(QSize(25, 25))
 			exec(f"self.group_box_widgets[i][0].pressed.connect(lambda self=self: self.changeTheme('{i}'))", globals(), locals())
 		# Add to layout
-		for i in self.widgets.keys(): self.layout.addWidget(self.widgets[i][0], self.widgets[i][1][0], self.widgets[i][1][1])
-		self.setLayout(self.layout) # Set layout
+		for i in self.widgets.keys():
+			self.layout.addWidget(self.widgets[i][0], self.widgets[i][1][0], self.widgets[i][1][1])
+		self.setLayout(self.layout)  # Set layout
 	
 	def setIcon(self, reply, icon):
 		image = QImage()
@@ -85,8 +86,10 @@ class Preferences(QWidget):
 			self.group_box_widgets[i][0].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none")
 			self.group_box_widgets[i][0].setFont(QFont(returnProperties()["font-family"], returnProperties()["font-size"]))
 		# self.widgets["font-family"][0].setStyleSheet("QComboBox QAbstractItemView {selection-color: #AAAAAA}")
-		if returnProperties()["theme"] == "light": self.widgets["font-family"][0].setStyleSheet("QComboBox QAbstractItemView { selection-color: #AAAAAA; color: #000000; };")
-		else: self.widgets["font-family"][0].setStyleSheet("QComboBox QAbstractItemView { selection-color: #555555; color: #FFFFFF; };")
+		if returnProperties()["theme"] == "light":
+			self.widgets["font-family"][0].setStyleSheet("QComboBox QAbstractItemView { selection-color: #AAAAAA; color: #000000; };")
+		else:
+			self.widgets["font-family"][0].setStyleSheet("QComboBox QAbstractItemView { selection-color: #555555; color: #FFFFFF; };")
 		self.update_function()
 		
 	def resetFontSize(self) -> None:
@@ -128,7 +131,7 @@ class ShutDownWindow(QWidget):
 	"""Shut Down Confirmation Window"""
 	def __init__(self, shut_down_function) -> None:
 		super(ShutDownWindow, self).__init__()
-		self.setCursor(Qt.ArrowCursor)
+		self.setCursor(Qt.CursorShape.ArrowCursor)
 		self.layout, self.cancel, self.confirm = QHBoxLayout(), Buttons.CancelButton(self, text="Cancel"), Buttons.ContinueButton(self, text="Shut Down")
 		self.cancel.pressed.connect(self.closeWindow)
 		self.confirm.pressed.connect(shut_down_function)
@@ -152,7 +155,7 @@ class KeyboardViewer(QWidget):
 	
 	def __init__(self):
 		super(KeyboardViewer, self).__init__()
-		self.setCursor(Qt.ArrowCursor)
+		self.setCursor(Qt.CursorShape.ArrowCursor)
 		self.setStyleSheet("background-color: #FFFFFF")
 		self.layout = QVBoxLayout()
 		self.layout.setSpacing(0)
@@ -247,18 +250,19 @@ class AboutDialog(QDialog):
 	"""About Dialog"""
 	def __init__(self, parent=None) -> None:
 		super(AboutDialog, self).__init__(parent=parent)
-		template = QGridLayout() # Set layout to grid
+		template = QGridLayout()  # Set layout to grid
 		# Set fixed width and height
 		self.setFixedHeight(self.height() - 175)
 		self.setFixedWidth(self.width() + 100)
-		title = QLabel("MiniOS") # Add title
-		title_font = title.font() # Add new font
-		title_font.setPointSize(50) # Set point size for font
-		title_font.setBold(True) # Make font bold
-		title.setFont(title_font) # Set font for title widget
+		title = QLabel("MiniOS")  # Add title
+		title_font = title.font()  # Add new font
+		title_font.setPointSize(50)  # Set point size for font
+		title_font.setBold(True)  # Make font bold
+		title.setFont(title_font)  # Set font for title widget
 		# Add widgets to layout
 		template.addWidget(title, 1, 2)
-		template.addWidget(QLabel("Made by Daniel M using Python 3 and the PyQt5 Graphics Library"), 2, 2)
-		for x in range(template.count()): template.itemAt(x).setAlignment(Qt.AlignmentFlag.AlignHCenter) # Align all widgets to center
-		self.setStyleSheet("color: white; background-color: #18082C;") # Set background color of dialog to #18082C and color of text to white
-		self.setLayout(template) # Display the widgets
+		template.addWidget(QLabel("Made by Daniel M using Python 3 and the PyQt6 Graphics Library"), 2, 2)
+		for x in range(template.count()):
+			template.itemAt(x).setAlignment(Qt.AlignmentFlag.AlignHCenter)  # Align all widgets to center
+		self.setStyleSheet("color: white; background-color: #18082C;")  # Set background color of dialog to #18082C and color of text to white
+		self.setLayout(template)  # Display the widgets

@@ -20,9 +20,9 @@ import desktop
 
 __import__("import_modules").checkModules()
 
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
+from PyQt6.QtWidgets import *
 
 applications, config = _applications.returnApplications(), Config()
 
@@ -37,7 +37,6 @@ class Window(QMainWindow):
 		self.context_menu = None
 		self.showing_keyboard_viewer = False
 		self.file_created_session = False  # Set file_created_session variable to False
-		self.setWindowFlag(Qt.WindowType.FramelessWindowHint)  # Remove window frame
 		self.setStyleSheet("background-color: " + returnBackgroundProperties()["background-color"])  # Set window style
 		self.window_size = application.primaryScreen().availableGeometry().width(), application.primaryScreen().availableGeometry().height()  # Get window size property
 		self.windows = []  # Create windows list
@@ -99,7 +98,7 @@ class Window(QMainWindow):
 				row += 1
 				column = 40
 			self.files.append(ToolButton(self))  # Append new ToolButton
-			self.files[-1].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none;") # Set style
+			self.files[-1].setStyleSheet(f"color: {returnBackgroundProperties()['text-color']}; border: none;")  # Set style
 			self.files[-1].setText(desktop.returnItems()[x]["displayname"])  # Set text
 			self.files[-1].setIcon(desktop.getFileIcon(desktop.returnItems()[x]["extension"], desktop.returnItems()[x]["type"]))  # Set icon
 			self.files[-1].setIconSize(QSize(75, 75))  # Set icon size
@@ -110,9 +109,8 @@ class Window(QMainWindow):
 			self.files[-1].pressed.connect((lambda self, length: (lambda: self.setFocusedFile(self.files[length])))(self, len(self.files) - 1))
 			column += 100  # Increase column count
 		self.showFullScreen()  # Show window in full screen
-		self.options.updateMenuPosition(self.width() - 100, "default")  # Update the Options Menu position after full-screening
-		self.show()  # Show the main window
-	
+		self.options.updateMenuPosition(self.width() - 100, "default")  # Update the Options Menu position
+
 	def setFocusedFile(self, file: typing.Union[ToolButton, None] = None):
 		"""Sets the focused file"""
 		if file is None:
@@ -135,12 +133,12 @@ class Window(QMainWindow):
 	def openAbout() -> None:
 		"""Opens the 'About' dialog"""
 		dialog = AboutDialog()  # Call the AboutDialog class
-		dialog.exec_()  # Show class
+		dialog.exec()  # Show class
 		
 	def contextMenuEvent(self, event: QContextMenuEvent) -> None:
 		"""Set context menu for desktop"""
 		menu = QMenu(self)  # Create menu
-		new_file, new_directory, action = menu.addAction("New file"), menu.addAction("New directory"), menu.exec_(self.mapToGlobal(event.pos()))  # Add actions
+		new_file, new_directory, action = menu.addAction("New file"), menu.addAction("New directory"), menu.exec(self.mapToGlobal(event.pos()))  # Add actions
 		if action == new_file:  # New file action
 			# Get row and column count
 			row, column = 0, 40
@@ -329,4 +327,4 @@ for i in applications.keys():
 window = Window()  # Call main Window class
 window.show()  # Show Main Window
 
-sys.exit(application.exec_())  # Execute QApplication
+sys.exit(application.exec())  # Execute QApplication

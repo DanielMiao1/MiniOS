@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
+from PyQt6.QtWidgets import *
 
 
 class Dock(QGroupBox):
@@ -48,8 +48,8 @@ class DockItem(QLabel):
 		self.label.adjustSize()
 		self.label.hide()
 
-	def enterEvent(self, event):
-		self.label.move(QPoint(event.globalPos().x() - event.pos().x() + (self.width() // 2) - (self.label.width() // 2), self.parent().parent().height() - self.parent().height() - self.label.height() - 10))
+	def enterEvent(self, event: QEnterEvent):
+		self.label.move(QPoint(event.globalPosition().x() - event.position().x() + (self.width() // 2) - (self.label.width() // 2), self.parent().parent().height() - self.parent().height() - self.label.height() - 15))
 		self.label.show()
 		super(DockItem, self).enterEvent(event)
 
